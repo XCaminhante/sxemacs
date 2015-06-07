@@ -82,6 +82,16 @@ void init_input(const char *res_name, const char *res_class, Display * display)
 					  NULL);
 	if (!initial_input_context) {
 		stderr_out("WARNING: Could not create input context.\n");
+		char *envvar = getenv("LANG");
+		if (envvar) {
+		  stderr_out("LANG=");
+		  stderr_out(envvar);
+		}
+		envvar = getenv("XMODIFIERS");
+		if (envvar) {
+		  stderr_out("XMODIFIERS=");
+		  stderr_out(envvar);
+		}
 		return;
 	}
 
