@@ -377,23 +377,32 @@ XIM_init_frame (struct frame *f)
 				      XNFontSet,      xic_vars.fontset,
 				      NULL);
 
-	s_list = XVaCreateNestedList (0,
-				      XNArea,         &s_area,
-				      XNForeground,   xic_vars.fg,
-				      XNBackground,   xic_vars.bg,
-				      XNFontSet,      xic_vars.fontset,
-				      NULL);
-
-	FRAME_X_XIC (f) = xic =
-		XCreateIC (xim,
-			   XNInputStyle, style,
-			   XNClientWindow, win,
-			   XNFocusWindow, win,
-			   XNPreeditAttributes, p_list,
-			   XNStatusAttributes, s_list,
-			   NULL);
-	XFree (p_list);
-	XFree (s_list);
+        if (style & XIMStatusArea) {
+                s_list = XVaCreateNestedList (0,
+                                              XNArea,         &s_area,
+                                              XNForeground,   xic_vars.fg,
+                                              XNBackground,   xic_vars.bg,
+                                              XNFontSet,      xic_vars.fontset,
+                                              NULL);
+                FRAME_X_XIC (f) = xic =
+                        XCreateIC (xim,
+                                   XNInputStyle, style,
+                                   XNClientWindow, win,
+                                   XNFocusWindow, win,
+                                   XNPreeditAttributes, p_list,
+                                   XNStatusAttributes, s_list,
+                                   NULL);
+                XFree (s_list);
+        } else {
+                FRAME_X_XIC (f) = xic =
+                        XCreateIC (xim,
+                                   XNInputStyle, style,
+                                   XNClientWindow, win,
+                                   XNFocusWindow, win,
+                                   XNPreeditAttributes, p_list,
+                                   NULL);
+        }
+        XFree (p_list);
 
 	if (!xic) {
 	        char *lang = getenv("LANG");
