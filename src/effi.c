@@ -1817,6 +1817,13 @@ Create dynamic callback and return pointer to it.
 	ptr = Fmake_ffi_object(Qpointer, Qnil);
 #ifdef __i386__
 	XEFFIO(ptr)->fop.ptr = ffi_make_callback_x86(data, XINT(cctype));
+#else
+#ifdef SXEMACS
+        error("FFI Callbacks not supported on this configuration");
+#else
+        signal_ferror(Qinternal_error,
+                      "FFI Callbacks not supported on this configuration");
+#endif	/* SXEMACS */
 #endif /* __i386__ */
 	return ptr;
 }
