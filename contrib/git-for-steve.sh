@@ -2,7 +2,8 @@
 #
 # A script to setup your git area to contribute back to SXEmacs
 #
-# (C) 2008 Nelson Ferreira
+# Copyright (C) 2008 Nelson Ferreira
+# Copyright (C) 2015 Steve Youngs
 #
 # This program is free software; you can redistribute it and/or modify it
 # under a BSD-like licence.
@@ -30,106 +31,584 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-echo "If you have any questions or concerns about how to contribute "
-echo "to SXEmacs, ask us on freenode channel #sxemacs"
-USER_EMAIL=$(git config user.email)
-if [ -z "$USER_EMAIL" ]; then
-    echo "You need to setup your email address with:"
-    echo "    git config user.email <your email address>"
+
+### Commentary:
+##
+##    This script sets up your SXEmacs git WD so that contributing
+##    back to the SXEmacs project is as easy as possible, in the way
+##    that the maintainers like best. :-)
+##
+##    Much care has been taken to NOT overwrite your current settings.
+##    Most times, a setting will only be set if it is not already set,
+##    and you will be prompted before any changes are made, giving you
+##    the option to bail out.
+##
+##    Before the script does anything it checks to make sure you are
+##    running it in a SXEmacs source tree (bails out, if not).
+##    And if you have a dirty WD (uncommitted changes) the script will
+##    stash them first, just to be safe (they're restored at the end).
+##
+##    The stuff this script looks at and might sets/changes:
+##
+##      user.name, user.email, user.signingKey, commit.gpgSign,
+##      format.numbered, format.to, format.subjectprefix,
+##      format.headers, sendmail.to, sendmail.from
+##
+##    It also ensures that origin points to the right place
+##    (http://git.sxemacs.org/sxemacs), optionally makes sure your
+##    remote is set up correctly, that you have a "for-steve" tracking
+##    branch, and adds a devkey.$INITIALS tag containing your public
+##    GnuPG key if available, which can be pushed to your remote.
+##
+##    Oh, and it adds a swag of nice aliases.
+##
+LETSPOP=0
+cat<<EOF
+**********************************************************************
+|               Hello, and welcome to the SXEmacs Team               |
+|                                                                    |
+| This script will help guide you through setting up your personal   |
+| SXEmacs git repo in a way that will make your life as a developer, |
+| and contributor, as easy as possible.                              |
+|                                                                    |
+| We just make sure a few basics are set like name, email, the right |
+| tracking branch, remotes, etc, and add a few nice aliases and      |
+| config options.  You will be prompted if we need to make any       |
+| changes to your config, and you can bail out at any time with C-c. |
+|--------------------------------------------------------------------|
+| I hope you get immense fun and satisfaction from hacking SXEmacs   |
+|      Steve Youngs <steve@sxemacs.org> "SteveYoungs" on IRC         |
+**********************************************************************
+                            Hit [RETURN] to continue, or C-c to abort.
+EOF
+read junk
+
+# Work in the toplevel dir just to be on the safe side
+pushd $(git rev-parse --show-toplevel) 2>/dev/null || 
+    ( echo 1>&2 "Please run this script from _inside_ your SXEmacs repo."
+	exit 1 )
+
+# Lets not mess about in anything that isn't a SXEmacs repo
+if [ ! -f "sxemacs.pc.in" ]; then
+    echo 1>&2 "This is NOT a SXEmacs repo, bailing out!"
     exit 1
 fi
-USER_NAME=$(git config user.name)
-if [ -z "$USER_NAME" ]; then
-    echo "You need to configure git with your name:"
-    echo "    git config user.name \"John Doe\""
-    exit 1
+
+## Clean WD
+clear_wd()
+{
+    cat<<EOF
+
+**********************************************************************
+Your working directory contains changes that have not been committed
+yet.  Under certain conditions this script may do a couple of branch
+jumps, so we will play it safe and store your changes out of the way
+with 'git stash'.  We will 'pop' them back again when we are all done
+here.
+**********************************************************************
+                            Hit [RETURN] to continue, or C-c to abort.
+EOF
+    read junk
+    git stash save --all --quiet "git-for-steve.sh safety stash"
+    LETSPOP=1
+    echo
+}
+DIRTY=$(git status -u --ignored --porcelain -z)
+[ -n "${DIRTY}" ] && clear_wd
+
+## Name
+have_noname()
+{
+    echo
+    echo "Please enter your name as you would like it to appear in the logs"
+    echo -n "Take care to guard against shell expansion (\"John Doe\"): "
+    read NAME
+}
+
+set_name()
+{
+    [ $USER ] && NAMEGUESS=$(getent passwd $USER|cut -d: -f5)
+
+    if [ -n "${NAMEGUESS}" ]; then
+	echo
+	echo "Git needs to know your name (for commit logs, etc)."
+	echo -n "Can we use \"${NAMEGUESS}\"? [Y/n]: "
+	read RESP
+	if [ "${RESP}" = "Y" -o "${RESP}" = "y" -o "${RESP}" = "" ]; then
+	    NAME=${NAMEGUESS}
+	else
+	    have_noname
+	fi
+    else
+	have_noname
+    fi
+
+    git config user.name "${NAME}"
+}
+[ -n "$(git config user.name)" ] || set_name
+
+## Email
+set_email()
+{
+    echo
+    echo "Git needs to know your email address (for commit logs, etc)."
+    echo -n "Please enter your email address (eg john@doe.com): "
+    read EMAIL
+    git config user.email ${EMAIL}
+}
+[ -n "$(git config user.email)" ] || set_email
+
+## Tracking branch "for-steve"
+# Make sure origin points to http://git.sxemacs.org/sxemacs
+ORIGIN_URL=$(git config remote.origin.url)
+if [ "${ORIGIN_URL}" != "http://git.sxemacs.org/sxemacs" ]; then
+    echo
+    echo "Uh-Oh! origin URL is wrong.  Currently set to: ${ORIGIN_URL}"
+    echo -n "Hit [RETURN] to reset to: http://git.sxemacs.org/sxemacs or C-c to abort: "
+    read junk
+    git remote set-url origin http://git.sxemacs.org/sxemacs
 fi
-git branch --track for-steve origin/master
-git checkout for-steve
-if ! type gpg > dev/null 2>&1 ; then
-    echo "MANDATORY: Please install gpg and create/install your private key."
-    exit 1
-fi
-echo ""
-SIGNKEY=$(git config user.signingkey)
-if [ -z "$SIGNKEY" ]; then
-    KEYGUESS=$(gpg --list-keys $USER_EMAIL |\
-               awk '/^pub/ { split($2,k,"/"); print k[2] }')
-    echo "You need to setup your GPG signing key:"
-    echo "    git config user.signingkey ${KEYGUESS:-<GPG key signature>}"
-    exit 1
-fi
-CO_ALIAS=$(git config alias.co)
-if [ -z "$CO_ALIAS" ]; then
-    echo "RECOMMENDED: It is recommended you define the 'co' alias"
-    echo "             to quickly switch betwen the master and "
-    echo "             for-steve branches."
-    echo "    git config alias.co checkout"
-fi
-REMOTE=$(git remote | grep -v origin)
-INITIALS=""
-for word in $(git config user.name); do
-  INITIALS="${INITIALS}$(echo $w | cut -c1)"
-done
-DEVKEYTAG=$(git show devkey.$INITIALS | grep Tagger | sed 's/^Tagger: //')
-EXPECTEDTAG="$USER_NAME <$USER_EMAIL>"
-if [ -z "$DEVKEYTAG" ]; then
-    echo "RECOMMENDED: It is recommended you tag (and push) your "
-    echo "             GPG public key as devkey.${INITIALS}:"
-    echo ""
-    echo "       git tag -s devkey.$INITIALS \ "
-    echo "               -m 'Public key for $USER_NAME <$USER_EMAIL>' \ "
-    echo "          $(gpg --armor --export $USER_EMAL | \ "
-    echo "            git hash-object -w --stdin)"
-    echo ""
-    echo "Don't forget to push the tag to your remote:"
-    echo "       git push <myremote> devkey.${INITIALS}"
-    exit 1
-elif [ "$DEVKEYTAG" != "EXPECTEDTAG" ]; then
-    LONGDEVKEYTAG=$(git show devkey.$INITIALS.$SIGNKEY | grep Tagger)
-    if [ -z "$LONGDEVKEYTAG" ]; then
-    echo "It seems there is someone else using your initials for a key:"
-    echo "       $DEVKEYTAG"
-    echo "RECOMMENDED: It is recommended you tag (and push) your "
-    echo "             GPG public key as devkey.${INITIALS}.${SIGNKEY}:"
-    echo ""
-    echo "       git tag -s devkey.${INITIALS}.${SIGNKEY} \ "
-    echo "               -m 'Public key for $USER_NAME <$USER_EMAIL>' \ "
-    echo "          $(gpg --armor --export $USER_EMAL | \ "
-    echo "            git hash-object -w --stdin)"
-    echo ""
-    echo "Don't forget to push the tag to your remote:"
-    echo "       git push <myremote> devkey.${INITIALS}.${SIGNKEY}"
-fi
-MAINTAINER=$(git show maintaner-pgp | grep Tagger | sed 's/^Tagger: //')
-if ! gpg list-keys "$MAINTAINER" > /devnull 2>&1 ; then
-    echo "RECOMMENDED: You should import the maintainers key to your "
-    echo "             key ring so you can verify objects on the repository"
-    echo "       git show maintainer-pgp | gpg --import"
-    echo ""
-fi
-if [ -z "$REMOTE" ]; then
-    echo "MANDATORY: You now must configure your remote repository "
-    echo "           location using:"
-    echo "    git remote add <myremote> <repository location>"
-    echo ""
-    echo "           We recommend that you use 'myremote' explicitly"
-    echo "           for the remote name, but it can be whatever name"
-    echo "           you wish, except origin"
-    echo "           The repository location can be either a git server"
-    echo "               git://example.com/sxemacs.git"
-    echo "           or an ssh accessible location:"
-    echo "               ssh://user@example.com/~/path/to/git"
-    echo "           in this last case it is VERY convenient that you "
-    echo "           setup SSH public key authentication."
-else
-    echo "Please verify that one of these remotes is for your SXEmacs "
-    echo "public repository"
-    for r in $REMOTE; do
-	git remote show $r
+
+set_branch()
+{
+    echo
+    echo "**********************************************************************"
+    echo "Setting up a \"for-steve\" branch to track origin/master."
+    echo
+    echo "This is the branch that you will merge your work into once it is"
+    echo "ready for Steve to pull into his repo."
+    echo "**********************************************************************"
+    echo -n "                            Hit [RETURN] to continue, or C-c to abort."
+    read junk
+    # Does it make a difference from where we do this from?  Lets
+    # jump into master just to be on the safe side.
+    git checkout --quiet master
+    git branch --track for-steve origin/master
+}
+git branch | grep -q for-steve || set_branch
+git checkout --quiet for-steve
+
+## Remotes
+# myremote
+set_myremote()
+{
+    cat<<EOF
+
+**********************************************************************
+You need to have a remote repository set up for you to push your
+changes to.  Steve will need read-only access so he can fetch your
+changes into his repo.  You can name this repo anything you like,
+just as long as it is a single word, and that word is not \"origin\".
+
+A remote repo can have a "Fetch URL", and a "Push URL".  The
+former (Fetch URL) is the URL from which people would clone, pull,
+fetch from.  And the latter (Push URL) is the URL you would use to
+push (or write) to.
+
+The Push URL to your remote needs to be writable for you, here are a
+couple of examples...
+
+    ssh://user@example.com/~/path/to/repo       (using ssh)
+    https://user:pass@example.com/path/to/repo  (using \"smart http\")
+
+You _could_ use a git protocol URL (git://), but because the git
+protocol has no authentication if you allow write access you are
+allowing write access for anyone who has an internet connection.  So
+PLEASE DO NOT write to your remote via the git protocol.
+
+Before we go ahead and add a remote to your repo, lets see if you have
+one already.
+**********************************************************************
+                            Hit [RETURN] to continue, or C-c to abort.
+EOF
+    read junk
+    REMOTES=($(git remote | grep -v origin))
+    echo
+    echo "**********************************************************************"
+    echo "          Currently configured remotes (possibly empty list)"
+    echo
+    for (( i = 1; i <= ${#REMOTES}; i++ )); do
+	echo -n "\t"${i} -- ${REMOTES[${i}]}" at: "
+	echo $(git config remote.${REMOTES[${i}]}.url)
     done
+    echo
+    echo "**********************************************************************"
+    echo -n " Enter the number that corresponds to your remote, or \"x\" for none: "
+    read index
+
+    if [ "${index}" = "x" -o "${index}" = "" ]; then
+	echo
+	echo -n "Enter the \"Fetch URL\" (read-only access) to your remote: "
+	read MYREMOTE_FETCH
+	echo -n "Enter the \"Push URL\" (write-access for you) to your remote: "
+	read MYREMOTE_PUSH
+	echo "And what would you like to call this remote?  It MUST be a single "
+	echo -n "word, and CANNOT be \"origin\": "
+	read MYREMOTE_NAME
+	git remote add ${MYREMOTE_NAME} ${MYREMOTE_FETCH}
+	git remote set-url --push ${MYREMOTE_NAME} ${MYREMOTE_PUSH}
+	git config sxemacs.remote ${MYREMOTE_NAME}
+    else
+	TYPE="X"
+	URL=$(git config remote.${REMOTES[${index}]}.url)
+	while [ "${TYPE}" != "F" -a "${TYPE}" != "P" -a "${TYPE}" != "B" ]; do
+	    echo  "Is \"${URL}\""
+	    echo -n "  used for Fetch, Push, or Both? [F/P/B]: "
+	    read TYPE
+	    TYPE=$(echo ${TYPE}|tr 'fpb' 'FPB')
+	done
+	case ${TYPE} in
+	    F)
+	        echo -n "${REMOTES[${index}]} \"Push URL\" (write-access for you): "
+		read TYPEURL
+		git remote set-url --push ${REMOTES[${index}]} ${TYPEURL}
+		;;
+	    P)
+	        echo -n "${REMOTES[${index}]} \"Fetch URL\" (read-only access): "
+		read TYPEURL
+		git remote set-url ${REMOTES[${index}]} ${TYPEURL}
+		git remote set-url --push ${REMOTES[${index}]} ${URL}
+		;;
+	    B)  ;; # do nothing
+	esac
+	git config sxemacs.remote ${REMOTES[${index}]}
+    fi
+}
+if [ -z "$(git config sxemacs.remote)" ]; then
+    cat<<EOF
+
+**********************************************************************
+The easiest, and quickest way to get your work and changes into the
+main SXEmacs repository is if you have a publicly accessible remote
+repo.  Well, technically, it does not need to be publicly accessible,
+it just needs to allow Steve read-only access.  Nobody, except you,
+will ever need to write to this repo.
+**********************************************************************
+EOF
+    echo -n "                    Do you have a remote repo like this set up? [Y/n]:"
+    read RESP
+    if [ "${RESP}" = "Y" -o "${RESP}" = "y" -o "${RESP}" = "" ]; then
+	set_myremote
+    else
+	echo "If you ever do set up a remote repo, please re-run this script."
+    fi
 fi
-echo ""
-echo "Make sure to read the SPPM for more information."
-echo "Info node: (sppm)Setting up a publicly accessible repo"
-echo ""
+
+## GnuPG
+set_tagblob()
+{
+    for word in $(git config user.name); do
+	SXEINITIALS="${SXEINITIALS}$(echo ${word}|cut -c1)"
+    done
+    INTLS=${INITIALS:-${SXEINITIALS}}
+    TAGNAME=devkey.${INTLS}
+
+    git tag|grep -q ${TAGNAME} && TAGEXISTS=yes
+    if [ "${TAGEXISTS}" = "yes" ]; then
+	echo "There is already a developer key tag using your initials..."
+	echo
+	git show ${TAGNAME}|sed -n 2,5p
+	echo
+	echo -n "Is it yours? [Y/n]: "
+	read RESP
+	if [ "${RESP}" = "Y" -o "${RESP}" = "y" -o "${RESP}" = "" ]; then
+	    git config sxemacs.devkey $(git show-ref ${TAGNAME}|awk '{print $1;}')
+	else
+	    echo -n "Setting developer key tagname to: "
+	    echo "${TAGNAME}.$(git config user.signingKey)"
+	    TAGNAME=${TAGNAME}.$(git config user.signingKey)
+	fi
+    fi
+
+    if [ -z "$(git config sxemacs.devkey)" ]; then
+	TAGMSG=$(cat<<EOF
+Developer Key -- $(git config user.name)
+
+This is the GnuPG key used by $(git config user.name) <$(git config user.email)>
+to sign commits, merges, and tags in this repository.
+
+You may import this key into your GnuPG keyring with...
+
+  'git show ${TAGNAME} | gpg --import'
+
+To verify signed objects in the repo, use the '--show-signature'
+option with the git-log and git-show commands.
+
+EOF
+)
+	git tag -s ${TAGNAME} -m "${TAGMSG}" \
+	    $(gpg --armor --export $(git config user.signingKey) |
+	    git hash-object -w --stdin)
+	git config sxemacs.devkey $(git show-ref ${TAGNAME} | 
+	    awk '{print $1;}')
+
+	echo
+	echo "Your devkey tag has been created successfully."
+	echo -n "Can we now push ${TAGNAME} to $(git config sxemacs.remote)? [Y/n]: "
+	read RESP
+	if [ "${RESP}" = "Y" -o "${RESP}" = "y" -o "${RESP}" = "" ]; then
+	    git push $(git config sxemacs.remote) ${TAGNAME}
+	    cat<<EOF
+
+**********************************************************************
+Please let Steve know that your devkey is ready to be fetched into the
+main SXEmacs repo.
+
+You can email Steve at steve@sxemacs.org, be sure to also include the
+output from 'git config sxemacs.devkey', it will give Steve a way to
+verify that the tag has not been tampered with.
+**********************************************************************
+                            Hit [RETURN] to continue, or C-c to abort.
+EOF
+	    read junk
+	fi
+    fi
+}
+
+set_keys()
+{
+    # Make sure they've got Steve's key in their keyring.  Safe to
+    # call even if the key exists in the keyring.
+    git tag|grep -q maintainer-pgp &&
+        git show maintainer-pgp|gpg --import --quiet
+
+    DEFKEY=$(grep default-key ~/.gnupg/gpg.conf 2>/dev/null |
+	awk '{print $2;}')
+    if [ -z "${DEFKEY}" ]; then
+	GUESS=$(gpg --list-keys $(git config user.email) |
+	    awk '/^pub/ { split($2,k,"/"); print k[2] }')
+	SIGNKEY=${GUESS:-NOTSET}
+    else
+	SIGNKEY=${DEFKEY}
+    fi
+
+    if [ "${SIGNKEY}" = "NOTSET" ]; then
+	echo
+	echo -n "Please enter the Key-ID of your default GnuPG key: "
+	read RESP
+	[ -n "${RESP}" ] && git config user.signingKey ${RESP}
+    else
+	git config user.signingKey ${SIGNKEY}
+    fi
+
+    git config --bool commit.gpgSign true
+    [ -n "$(git config sxemacs.devkey)" ] || set_tagblob
+}
+
+if ! type gpg 1>/dev/null ; then
+    cat<<EOF
+
+**********************************************************************
+WARNING:  We could not find a gpg executable!
+          The GnuPG related setup in this script will be skipped.
+
+We highly recommend that you have and use GnuPG (gpg) so that you can
+both, verify the signed objects in the repository, and sign your own
+commits.
+
+Once you have GnuPG installed and set up please come back and re-run
+this script.
+**********************************************************************
+                            Hit [RETURN] to continue, or C-c to abort.
+EOF
+    read junk
+elif [ -z "$(git config user.signingKey)" ]; then
+    set_keys
+fi
+
+# set_tagblog is called from set_keys but we may need to call it
+# explicitly if user.signingKey was set prior to running this script.
+[ -n "$(git config sxemacs.devkey)" ] || set_tagblob
+
+## Misc config (format, sendemail, etc)
+set_formats()
+{
+    [ -n "$(git config format.numbered)" ] ||
+        git config format.numbered auto
+    [ -n "$(git config format.to)" ] || git config format.to \
+	"SXEmacs Patches <sxemacs-patches@sxemacs.org>"
+    [ -n "$(git config format.subjecprefix)" ] ||
+        git config format.subjectprefix Patch
+    git config format.headers || git config format.headers \
+	"X-Git-Repo: $(git config remote.$(git config sxemacs.remote).url)
+X-Git-Branch: for-steve"
+    [ -n "$(git config sendemail.to)" ] || git config sendemail.to \
+	"SXEmacs Patches <sxemacs-patches@sxemacs.org>"
+    [ -n "$(git config sendemail.from)" ] || git config sendemail.from \
+	"$(git config user.name) <$(git config user.email)>"
+
+    echo
+    echo "**********************************************************************"
+    echo "        Here are the format and sendemail configs we just set."
+    echo
+    echo "      format.numbered --" $(git config format.numbered)
+    echo "            format.to --" $(git config format.to)
+    echo " format.subjectprefix --" $(git config format.subjectprefix)
+    echo "       format.headers --" $(git config format.headers)
+    echo "         sendemail.to --" $(git config sendemail.to)
+    echo "       sendemail.from --" $(git config sendemail.from)
+    echo
+    echo "**********************************************************************"
+    echo -n "                            Hit [RETURN] to continue, or C-c to abort."
+    read junk
+    git config --bool sxemacs.formats true
+}
+BOOL=$(git config sxemacs.formats)
+if [ "${BOOL}" != "true" ]; then
+    echo
+    echo "We're going to set some format config values, but only if they aren't"
+    echo "already set, so your existing ones are safe."
+    set_formats
+fi
+
+## Hooks
+set_hook()
+{
+    # post-commit hook
+    if [ -f ".git/hooks/post-commit" ]; then
+	cat>>.git/hooks/post-commit<<EOF
+
+### Begin - lines added by git-for-steve.sh
+LOG=\$(git rev-parse --show-toplevel)/++log
+[ -f \${LOG} ] && rm -f \${LOG}
+### End -- lines added by git-for-steve.sh
+EOF
+    elif [ -f ".git/hooks/post-commit.sample" ]; then
+	cat>>.git/hooks/post-commit.sample<<EOF
+
+### Begin - lines added by git-for-steve.sh
+LOG=\$(git rev-parse --show-toplevel)/++log
+[ -f \${LOG} ] && rm -f \${LOG}
+### End -- lines added by git-for-steve.sh
+EOF
+        sed -i /Nothing/d .git/hooks/post-commit.sample
+	mv .git/hooks/post-commit{.sample,}
+    else
+	cat>.git/hooks/post-commit<<EOF
+#!/bin/sh
+### Begin - lines added by git-for-steve.sh
+LOG=\$(git rev-parse --show-toplevel)/++log
+[ -f \${LOG} ] && rm -f \${LOG}
+### End -- lines added by git-for-steve.sh
+EOF
+        chmod 755 .git/hooks/post-commit
+    fi
+}
+
+HAVEHOOK=$(git config sxemacs.commithook)
+if [ "${HAVEHOOK}" != "true" ]; then
+    cat<<EOF
+
+**********************************************************************
+Some of the SXEmacs developers use a variation of the
+#'add-change-log-entry defun (C-x 4 a) for logging their changes
+It creates a log file in the toplevel directory (called '++log') which
+you can use with the '-F' switch of 'git commit'.
+
+If you think that is something you would use (we hope you do), then we
+can add a post-commit hook to your repo that automatically deletes
+that log file after a successful commit.
+**********************************************************************
+EOF
+    echo -n "                                       Shall we add the hook? [Y/n]: "
+    read HOOKME
+    if [ "${HOOKME}" = "Y" -o "${HOOKME}" = "y" -o "${HOOKME}" = "" ]; then
+	set_hook
+	git config --bool sxemacs.commithook true
+    fi
+fi
+
+## Aliases
+set_aliases()
+{
+    echo
+    echo "Which directory would you like to use as the output dir for"
+    echo -n "git format-patch, and send-email? [${TMP:-/tmp}]: "
+    read GITTMP
+    GITTMP=${GITTMP:-${TMP:-/tmp}}
+
+    [ -n "$(git config alias.alias)" ] ||
+        git config alias.alias "config --get-regexp alias"
+    [ -n "$(git config alias.bi)" ] || git config alias.bi bisect
+    [ -n "$(git config alias.co)" ] || git config alias.co checkout
+    [ -n "$(git config alias.ci)" ] || git config alias.ci commit
+    [ -n "$(git config alias.cam)" ] || git config alias.cam "commit -sam"
+
+    BOOL=$(git config sxemacs.commithook)
+    if [ "${BOOL}" = "true" ]; then
+	[ -n "$(git config alias.cwl)" ] ||
+            git config alias.cwl \
+            '!git commit -sF $(git rev-parse --show-toplevel)/++log'
+        [ -n "$(git config alias.cawl)" ] ||
+            git config alias.cawl \
+            '!git commit -saF $(git rev-parse --show-toplevel)/++log'
+    fi
+
+    [ -n "$(git config alias.rbi)" ] || git config alias.rbi "rebase -i"
+    [ -n "$(git config alias.pfs)" ] ||
+        git config alias.pfs "push $(git config sxemacs.remote) for-steve"
+    [ -n "$(git config alias.fp)" ] || git config alias.fp \
+	"format-patch --minimal -o ${GITTMP} origin/master"
+    [ -n "$(git config alias.fpc)" ] || git config alias.fpc \
+	"format-patch --minimal --cover-letter -o ${GITTMP} origin/master"
+    [ -n "$(git config alias.sp)" ] || git config alias.sp \
+	"send-email ${GITTMP}"
+    [ -n "$(git config alias.spc)" ] || git config alias.spc \
+	"send-email --compose ${GITTMP}"
+
+    echo
+    echo "**********************************************************************"
+    echo "         The following aliases are now available for use..."
+    echo
+    git alias
+    echo
+    echo "**********************************************************************"
+    echo -n "                            Hit [RETURN] to continue, or C-c to abort."
+    read junk
+    git config --bool sxemacs.aliases true
+}
+
+BOOL=$(git config sxemacs.aliases)
+if [ "${BOOL}" != "true" ]; then
+    cat<<EOF
+
+**********************************************************************
+And finally, lets set a few aliases.  We will only set them if they
+have not already been set so all of your pre-existing aliases are
+safe.
+**********************************************************************
+                            Hit [RETURN] to continue, or C-c to abort.
+EOF
+    read junk
+    set_aliases
+fi
+
+cat<<EOF
+
+**********************************************************************
+| Thank you for taking the time to setup your repo so that you can   |
+| contribute back to the SXEmacs Project.  We really appreciate all  |
+| that you do, no matter how small or insignificant you may think it |
+| is, it all counts.                                                 |
+|                                                                    |
+| If you have not already done so, please take a few minutes now to  |
+| read through our policies and procedures manual,  We call it the   |
+| "SPPM".  From inside SXEmacs you can get to it via 'C-h C-i sppm', |
+| or from the command line via 'info sppm'.                          |
+|                                                                    |
+| Also, now would be a good time for you to head over to             |
+| http://www.sxemacs.org/lists.html and subscribe to our mailing     |
+| lists.                                                             |
+|--------------------------------------------------------------------|
+| Thank you, and do drop into #sxemacs on freenode IRC for a chat    |
+| any time, especially if you need a hand with anything.             |
+**********************************************************************
+EOF
+
+# If we stashed at the start, pop them back
+[ ${LETSPOP} -eq 1 ] && git stash pop --quiet
+
+popd
+
+exit 0
+### git-for-steve.sh ends here.
