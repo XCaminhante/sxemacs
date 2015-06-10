@@ -85,9 +85,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #endif
 
 Lisp_Object Qxim_xlib;
-#define xim_warn(str) warn_when_safe (Qxim_xlib, Qwarning, str);
-#define xim_warn1(fmt, str) warn_when_safe (Qxim_xlib, Qwarning, fmt, str);
-#define xim_info(str) warn_when_safe (Qxim_xlib, Qinfo, str);
+#define xim_warn(str) warn_when_safe (Qxim_xlib, Qwarning, str)
+#define xim_warn1(fmt, str) warn_when_safe (Qxim_xlib, Qwarning, fmt, str)
+#define xim_warn2(fmt, str1, str2) \
+  warn_when_safe (Qxim_xlib, Qwarning, fmt, str1, str2)
+#define xim_info(str) warn_when_safe (Qxim_xlib, Qinfo, str)
 
 #ifdef XIM_XLIB /* XIM_XLIB specific */
 /* Get/Set IC values for just one attribute */
@@ -375,26 +377,38 @@ XIM_init_frame (struct frame *f)
 				      XNFontSet,      xic_vars.fontset,
 				      NULL);
 
-	s_list = XVaCreateNestedList (0,
-				      XNArea,         &s_area,
-				      XNForeground,   xic_vars.fg,
-				      XNBackground,   xic_vars.bg,
-				      XNFontSet,      xic_vars.fontset,
-				      NULL);
-
-	FRAME_X_XIC (f) = xic =
-		XCreateIC (xim,
-			   XNInputStyle, style,
-			   XNClientWindow, win,
-			   XNFocusWindow, win,
-			   XNPreeditAttributes, p_list,
-			   XNStatusAttributes, s_list,
-			   NULL);
-	XFree (p_list);
-	XFree (s_list);
+        if (style & XIMStatusArea) {
+                s_list = XVaCreateNestedList (0,
+                                              XNArea,         &s_area,
+                                              XNForeground,   xic_vars.fg,
+                                              XNBackground,   xic_vars.bg,
+                                              XNFontSet,      xic_vars.fontset,
+                                              NULL);
+                FRAME_X_XIC (f) = xic =
+                        XCreateIC (xim,
+                                   XNInputStyle, style,
+                                   XNClientWindow, win,
+                                   XNFocusWindow, win,
+                                   XNPreeditAttributes, p_list,
+                                   XNStatusAttributes, s_list,
+                                   NULL);
+                XFree (s_list);
+        } else {
+                FRAME_X_XIC (f) = xic =
+                        XCreateIC (xim,
+                                   XNInputStyle, style,
+                                   XNClientWindow, win,
+                                   XNFocusWindow, win,
+                                   XNPreeditAttributes, p_list,
+                                   NULL);
+        }
+        XFree (p_list);
 
 	if (!xic) {
-		xim_warn ("Warning: XCreateIC failed.\n");
+	        char *lang = getenv("LANG");
+		char *xmodifiers = getenv("XMODIFIERS");
+		xim_warn2 ("Warning: XCreateIC failed. LANG='%s' XMODIFIERS='%s'\n",
+			   (lang?lang:""), (xmodifiers?xmodifiers:""));
 		return;
 	}
 

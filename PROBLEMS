@@ -468,6 +468,14 @@ moment.  However, you can perform the additional check yourself if
 you have taglib installed.  Use the included ffi-taglib.el.
 
 
+*** XCreateIC fails at startup
+
+SXEmacs sometimes fails to create the input context with XCreateIC on
+non-C languages.  SXEmacs will include the values of the LANG and
+XMODIFIERS environment variables which influence the behavior of
+XCreateIC.  Failures have been observed with XMODIFIERS=@im=ibus
+
+
 * Original XEmacs PROBLEMS File
 ===============================
 
