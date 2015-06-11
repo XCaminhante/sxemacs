@@ -306,42 +306,6 @@ AC_DEFUN([SXE_CHECK_DIRNAME], [dnl
 	fi
 ])dnl SXE_CHECK_DIRNAME
 
-AC_DEFUN([_SXE_CHECK_DIRNAME_SIDE_EFFECT], [dnl
-	## defines sxe_func_dirname_side_effect
-	## and DIRNAME_SIDE_EFFECT
-	pushdef([resvar], [sxe_func_dirname_side_effect])
-
-	AC_MSG_CHECKING([whether dirname modifies its argument by side-effect])
-	AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-#endif
-
-int dirname_modifies_argument()
-{
-	char p[11] = "somefile\000";
-	dirname(p);
-	return ((p[0] == '.' && p[1] == '\0') == 0);
-}
-
-int main()
-{
-	return dirname_modifies_argument();
-}
-		]])],
-		resvar[=yes],
-		resvar[=no],
-		resvar[=no])
-	AC_MSG_RESULT([$]resvar)
-
-	if test "$[]resvar[]" = "yes"; then
-		AC_DEFINE([DIRNAME_SIDE_EFFECT], [1],
-			[Whether dirname() operates by side effect])
-	fi
-
-	popdef([resvar])
-])dnl _SXE_CHECK_DIRNAME_SIDE_EFFECT
-
 AC_DEFUN([_SXE_CHECK_DIRNAME_RETVAL], [dnl
 	## arg #1 is the return type, char* by default
 	## arg #2 is the final test,
@@ -388,116 +352,6 @@ int main()
 	popdef([rettest])
 ])dnl _SXE_CHECK_DIRNAME_RETVAL
 
-AC_DEFUN([_SXE_CHECK_DIRNAME_RETVAL_OWNER], [dnl
-	## defines sxe_func_dirname_retval_owner,
-	## values are either "sys" or "user"
-	pushdef([resvar], [sxe_func_dirname_retval_owner])
-
-	malloc_check=${MALLOC_CHECK_}
-	## Turn off the stupid glibc 2.5 stack trace check. We *know* we may
-	## do something bad here :-)
-	MALLOC_CHECK_=0
-	export MALLOC_CHECK_
-	## this test is especially critical, because some systems do not
-	## allocate memory for the user when the return value is "."
-	## instead they point to a static const char somewhere in their
-	## guts which, of course, must not be furtherly modified, free'd or
-	## anything ... took me fucking ages to find out what's going on
-	## so let's drink to the morons responsible for THAT!
-	AC_MSG_CHECKING([to whom belongs the object returned by dirname])
-	if test "$opsys" = "darwin" ; then
-	   resvar=sys
-	else
-	AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-#endif
-
-#define FOLLOW_FREE_STRATEGY		1
-#define FOLLOW_REALLOC_STRATEGY		1
-
-int owner_of_object_returned_by_dirname()
-{
-	void *r;  /* any pointer is just fine */
-	char p[11] = "./somefile\000";
-
-	r = (void*)dirname(p);
-#if FOLLOW_REALLOC_STRATEGY
-	/* reallocation would help already */
-	r = realloc(r, 4096);
-#endif
-#if FOLLOW_FREE_STRATEGY
-	/* if r was ours we should be able to free it */
-	free(r);
-#endif
-#if FOLLOW_FREE_STRATEGY || FOLLOW_REALLOC_STRATEGY
-	return 0;
-#else
-	return 1;
-#endif
-}
-
-int main()
-{
-	return owner_of_object_returned_by_dirname();
-}
-		]])],
-		resvar[=user],
-		resvar[=sys],
-		resvar[=sys])
-	fi
-	if test "${malloc_check}" = "" ; then
-		unset MALLOC_CHECK_
-	else
-		MALLOC_CHECK_=${malloc_check}
-	fi
-	AC_MSG_RESULT([$]resvar)
-
-	if test "$[]resvar[]" = "user"; then
-		AC_DEFINE([DIRNAME_USER_OWNS_RETVAL], [1],
-			[Whether the user space owns the retval of dirname()])
-	elif test "$[]resvar[]" = "sys"; then
-		AC_DEFINE([DIRNAME_SYS_OWNS_RETVAL], [1],
-			[Whether the system owns the retval of dirname()])
-	fi
-
-	popdef([resvar])
-])dnl _SXE_CHECK_DIRNAME_RETVAL_OWNER
-
-AC_DEFUN([_SXE_CHECK_DIRNAME_ON_PROTECTED_MEMORY], [dnl
-	## defines sxe_func_dirname_accepts_protmem
-	pushdef([resvar], [sxe_func_dirname_accepts_protmem])
-
-	AC_MSG_CHECKING([whether dirname can operate on protected mem blocks])
-	AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#ifdef HAVE_LIBGEN_H
-#  include <libgen.h>
-#endif
-
-int dirname_can_operate_on_protected_mem_blocks()
-{
-	dirname("./somefile");
-	return 0;
-}
-
-int main()
-{
-	return dirname_can_operate_on_protected_mem_blocks();
-}
-		]])],
-		resvar[=yes],
-		resvar[=no],
-		resvar[=no])
-	AC_MSG_RESULT([$]resvar)
-
-	if test "$[]resvar[]" = "yes"; then
-		AC_DEFINE([DIRNAME_ACCEPTS_PROTMEM], [1],
-			[Whether dirname() accepts protected memory blocks])
-	fi
-
-	popdef([resvar])
-])dnl _SXE_CHECK_DIRNAME_ON_PROTECTED_MEMORY
-
 AC_DEFUN([_SXE_CHECK_DIRNAME_ON_C99_RESTRICT_MEMORY], [dnl
 	## defines sxe_func_dirname_accepts_restrmem
 	pushdef([resvar], [sxe_func_dirname_accepts_restrmem])
@@ -540,11 +394,8 @@ int main()
 
 AC_DEFUN([SXE_CHECK_BROKEN_DIRNAME], [dnl
 	## defines 3 vars, look in the sub macros to see which ones
-	_SXE_CHECK_DIRNAME_SIDE_EFFECT
-	_SXE_CHECK_DIRNAME_ON_PROTECTED_MEMORY
 	_SXE_CHECK_DIRNAME_ON_C99_RESTRICT_MEMORY
 	_SXE_CHECK_DIRNAME_RETVAL
-	_SXE_CHECK_DIRNAME_RETVAL_OWNER
 ])dnl SXE_CHECK_BROKEN_DIRNAME
 
 

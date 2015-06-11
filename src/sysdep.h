@@ -223,35 +223,24 @@ x__dirlen(const char *file, size_t len)
 extern_inline void
 x__dirname(char *restrict res, const char *file, size_t len)
 	__attribute__((always_inline));
-#if defined(HAVE_DIRNAME) && defined(DIRNAME_SIDE_EFFECT)
+#if defined(HAVE_DIRNAME)
 extern_inline void
 x__dirname(char *restrict res, const char *file, size_t len)
 {
-	/* assumes res is malloc'd of size LEN */
-	xstrncpy(res, file, len);
-	dirname(res);
-	return;
-}
-#elif defined(HAVE_DIRNAME) && !defined(DIRNAME_ACCEPTS_PROTMEM)
-extern_inline void
-x__dirname(char *restrict res, const char *file, size_t len)
-{
-	/* assumes res is malloc'd of size LEN */
-	char *result;
-	xstrncpy(res, file, len);
-	/* if we were using side effects we woulda matched the above cond */
-	result = dirname(res);
-	xstrncpy(res, result, len);
-	return;
-}
-#elif defined(HAVE_DIRNAME)
-extern_inline void
-x__dirname(char *restrict res, const char *file, size_t len)
-{
-	/* assumes res is malloc'd of size LEN */
-	char *result = dirname(res);
-	xstrncpy(res, result, len);
-	return;
+        /* assumes res is malloc'd of size LEN */
+        char *result;
+        xstrncpy(res, file, len);
+        result = dirname(res);
+        if (res == result) {
+                return;
+        }
+        if (result < res || result >= (res+len)) {
+                xstrncpy(res, result, len);
+        } else {
+                /* Use memmove if result overlaps res */
+                memmove(res, result, strlen(result)+1);
+        }
+        return;
 }
 #endif
 
