@@ -112,6 +112,7 @@ AC_DEFUN([_SXE_CHECK_REALPATH_RETVAL_OWNER], [dnl
 
 #define FOLLOW_FREE_STRATEGY		1
 #define FOLLOW_REALLOC_STRATEGY		1
+#define FOLLOW_DOUBLE_CALL_STRATEGY	1
 
 int owner_of_object_returned_by_realpath()
 {
@@ -119,6 +120,16 @@ int owner_of_object_returned_by_realpath()
 	char p[8] = "/bin/sh\000";
 
 	r = (void*)realpath(p, NULL);
+#if FOLLOW_DOUBLE_CALL_STRATEGY
+        {
+		char p[8] = "/bin/cp\000";
+
+		if (r == (void*)realpath(p, NULL)) {
+			/* System owns when 2 calls yield same pointer */
+			return 1;
+		}
+	}
+#endif
 #if FOLLOW_REALLOC_STRATEGY
 	/* reallocation would help already */
 	r = realloc(r, 4096);
