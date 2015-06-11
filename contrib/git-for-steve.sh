@@ -84,15 +84,19 @@ EOF
 read junk
 
 # Work in the toplevel dir just to be on the safe side
-pushd $(git rev-parse --show-toplevel) 2>/dev/null || 
+pushd $(git rev-parse --show-toplevel) 1>/dev/null || 
     ( echo 1>&2 "Please run this script from _inside_ your SXEmacs repo."
 	exit 1 )
 
 # Lets not mess about in anything that isn't a SXEmacs repo
-if [ ! -f "sxemacs.pc.in" ]; then
+if [ "$(git show-ref v22.1.13 2>/dev/null|cut -c-8)" != "5ff9eebe" ]; then
     echo 1>&2 "This is NOT a SXEmacs repo, bailing out!"
     exit 1
 fi
+
+
+# Save the current branch name in case we move about
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 ## Clean WD
 clear_wd()
@@ -160,13 +164,28 @@ set_email()
 
 ## Tracking branch "for-steve"
 # Make sure origin points to http://git.sxemacs.org/sxemacs
-ORIGIN_URL=$(git config remote.origin.url)
-if [ "${ORIGIN_URL}" != "http://git.sxemacs.org/sxemacs" ]; then
-    echo
-    echo "Uh-Oh! origin URL is wrong.  Currently set to: ${ORIGIN_URL}"
-    echo -n "Hit [RETURN] to reset to: http://git.sxemacs.org/sxemacs or C-c to abort: "
-    read junk
-    git remote set-url origin http://git.sxemacs.org/sxemacs
+CHECK_ORIGIN=${CHECK_ORIGIN:-true}
+if [ "${CHECK_ORIGIN}" != "false" ]; then
+    ORIGIN_URL=$(git config remote.origin.url)
+    if [ "${ORIGIN_URL}" != "http://git.sxemacs.org/sxemacs" ]; then
+	cat<<EOF
+
+**********************************************************************
+WARNING: origin URL is WRONG.
+
+ It is currently set to: ${ORIGIN_URL}
+But it SHOULD be set to: http://git.sxemacs.org/sxemacs
+
+It you are absolutely 110% sure that your origin is correct, abort now
+with C-c, and re-run this script with the environment variable, 
+"CHECK_ORIGIN" set explicitly to the string: "false".  Otherwise we
+are going to reset it for you.
+**********************************************************************
+                            Hit [RETURN] to continue, or C-c to abort.
+EOF
+	read junk
+	git remote set-url origin http://git.sxemacs.org/sxemacs
+    fi
 fi
 
 set_branch()
@@ -180,13 +199,22 @@ set_branch()
     echo "**********************************************************************"
     echo -n "                            Hit [RETURN] to continue, or C-c to abort."
     read junk
-    # Does it make a difference from where we do this from?  Lets
-    # jump into master just to be on the safe side.
-    git checkout --quiet master
+    # Does it make a difference from where we do this from?  Lets jump
+    # into master if we're not there already, just to be on the safe
+    # side.
+    [ "${CURRENT_BRANCH}" != "master" ] && git checkout --quiet master
     git branch --track for-steve origin/master
+    # Offer to leave them in for-steve, but only if we didn't stash
+    if [ ${LETSPOP} -eq 0 ]; then
+	echo
+	echo -n "Switch to the \"for-steve\" branch when this script exits? [Y/n]: "
+	read RESP
+	if [ "${RESP}" = "Y" -o "${RESP}" = "y" -o "${RESP}" = "" ]; then
+	    git checkout --quiet for-steve
+	fi
+    fi
 }
 git branch | grep -q for-steve || set_branch
-git checkout --quiet for-steve
 
 ## Remotes
 # myremote
@@ -528,9 +556,10 @@ set_aliases()
     GITTMP=${GITTMP:-${TMP:-/tmp}}
 
     [ -n "$(git config alias.alias)" ] ||
-        git config alias.alias "config --get-regexp alias"
+        git config alias.alias "config --get-regexp ^alias"
     [ -n "$(git config alias.bi)" ] || git config alias.bi bisect
     [ -n "$(git config alias.co)" ] || git config alias.co checkout
+    [ -n "$(git config alias.cob)" ] || git config alias.co "checkout -b"
     [ -n "$(git config alias.ci)" ] || git config alias.ci commit
     [ -n "$(git config alias.cam)" ] || git config alias.cam "commit -sam"
 
@@ -545,6 +574,7 @@ set_aliases()
     fi
 
     [ -n "$(git config alias.rbi)" ] || git config alias.rbi "rebase -i"
+    [ -n "$(git config alias.prb)" ] || git config alias.co "pull --rebase"
     [ -n "$(git config alias.pfs)" ] ||
         git config alias.pfs "push $(git config sxemacs.remote) for-steve"
     [ -n "$(git config alias.fp)" ] || git config alias.fp \
@@ -555,6 +585,8 @@ set_aliases()
 	"send-email ${GITTMP}"
     [ -n "$(git config alias.spc)" ] || git config alias.spc \
 	"send-email --compose ${GITTMP}"
+    [ -n "$(git config alias.wb" ] || git config alias.wb \
+	"rev-parse --abbrev-ref HEAD"
 
     echo
     echo "**********************************************************************"
@@ -583,6 +615,17 @@ EOF
     set_aliases
 fi
 
+popd 1>/dev/null
+
+if [ ${LETSPOP} -eq 1 ]; then
+    # If we changed branches on them, go back.
+    if [ "${CURRENT_BRANCH}" != "$(git rev-parse --abbrev-ref HEAD)" ]; then
+	git checkout --quiet ${CURRENT_BRANCH}
+    fi
+    git stash pop --quiet
+fi
+
+## All done, bar the shouting...
 cat<<EOF
 
 **********************************************************************
@@ -604,11 +647,6 @@ cat<<EOF
 | any time, especially if you need a hand with anything.             |
 **********************************************************************
 EOF
-
-# If we stashed at the start, pop them back
-[ ${LETSPOP} -eq 1 ] && git stash pop --quiet
-
-popd
 
 exit 0
 ### git-for-steve.sh ends here.
