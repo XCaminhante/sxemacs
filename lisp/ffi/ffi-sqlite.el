@@ -476,32 +476,38 @@ BIND specifies bindings for SQL query."
 ;;}}}
 ;;{{{ Custom collations
 
-(define-ffi-callback sqlite-generic-collation 'int
-  ((user-data 'pointer) (len1 'int) (str1 'pointer)
-   (len2 'int) (str2 'pointer))
-  (let ((fun (ffi-pointer-to-lisp-object user-data))
-	(s1 (ffi-get str1 :type (cons 'c-data len1)))
-	(s2 (ffi-get str2 :type (cons 'c-data len2))))
-    (funcall fun s1 s2)))
+(ignore-errors
+  (define-ffi-callback sqlite-generic-collation 'int
+    ((user-data 'pointer) (len1 'int) (str1 'pointer)
+     (len2 'int) (str2 'pointer))
+    (let ((fun (ffi-pointer-to-lisp-object user-data))
+	  (s1 (ffi-get str1 :type (cons 'c-data len1)))
+	  (s2 (ffi-get str2 :type (cons 'c-data len2))))
+      (funcall fun s1 s2))))
 
 (defun sqlite-create-collation (db name compare-function)
   "For DB register new collation named NAME.
 COMPARE-FUNCTION must get exactly two string arguments and return:
   -1  if first string is less then second
    0  if strings are equal
-   1  if first string is greater then second"
-  (let* ((ccolls (get db 'custom-collations))
-	 (colla (assoc name ccolls)))
-    (if colla
-	(setcdr colla compare-function)
-      (put db 'custom-collations
-	   (cons (cons name compare-function) ccolls))))
-  (sqlite-check-result
-   (sqlite:create-collation
-    db name sqlite-UTF-8
-    (ffi-lisp-object-to-pointer compare-function)
-    (ffi-callback-fo 'sqlite-generic-collation))
-   (sqlite:errmsg db)))
+   1  if first string is greater then second.
+
+Currently, this is only available on i386."
+  (if (not (boundp 'sqlite-generic-collation))
+      (error 'unimplemented 'ffi-make-callback
+	     "for this architecture")
+    (let* ((ccolls (get db 'custom-collations))
+	   (colla (assoc name ccolls)))
+      (if colla
+	  (setcdr colla compare-function)
+	(put db 'custom-collations
+	     (cons (cons name compare-function) ccolls))))
+    (sqlite-check-result
+     (sqlite:create-collation
+      db name sqlite-UTF-8
+      (ffi-lisp-object-to-pointer compare-function)
+      (ffi-callback-fo 'sqlite-generic-collation))
+     (sqlite:errmsg db))))
 
 (defun sqlite-remove-collation (db name)
   "For DB remove collation by NAME."

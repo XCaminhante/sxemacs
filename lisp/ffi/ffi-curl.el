@@ -235,15 +235,16 @@ object with key 'ctx to keep it accessible."
 (defvar curl:download-history nil
   "History for `curl:download' and `curl:download&'.")
 
-(define-ffi-callback curl:cb-write-to-buffer int
-  ((ptr pointer) (size int) (nmemb int) (stream pointer))
-  "Writer to STREAM buffer."
-  (let ((buf (ffi-pointer-to-lisp-object stream))
-	(rsz (* size nmemb)))
-    (when (and (positivep rsz) (buffer-live-p buf))
-      (with-current-buffer buf
-	(insert (ffi-get ptr :type (cons 'c-data rsz)))))
-    rsz))
+(ignore-errors
+  (define-ffi-callback curl:cb-write-to-buffer int
+    ((ptr pointer) (size int) (nmemb int) (stream pointer))
+    "Writer to STREAM buffer."
+    (let ((buf (ffi-pointer-to-lisp-object stream))
+	  (rsz (* size nmemb)))
+      (when (and (positivep rsz) (buffer-live-p buf))
+	(with-current-buffer buf
+	  (insert (ffi-get ptr :type (cons 'c-data rsz)))))
+      rsz)))
 
 ;;;###autoload
 (defun curl:download (url file-or-buffer &rest options)
@@ -269,7 +270,8 @@ works with HTTP URLs."
 	 (setq options (list :header t :nobody t))))
 
   (let* ((ctx (curl:easy-init))
-	 (bufferp (bufferp file-or-buffer))
+	 (bufferp (and (boundp 'curl:cb-write-to-buffer)
+		       (bufferp file-or-buffer)))
 	 (fs (if bufferp
 		 (ffi-lisp-object-to-pointer file-or-buffer)
 	       (c:fopen (expand-file-name file-or-buffer) "w"))))
