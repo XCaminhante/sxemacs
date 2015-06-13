@@ -57,7 +57,7 @@ AC_DEFUN([SXE_PROG_BISON], [
 		SXE_MSG_CHECKING([if bison is recent enough])
 		sxe_cv_feat_bison_version="$(${BISON} --version | head -n1)"
 		case "$sxe_cv_feat_bison_version" in
-		*\ 1.875 | *\ 2.*)
+		*\ 2.7* | *\ 3.*)
 			;;
 		*)
 			have_bison="no"

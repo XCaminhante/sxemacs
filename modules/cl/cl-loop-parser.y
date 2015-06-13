@@ -55,8 +55,8 @@ cl_loop_step_scanner(Lisp_Object *scanner)
 
 %}
 
-%name-prefix="cl_loop_yy"
-%pure_parser
+%define api.prefix {cl_loop_yy}
+%define api.pure full
 %defines
 
 %parse-param {Lisp_Object *yyscanner}
