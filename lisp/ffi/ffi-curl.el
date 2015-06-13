@@ -270,8 +270,10 @@ works with HTTP URLs."
 	 (setq options (list :header t :nobody t))))
 
   (let* ((ctx (curl:easy-init))
-	 (bufferp (and (boundp 'curl:cb-write-to-buffer)
-		       (bufferp file-or-buffer)))
+	 (bufferp (when (bufferp file-or-buffer)
+		    (or (boundp 'curl:cb-write-to-buffer)
+			(error 'unimplemented 'ffi-make-callback
+			       "for this architecture"))))
 	 (fs (if bufferp
 		 (ffi-lisp-object-to-pointer file-or-buffer)
 	       (c:fopen (expand-file-name file-or-buffer) "w"))))
@@ -315,7 +317,10 @@ is run.  Functions in there will be called with an argument JOB."
 
   (if (featurep 'workers)
       (let* ((ctx (curl:easy-init))
-	     (bufferp (bufferp file-or-buffer))
+	     (bufferp (when (bufferp file-or-buffer)
+			(or (boundp 'curl:cb-write-to-buffer)
+			    (error 'unimplemented 'ffi-make-callback
+				   "for this architecture"))))
 	     (fs (if bufferp
 		     (ffi-lisp-object-to-pointer file-or-buffer)
 		   (c:fopen (expand-file-name file-or-buffer) "w"))))
