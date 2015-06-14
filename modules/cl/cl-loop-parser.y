@@ -55,7 +55,7 @@ cl_loop_step_scanner(Lisp_Object *scanner)
 
 %}
 
-%define api.prefix {cl_loop_yy}
+%define api.prefix "cl_loop_yy"
 %define api.pure full
 %defines
 
