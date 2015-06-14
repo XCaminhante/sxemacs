@@ -359,7 +359,7 @@ AC_DEFUN([_SXE_CHECK_DIRNAME_ON_C99_RESTRICT_MEMORY], [dnl
 	AC_MSG_CHECKING([whether dirname can operate on C99 restrict mem blocks])
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_STDIO_H
-#  inlcude <stdio.h>
+#  include <stdio.h>
 #endif
 #ifdef HAVE_LIBGEN_H
 #  include <libgen.h>
