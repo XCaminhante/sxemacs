@@ -1266,6 +1266,7 @@ error
     syntax-error
       invalid-read-syntax
       invalid-regexp
+      scan-error
       structure-formation-error
 	list-formation-error
 	  malformed-list

@@ -88,6 +88,8 @@ Lisp_Object Vstandard_syntax_table;
 
 Lisp_Object Vsyntax_designator_chars_string;
 
+Lisp_Object Qscan_error;
+
 /* This is the internal form of the parse state used in parse-partial-sexp.  */
 
 struct lisp_parse_state {
@@ -1205,6 +1207,7 @@ scan_lists(struct buffer * buf, Bufpos from, int count, int depth,
 	enum syntaxcode code;
 	int syncode;
 	int min_depth = depth;	/* Err out if depth gets less than this. */
+	Bufpos last_good = from;
 
 	if (depth > 0)
 		min_depth = 0;
@@ -1223,6 +1226,8 @@ scan_lists(struct buffer * buf, Bufpos from, int count, int depth,
 			c = BUF_FETCH_CHAR(buf, from);
 			syncode = SYNTAX_CODE_FROM_CACHE(mirrortab, c);
 			code = SYNTAX_FROM_CODE(syncode);
+			if (depth == min_depth)
+				last_good = from;
 			from++;
 
 			/* a 1-char comment start sequence */
@@ -1348,8 +1353,11 @@ scan_lists(struct buffer * buf, Bufpos from, int count, int depth,
 				if (depth < min_depth) {
 					if (noerror)
 						return Qnil;
-					error("Containing expression "
-					      "ends prematurely");
+					signal_type_error_2(Qscan_error,
+							    "Containing expression "
+							    "ends prematurely",
+							    make_int(last_good),
+							    make_int(from));
 				}
 				break;
 
@@ -1536,8 +1544,11 @@ scan_lists(struct buffer * buf, Bufpos from, int count, int depth,
 					if (noerror) {
 						return Qnil;
 					}
-					error("Containing expression "
-					      "ends prematurely");
+					signal_type_error_2(Qscan_error,
+							    "Containing expression "
+							    "ends premeturely",
+							    make_int(last_good),
+							    make_int(from));
 				}
 				break;
 
@@ -1611,7 +1622,8 @@ scan_lists(struct buffer * buf, Bufpos from, int count, int depth,
 
       lose:
 	if (!noerror)
-		error("Unbalanced parentheses");
+		signal_type_error_2(Qscan_error, "Unbalanced parentheses",
+				    make_int(last_good), make_int(from));
 	return Qnil;
 }
 
@@ -2260,6 +2272,8 @@ void syms_of_syntax(void)
 	DEFSUBR(Fscan_sexps);
 	DEFSUBR(Fbackward_prefix_chars);
 	DEFSUBR(Fparse_partial_sexp);
+
+	DEFERROR_STANDARD(Qscan_error, Qsyntax_error);
 }
 
 void vars_of_syntax(void)
