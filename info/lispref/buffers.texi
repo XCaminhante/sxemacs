@@ -34,7 +34,7 @@ not be displayed in any window.
 @end menu
 
 
-@node Buffer Basics
+@node Buffer Basics, Current Buffer, Buffers, Buffers
 @section Buffer Basics
 
 @ifinfo

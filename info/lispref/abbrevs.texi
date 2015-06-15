@@ -43,7 +43,7 @@ Mode, sxemacs, The SXEmacs User's Manual}.
 * Standard Abbrev Tables::      Abbrev tables used by various major modes.
 @end menu
 
-@node Abbrev Mode
+@node Abbrev Mode, Abbrev Tables, Abbrevs, Abbrevs
 @section Setting Up Abbrev Mode
 
   Abbrev mode is a minor mode controlled by the value of the variable
@@ -306,7 +306,7 @@ aborts expansion if it is not confirmed.
           (error "Not expanding this abbrev"))))
 @end smallexample
 
-@node Standard Abbrev Tables
+@node Standard Abbrev Tables,  , Abbrev Expansion, Abbrevs
 @section Standard Abbrev Tables
 
   Here we list the variables that hold the abbrev tables for the

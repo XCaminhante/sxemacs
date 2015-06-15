@@ -5,7 +5,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/hash-tables.info
 
-@node Hash Tables, Range Tables, Media, top
+@node Hash Tables, Range Tables, Media, Top
 @chapter Hash Tables
 @cindex hash table
 
@@ -23,7 +23,7 @@ This function returns @code{t} if @var{object} is a hash table, else @code{nil}.
 @end menu
 
 
-@node Introduction to Hash Tables
+@node Introduction to Hash Tables, Working With Hash Tables, Hash Tables, Hash Tables
 @section Introduction to Hash Tables
 
 A @dfn{hash table} is a data structure that provides mappings from
@@ -193,7 +193,7 @@ processed by @var{function}.
 @end defun
 
 
-@node Weak Hash Tables
+@node Weak Hash Tables,  , Working With Hash Tables, Hash Tables
 @section Weak Hash Tables
 @cindex hash table, weak
 @cindex weak hash table

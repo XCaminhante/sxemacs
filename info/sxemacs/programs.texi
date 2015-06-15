@@ -870,7 +870,7 @@ class browser.  @xref{Top,,, ebrowse, Ebrowse User's Manual}.
 * List Tags::		Listing and finding tags defined in a file.
 @end menu
 
-@node Tag Syntax
+@node Tag Syntax, Create Tags Table, Tags, Tags
 @subsection Source File Tag Syntax
 
   Here is how tag syntax is defined for the most popular languages:

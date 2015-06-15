@@ -29,7 +29,7 @@ function @code{eval}.
 @end menu
 
 
-@node Intro Eval
+@node Intro Eval, Eval, Evaluation, Evaluation
 @section Introduction to Evaluation
 
   The Lisp interpreter, or evaluator, is the program that computes
@@ -102,7 +102,7 @@ effects is @code{(setq foo 1)}.
   The details of what evaluation means for each kind of form are
 described below (@pxref{Forms}).
 
-@node Eval
+@node Eval, Forms, Intro Eval, Evaluation
 @section Eval
 @c ??? Perhaps this should be the last section in the chapter.
 
@@ -238,7 +238,7 @@ particular elements, like this:
 @end example
 @end defvar
 
-@node Forms
+@node Forms, Quoting, Eval, Evaluation
 @section Kinds of Forms
 
   A Lisp object that is intended to be evaluated is called a @dfn{form}.
@@ -262,7 +262,7 @@ starting with ``all other types'' which are self-evaluating forms.
 @end menu
 
 
-@node Self-Evaluating Forms
+@node Self-Evaluating Forms, Symbol Forms, Forms, Forms
 @subsection Self-Evaluating Forms
 @cindex vector evaluation
 @cindex literal evaluation
@@ -317,7 +317,7 @@ program.  Here is an example:
 @end example
 
 
-@node Symbol Forms
+@node Symbol Forms, Classifying Lists, Self-Evaluating Forms, Forms
 @subsection Symbol Forms
 @cindex symbol evaluation
 
@@ -352,7 +352,7 @@ these two symbols act like self-evaluating forms, even though
 @code{eval} treats them like any other symbol.
 
 
-@node Classifying Lists
+@node Classifying Lists, Function Indirection, Symbol Forms, Forms
 @subsection Classification of List Forms
 @cindex list form evaluation
 
@@ -369,7 +369,7 @@ and how the rest of the list is to be processed.  The first element is
 Scheme.
 
 
-@node Function Indirection
+@node Function Indirection, Function Forms, Classifying Lists, Forms
 @subsection Symbol Function Indirection
 @cindex symbol function indirection
 @cindex indirection
@@ -469,7 +469,7 @@ Here is how you could define @code{indirect-function} in Lisp:
 @end defun
 
 
-@node Function Forms
+@node Function Forms, Macro Forms, Function Indirection, Forms
 @subsection Evaluation of Function Forms
 @cindex function form evaluation
 @cindex function call
@@ -495,7 +495,7 @@ the forms in the function body are evaluated in order, and the value of
 the last body form becomes the value of the function call.
 
 
-@node Macro Forms
+@node Macro Forms, Special Forms, Function Forms, Forms
 @subsection Lisp Macro Evaluation
 @cindex macro call evaluation
 
@@ -542,7 +542,7 @@ expansion.
 @xref{Macros}, for a complete description of SXEmacs Lisp macros.
 
 
-@node Special Forms
+@node Special Forms, Autoloading, Macro Forms, Forms
 @subsection Special Forms
 @cindex special form evaluation
 
@@ -652,7 +652,7 @@ values).@refill
 @end quotation
 
 
-@node Autoloading
+@node Autoloading,  , Special Forms, Forms
 @subsection Autoloading
 
   The @dfn{autoload} feature allows you to call a function or macro
@@ -663,7 +663,7 @@ function automatically loads the specified file; then it calls the real
 definition loaded from that file.  @xref{Autoload}.
 
 
-@node Quoting
+@node Quoting,  , Forms, Evaluation
 @section Quoting
 @cindex quoting
 
@@ -687,7 +687,7 @@ sources.  You can test yourself in the example section below. @c :)
 @end menu
 
 
-@node Quoting with quote
+@node Quoting with quote, Quoting with function, Quoting, Quoting
 @subsection Quoting with @code{quote}
 @findex quote
 @findex @samp{'}
@@ -807,7 +807,7 @@ quoting.  @xref{Self-Evaluating Forms}.
 @end example
 
 
-@node Quoting with function
+@node Quoting with function, Quoting with backquote, Quoting with quote, Quoting
 @subsection Quoting with @code{function}
 @findex function
 @findex @samp{#'}
@@ -947,7 +947,7 @@ likely wrong anyway so we will not give examples here.
 The true expansion of @code{(lambda @dots{})} is @code{(function (lambda @dots{}))}.
 
 
-@node Quoting with backquote
+@node Quoting with backquote, Nested quoting, Quoting with function, Quoting
 @subsection Quoting with @code{`} (backquote)
 @findex backquote
 @findex @samp{`}
@@ -1150,7 +1150,7 @@ test-list
 @end example
 
 
-@node Nested quoting
+@node Nested quoting,  , Quoting with backquote, Quoting
 @subsection Nested quoting
 
   Simple nested quotations have already been used throughout this

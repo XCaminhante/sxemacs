@@ -27,7 +27,7 @@ that SXEmacs presents to the user.
 @end menu
 
 
-@node Refresh Screen
+@node Refresh Screen, Truncation, Display, Display
 @section Refreshing the Screen
 
 The function @code{redraw-frame} redisplays the entire contents of a
@@ -1147,7 +1147,7 @@ type.
 @end ignore
 
 
-@node Beeping
+@node Beeping,  , Display Tables, Display
 @section Beeping
 @cindex beeping
 @cindex bell

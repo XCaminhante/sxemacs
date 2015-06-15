@@ -7,7 +7,7 @@
 @c  ldap.texi.
 @setfilename ../../info/postgresql.info
 
-@node PostgreSQL Support, OpenSSL Support, LDAP Support, top
+@node PostgreSQL Support, OpenSSL Support, LDAP Support, Top
 @chapter PostgreSQL Support
 @cindex PostgreSQL
 

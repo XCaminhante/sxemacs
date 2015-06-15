@@ -397,7 +397,7 @@ library.  If this is what you want to do, use the GNU Library General
 Public License instead of this License.
 
 
-@node Introduction, Packaging, Copying, Top
+@node Introduction,  , Copying
 @chapter Introduction
 
   Most of the SXEmacs text editor is written in the programming
@@ -431,7 +431,7 @@ peculiar to SXEmacs Lisp or relate specifically to editing.
 @end menu
 
 
-@node Caveats
+@node Caveats, Lisp History, Introduction, Introduction
 @section Caveats
 
   This manual has gone through numerous drafts.  It is nearly complete
@@ -489,7 +489,7 @@ sxemacs-devel@@sxemacs.org
   -- Sebastian Freundt
 @end ifinfo
 
-@node Lisp History
+@node Lisp History, Conventions, Caveats, Introduction
 @section Lisp History
 @cindex Lisp history
 
@@ -516,7 +516,7 @@ Lisp differs from Common Lisp.  If you don't know Common Lisp, don't
 worry about it; this manual is self-contained.
 
 
-@node Conventions
+@node Conventions, Acknowledgements, Lisp History, Introduction
 @section Conventions
 
 This section explains the notational conventions that are used in this
@@ -533,7 +533,7 @@ manual.  You may want to skip this section and refer back to it later.
 @end menu
 
 
-@node Some Terms
+@node Some Terms, nil and t, Conventions, Conventions
 @subsection Some Terms
 
   Throughout this manual, the phrases ``the Lisp reader'' and ``the Lisp
@@ -550,7 +550,7 @@ including those you write.
 in this font or form: @var{first-number}.
 
 
-@node nil and t
+@node nil and t, Evaluation Notation, Some Terms, Conventions
 @subsection @code{nil} and @code{t}
 @cindex @code{nil}, uses of
 @cindex truth value
@@ -594,7 +594,7 @@ values results in a @code{setting-constant} error.  @xref{Accessing
 Variables}.
 
 
-@node Evaluation Notation
+@node Evaluation Notation, Printing Notation, nil and t, Conventions
 @subsection Evaluation Notation
 @cindex evaluation notation
 @cindex documentation notation
@@ -631,7 +631,7 @@ indicated with @samp{@equiv{}}.
 @end example
 
 
-@node Printing Notation
+@node Printing Notation, Error Messages, Evaluation Notation, Conventions
 @subsection Printing Notation
 @cindex printing notation
 
@@ -657,7 +657,7 @@ the form (here @code{bar}) follows on a separate line.
 @end example
 
 
-@node Error Messages
+@node Error Messages, Buffer Text Notation, Printing Notation, Conventions
 @subsection Error Messages
 @cindex error message notation
 
@@ -672,7 +672,7 @@ the echo area.
 @end example
 
 
-@node Buffer Text Notation
+@node Buffer Text Notation, Format of Descriptions, Error Messages, Conventions
 @subsection Buffer Text Notation
 @cindex buffer text notation
 
@@ -697,7 +697,7 @@ This is the changed @point{}contents of foo.
 @end example
 
 
-@node Format of Descriptions
+@node Format of Descriptions,  , Buffer Text Notation, Conventions
 @subsection Format of Descriptions
 @cindex description format
 
@@ -724,7 +724,7 @@ The description follows on succeeding lines, sometimes with examples.
 @end menu
 
 
-@node A Sample Function Description
+@node A Sample Function Description, A Sample Variable Description, Format of Descriptions, Format of Descriptions
 @subsubsection A Sample Function Description
 @cindex function descriptions
 @cindex command descriptions
@@ -829,7 +829,7 @@ from @var{body}, which includes all remaining elements of the form.
 @end defspec
 
 
-@node A Sample Variable Description
+@node A Sample Variable Description,  , A Sample Function Description, Format of Descriptions
 @subsubsection A Sample Variable Description
 @cindex variable descriptions
 @cindex option descriptions
@@ -853,7 +853,7 @@ have not yet thought about executing.
 replaced by `User Option'.
 
 
-@node Acknowledgements
+@node Acknowledgements,  , Conventions, Introduction
 @section Acknowledgements
 
   This manual was based on the GNU Emacs Lisp Reference Manual, version

@@ -20,7 +20,7 @@ current session.
 @end menu
 
 
-@node Backup Files
+@node Backup Files, Auto-Saving, Backups and Auto-Saving, Backups and Auto-Saving
 @section Backup Files
 @cindex backup file
 
@@ -50,7 +50,7 @@ don't want them any more, or SXEmacs can delete them automatically.
 @end menu
 
 
-@node Making Backups
+@node Making Backups, Rename or Copy, Backup Files, Backup Files
 @subsection Making Backup Files
 
 @defun backup-buffer
@@ -121,7 +121,7 @@ its value.  Major modes should not set this variable---they should set
 @end defvar
 
 
-@node Rename or Copy
+@node Rename or Copy, Numbered Backups, Making Backups, Backup Files
 @subsection Backup by Renaming or by Copying?
 @cindex backup files, how to make them
 
@@ -186,7 +186,7 @@ non-@code{nil}.
 @end defvar
 
 
-@node Numbered Backups
+@node Numbered Backups, Backup Names, Rename or Copy, Backup Files
 @subsection Making and Deleting Numbered Backup Files
 
   If a file's name is @file{foo}, the names of its numbered backup
@@ -246,7 +246,7 @@ same thing @code{kept-new-versions} specifies when you make a new backup
 file.  The default value is 2.
 @end defopt
 
-@node Backup Names
+@node Backup Names,  , Numbered Backups, Backup Files
 @subsection Naming Backup Files
 
   The functions in this section are documented mainly because you can
@@ -357,7 +357,7 @@ automatically compare a file with its most recent backup.
 @end defun
 
 
-@node Auto-Saving
+@node Auto-Saving, Reverting, Backup Files, Backups and Auto-Saving
 @section Auto-Saving
 @cindex auto-saving
 
@@ -583,7 +583,7 @@ host name.
 @end defvar
 
 
-@node Reverting
+@node Reverting,  , Auto-Saving, Backups and Auto-Saving
 @section Reverting
 
   If you have made extensive changes to a file and then change your mind

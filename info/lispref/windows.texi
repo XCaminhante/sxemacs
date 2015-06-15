@@ -38,7 +38,7 @@ displayed in windows.
 @end menu
 
 
-@node Basic Windows
+@node Basic Windows, Splitting Windows, Windows, Windows
 @section Basic Concepts of Emacs Windows
 @cindex window
 @cindex selected window

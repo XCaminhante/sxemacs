@@ -34,7 +34,7 @@ otherwise.
 @end menu
 
 
-@node Symbol Components
+@node Symbol Components, Definitions, Symbols, Symbols
 @section Symbol Components
 @cindex symbol components
 
@@ -379,7 +379,7 @@ it returns @code{nil}.
 @end defun
 
 
-@node Symbol Properties
+@node Symbol Properties,  , Creating Symbols, Symbols
 @section Symbol Properties
 @cindex property list, symbol
 @cindex plist, symbol

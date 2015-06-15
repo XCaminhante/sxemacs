@@ -6,7 +6,7 @@
 @comment needs heavy extension! -hroptatyr
 @setfilename ../../info/databases.info
 
-@node Databases, Processes, Range Tables, top
+@node Databases, Processes, Range Tables, Top
 @chapter Databases
 @cindex database
 

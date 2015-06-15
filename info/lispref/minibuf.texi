@@ -32,7 +32,7 @@ use for reading an argument.
 @end menu
 
 
-@node Intro to Minibuffers
+@node Intro to Minibuffers, Text from Minibuffer, Minibuffers, Minibuffers
 @section Introduction to Minibuffers
 
   In most ways, a minibuffer is a normal SXEmacs buffer.  Most operations
@@ -79,7 +79,7 @@ for cautious completion.
 @end itemize
 
 
-@node Text from Minibuffer
+@node Text from Minibuffer, Object from Minibuffer, Intro to Minibuffers, Minibuffers
 @section Reading Text Strings with the Minibuffer
 
   Most often, the minibuffer is used to read text as a string.  It can
@@ -207,7 +207,7 @@ default, it makes the following bindings:
 @end defvar
 
 
-@node Object from Minibuffer
+@node Object from Minibuffer, Minibuffer History, Text from Minibuffer, Minibuffers
 @section Reading Lisp Objects with the Minibuffer
 
   This section describes functions for reading Lisp objects with the
@@ -327,7 +327,7 @@ expression, thus moving point forward one word.
 @end defun
 
 
-@node Minibuffer History
+@node Minibuffer History, Completion, Object from Minibuffer, Minibuffers
 @section Minibuffer History
 @cindex minibuffer history
 @cindex history list
@@ -415,7 +415,7 @@ libraries.  An @kbd{M-x apropos} search for @samp{history} should prove
 fruitful in discovering them.
 
 
-@node Completion
+@node Completion, Yes-or-No Queries, Minibuffer History, Minibuffers
 @section Completion
 @cindex completion
 
@@ -455,7 +455,7 @@ for reading certain kinds of names with completion.
 @end menu
 
 
-@node Basic Completion
+@node Basic Completion, Minibuffer Completion, Completion, Completion
 @subsection Basic Completion Functions
 
   The two functions @code{try-completion} and @code{all-completions}
@@ -592,7 +592,7 @@ non-@code{nil}, SXEmacs does not consider case significant in completion.
 @end defvar
 
 
-@node Minibuffer Completion
+@node Minibuffer Completion, Completion Commands, Basic Completion, Completion
 @subsection Completion and the Minibuffer
 
   This section describes the basic interface for reading from the
@@ -676,7 +676,7 @@ see @ref{Completion Commands}.
 @end defun
 
 
-@node Completion Commands
+@node Completion Commands, High-Level Completion, Minibuffer Completion, Completion
 @subsection Minibuffer Commands That Do Completion
 
   This section describes the keymaps, commands and user options used in
@@ -808,7 +808,7 @@ can be completed because the next character is not uniquely determined.
 @end defopt
 
 
-@node High-Level Completion
+@node High-Level Completion, Reading File Names, Completion Commands, Completion
 @subsection High-Level Completion  Functions
 
   This section describes the higher-level convenient functions for
@@ -953,7 +953,7 @@ predicate @code{user-variable-p} instead of @code{commandp}:
 @end defun
 
 
-@node Reading File Names
+@node Reading File Names, Programmed Completion, High-Level Completion, Completion
 @subsection Reading File Names
 
   Here is another high-level completion function, designed for reading a
@@ -1063,7 +1063,7 @@ The file is @point{}
 @end defopt
 
 
-@node Programmed Completion
+@node Programmed Completion,  , Reading File Names, Completion
 @subsection Programmed Completion
 @cindex programmed completion
 
@@ -1129,7 +1129,7 @@ to use for completion to be encapsulated in a symbol.
 @xref{File Name Completion}.
 
 
-@node Yes-or-No Queries
+@node Yes-or-No Queries, Multiple Queries, Completion, Minibuffers
 @section Yes-or-No Queries
 @cindex asking the user questions
 @cindex querying the user
@@ -1287,7 +1287,7 @@ box or the minibuffer, as appropriate.
 @end defun
 
 
-@node Multiple Queries
+@node Multiple Queries, Reading a Password, Yes-or-No Queries, Minibuffers
 @section Asking Multiple Y-or-N Questions
 
   When you have a series of similar questions to ask, such as ``Do you
@@ -1378,7 +1378,7 @@ The return value of @code{map-y-or-n-p} is the number of objects acted on.
 @end defun
 
 
-@node Reading a Password
+@node Reading a Password, Minibuffer Misc, Multiple Queries, Minibuffers
 @section Reading a Password
 @cindex passwords, reading
 
@@ -1413,7 +1413,7 @@ nothing is echoed.
 @end defopt
 
 
-@node Minibuffer Misc
+@node Minibuffer Misc,  , Reading a Password, Minibuffers
 @section Minibuffer Miscellany
 
   This section describes some basic functions and variables related to

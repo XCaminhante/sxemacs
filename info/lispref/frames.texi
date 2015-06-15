@@ -60,7 +60,7 @@ This predicate returns @code{t} if @var{object} is a frame, and
   @xref{Display}, for related information.
 
 
-@node Creating Frames
+@node Creating Frames, Frame Properties, Frames, Frames
 @section Creating Frames
 
 To create a new frame, call the function @code{make-frame}.
@@ -1028,7 +1028,7 @@ non-@code{nil}, the unwanted frames are iconified instead.
 @end defun
 
 
-@node Frame Hooks
+@node Frame Hooks,  , Frame Configurations, Frames
 @section Hooks for Customizing Frame Behavior
 @cindex frame hooks
 

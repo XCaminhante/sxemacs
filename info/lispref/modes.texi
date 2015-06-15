@@ -28,7 +28,7 @@ user.  For related topics such as keymaps and syntax tables, see
 @end menu
 
 
-@node Major Modes
+@node Major Modes, Minor Modes, Modes, Modes
 @section Major Modes
 @cindex major mode
 @cindex Fundamental mode
@@ -100,7 +100,7 @@ Fundamental mode.  Rmail mode is a complicated and specialized mode.
 @end menu
 
 
-@node Major Mode Conventions
+@node Major Mode Conventions, Example Major Modes, Major Modes, Major Modes
 @subsection Major Mode Conventions
 
   The code for existing major modes follows various coding conventions,
@@ -267,7 +267,7 @@ subsequent major mode.  @xref{Hooks}.
 @end defvar
 
 
-@node Example Major Modes
+@node Example Major Modes, Auto Major Mode, Major Mode Conventions, Major Modes
 @subsection Major Mode Examples
 
   Text mode is perhaps the simplest mode besides Fundamental mode.
@@ -499,7 +499,7 @@ Entry to this mode runs the hook `emacs-lisp-mode-hook'."
 @end smallexample
 
 
-@node Auto Major Mode
+@node Auto Major Mode, Mode Help, Example Major Modes, Major Modes
 @subsection How SXEmacs Chooses a Major Mode
 
   Based on information in the file name or in the file itself, SXEmacs
@@ -686,7 +686,7 @@ usually comes from the argument @var{find-file} given to
 @end defun
 
 
-@node Mode Help
+@node Mode Help, Derived Modes, Auto Major Mode, Major Modes
 @subsection Getting Help about a Major Mode
 @cindex mode help
 @cindex help for major mode
@@ -716,7 +716,7 @@ mode.
 @end defvar
 
 
-@node Derived Modes
+@node Derived Modes,  , Mode Help, Major Modes
 @subsection Defining Derived Modes
 
   It's often useful to define a new major mode in terms of an existing
@@ -781,7 +781,7 @@ Do not write an @code{interactive} spec in the definition;
 @end defmac
 
 
-@node Minor Modes
+@node Minor Modes, Modeline Format, Major Modes, Modes
 @section Minor Modes
 @cindex minor mode
 
@@ -812,7 +812,7 @@ keymaps make this easier than it used to be.
 @end menu
 
 
-@node Minor Mode Conventions
+@node Minor Mode Conventions, Keymaps and Minor Modes, Minor Modes, Minor Modes
 @subsection Conventions for Writing Minor Modes
 @cindex minor mode conventions
 @cindex conventions for writing minor modes
@@ -893,7 +893,7 @@ check for an existing element, to avoid duplication.  For example:
 @end itemize
 
 
-@node Keymaps and Minor Modes
+@node Keymaps and Minor Modes,  , Minor Mode Conventions, Minor Modes
 @subsection Keymaps and Minor Modes
 
   Each minor mode can have its own keymap, which is active when the mode
@@ -910,7 +910,7 @@ substituting your own definition of @code{self-insert-command} for the
 standard one.  The editor command loop handles this function specially.)
 
 
-@node Modeline Format
+@node Modeline Format, Hooks, Minor Modes, Modes
 @section Modeline Format
 @cindex modeline
 
@@ -954,7 +954,7 @@ is controlled using the @code{modeline} face.  @xref{Faces}.
 @end menu
 
 
-@node Modeline Data
+@node Modeline Data, Modeline Variables, Modeline Format, Modeline Format
 @subsection The Data Structure of the Modeline
 @cindex modeline construct
 
@@ -1089,7 +1089,7 @@ directory.
 @end example
 
 
-@node Modeline Variables
+@node Modeline Variables, %-Constructs, Modeline Data, Modeline Format
 @subsection Variables Used in the Modeline
 
   This section describes variables incorporated by the
@@ -1224,7 +1224,7 @@ that appears in the mode line.
 @end defvar
 
 
-@node %-Constructs
+@node %-Constructs,  , Modeline Variables, Modeline Format
 @subsection @code{%}-Constructs in the ModeLine
 
   The following table lists the recognized @code{%}-constructs and what
@@ -1327,7 +1327,7 @@ The value of @code{global-mode-string}.  Currently, only
 @end table
 
 
-@node Hooks
+@node Hooks,  , Modeline Format, Modes
 @section Hooks
 @cindex hooks
 

@@ -35,7 +35,7 @@ topics of discussion.
 @end menu
 
 
-@node Documentation Basics
+@node Documentation Basics, Accessing Documentation, Documentation, Documentation
 @section Documentation Basics
 @cindex documentation conventions
 @cindex writing a documentation string

@@ -87,13 +87,12 @@ instead of in the original English.
 @c and also in the file intro.texi.
 @c This manual documents SXEmacs 22.1 and was based on the
 @c documentation for XEmacs 21.0 (v3.3).
-@subtitle Version @version{} (for SXEmacs 22.1), May 2005
+@subtitle Version @version{} (for SXEmacs 22.1), Jun 2015
 
-@author by Steve Youngs, Sebastian Freundt
-@author SXEmacs developers
-@author
-@author Based on the XEmacs Lisp Reference Manual
-@author by Ben Wing
+@author Steve Youngs <steve@@sxemacs.org>
+@author Sebastian Freundt <hroptatyr@@sxemacs.org>
+@author Ben Wing <wing@@xemacs.org>
+
 @page
 @vskip 0pt plus 1filll
 Copyright @copyright{} 1990, 1991, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.

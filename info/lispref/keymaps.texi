@@ -39,7 +39,7 @@ is found.  The whole process is called @dfn{key lookup}.
 @end menu
 
 
-@node Keymap Terminology
+@node Keymap Terminology, Format of Keymaps, Keymaps, Keymaps
 @section Keymap Terminology
 @cindex key
 @cindex keystroke
@@ -1586,7 +1586,7 @@ displayed.
 @end deffn
 
 
-@node Other Keymap Functions
+@node Other Keymap Functions,  , Scanning Keymaps, Keymaps
 @section Other Keymap Functions
 
 @defun set-keymap-prompt keymap new-prompt

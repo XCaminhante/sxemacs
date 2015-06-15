@@ -5,7 +5,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/toolbar.info
 
-@node Toolbar, Gutter, Dialog Boxes, top
+@node Toolbar, Gutter, Dialog Boxes, Top
 @chapter Toolbar
 @cindex toolbar
 
@@ -19,7 +19,7 @@
 @end menu
 
 
-@node Toolbar Intro
+@node Toolbar Intro, Creating Toolbar, Toolbar, Toolbar
 @section Toolbar Intro
 
 A @dfn{toolbar} is a bar of icons displayed along one edge of a frame.
@@ -283,7 +283,7 @@ toolbar descriptors (@pxref{Toolbar Descriptor Format}).
 @end defun
 
 
-@node Other Toolbar Variables
+@node Other Toolbar Variables,  , Specifying the Toolbar, Toolbar
 @section Other Toolbar Variables
 
 The variables to control the toolbar thickness, visibility status, and

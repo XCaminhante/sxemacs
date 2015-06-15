@@ -6,7 +6,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/specifiers.info
 
-@node Specifiers, Faces and Window-System Objects, Extents, top
+@node Specifiers, Faces and Window-System Objects, Extents, Top
 @chapter Specifiers
 @cindex specifier
 
@@ -49,7 +49,7 @@ This function returns non-@code{nil} if @var{object} is a specifier.
 @end menu
 
 
-@node Introduction to Specifiers
+@node Introduction to Specifiers, Simple Specifier Usage, Specifiers, Specifiers
 @section Introduction to Specifiers
 
 Perhaps the most useful way to explain specifiers is via an analogy.
@@ -1529,7 +1529,7 @@ specifier type @var{type}.
 @end defun
 
 
-@node Other Specification Functions
+@node Other Specification Functions,  , Specifier Validation Functions, Specifiers
 @section Other Functions for Working with Specifications in a Specifier
 
 @defun copy-specifier specifier &optional dest locale tag-set exact-p how-to-add

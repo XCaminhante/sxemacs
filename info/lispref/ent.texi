@@ -56,7 +56,7 @@ with the current implementation.
 @end menu
 
 
-@node ENT Basics
+@node ENT Basics, Types of Numbers, Enhanced Number Types, Enhanced Number Types
 @section ENT Basics
 
   SXEmacs supports several of the available arithmetical and

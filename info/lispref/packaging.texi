@@ -175,8 +175,8 @@ results in a very ``clean'' @code{load-path}.
 
 The order of search can be changed at build time by specifying the
 @samp{--with-package-path} option to @file{configure}, or at run-time by
-specifying the @code{EMACSPACKAGEPATH} environment variable.
-@xref{Packages,,,sxemacs}
+specifying the @code{EMACSPACKAGEPATH} environment variable
+@xref{Packages,,,sxemacs}.
 Also, the location for @code{early-packages} may be set via the
 @code{-user-pkgs-directory} command line argument (@pxref{Command Switches,,,sxemacs}).
 

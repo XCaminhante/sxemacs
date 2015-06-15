@@ -51,7 +51,7 @@ This function returns @code{t} if @var{object} is a process,
 @end menu
 
 
-@node Subprocess Creation
+@node Subprocess Creation, Synchronous Processes, Processes, Processes
 @section Functions that Create Subprocesses
 
   There are three functions that create a new subprocess in which to run
@@ -133,7 +133,7 @@ file name.
 @end defopt
 
 
-@node Synchronous Processes
+@node Synchronous Processes, Asynchronous Processes, Subprocess Creation, Processes
 @section Creating a Synchronous Process
 @cindex synchronous subprocess
 
@@ -314,7 +314,7 @@ inputinput@point{}
 @end defun
 
 
-@node Asynchronous Processes
+@node Asynchronous Processes, Deleting Processes, Synchronous Processes, Processes
 @section Creating an Asynchronous Process
 @cindex asynchronous subprocess
 
@@ -419,7 +419,7 @@ process associated with the current buffer.
 @xref{Process Buffers}.
 
 
-@node Deleting Processes
+@node Deleting Processes, Process Information, Asynchronous Processes, Processes
 @section Deleting Processes
 @cindex deleting processes
 
@@ -472,7 +472,7 @@ return value is @code{t} if a query was formerly required, and
 @end defun
 
 
-@node Process Information
+@node Process Information, Input to Processes, Deleting Processes, Processes
 @section Process Information
 
   Several functions return information about processes.
@@ -608,7 +608,7 @@ instead of a terminal (see @code{process-connection-type} in
 @end defun
 
 
-@node Input to Processes
+@node Input to Processes, Signals to Processes, Process Information, Processes
 @section Sending Input to Processes
 @cindex process input
 
@@ -687,7 +687,7 @@ The function returns the process object identified by @var{process}.
 @end defun
 
 
-@node Signals to Processes
+@node Signals to Processes, Output from Processes, Input to Processes, Processes
 @section Sending Signals to Processes
 @cindex process signals
 @cindex sending signals
@@ -794,7 +794,7 @@ specifies which signal to send.
 @end deffn
 
 
-@node Output from Processes
+@node Output from Processes, Sentinels, Signals to Processes, Processes
 @section Receiving Output from Processes
 @cindex process output
 @cindex output from processes
@@ -814,7 +814,7 @@ discarded.
 @end menu
 
 
-@node Process Buffers
+@node Process Buffers, Filter Functions, Output from Processes, Output from Processes
 @subsection Process Buffers
 
   A process can (and usually does) have an @dfn{associated buffer},
@@ -889,7 +889,7 @@ subprocess with a @code{SIGHUP} signal (@pxref{Signals to Processes}).
 @end defun
 
 
-@node Filter Functions
+@node Filter Functions, Accepting Output, Process Buffers, Output from Processes
 @subsection Process Filter Functions
 @cindex filter function
 @cindex process filter
@@ -1058,7 +1058,7 @@ there is no filter function:
 @end ignore
 
 
-@node Accepting Output
+@node Accepting Output,  , Filter Functions, Output from Processes
 @subsection Accepting Output from Processes
 
   Output from asynchronous subprocesses normally arrives only while
@@ -1102,7 +1102,7 @@ arrived.
 @end defun
 
 
-@node Sentinels
+@node Sentinels, Process Window Size, Output from Processes, Processes
 @section Sentinels: Detecting Process Status Changes
 @cindex process sentinel
 @cindex sentinel
@@ -1197,7 +1197,7 @@ was not.
 
 
 @c SXEmacs+XEmacs feature
-@node Process Window Size
+@node Process Window Size, Transaction Queues, Sentinels, Processes
 @section Process Window Size
 @cindex process window size
 
@@ -1208,7 +1208,7 @@ with pty's.
 @end defun
 
 
-@node Transaction Queues
+@node Transaction Queues, Network, Process Window Size, Processes
 @section Transaction Queues
 @cindex transaction queue
 
@@ -1250,7 +1250,7 @@ Transaction queues are implemented by means of a filter function.
 @xref{Filter Functions}.
 
 
-@node Network
+@node Network,  , Transaction Queues, Processes
 @section Network Connections
 @cindex network connection
 @cindex TCP

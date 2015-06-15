@@ -46,7 +46,7 @@ containing Lisp code.
 @end menu
 
 
-@node How Programs Do Loading
+@node How Programs Do Loading, Autoload, Loading, Loading
 @section How Programs Do Loading
 
   SXEmacs Lisp has several interfaces for loading.  For example,

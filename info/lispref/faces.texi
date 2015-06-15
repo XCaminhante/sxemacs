@@ -5,7 +5,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/faces.info
 
-@node Faces and Window-System Objects, Glyphs, Specifiers, top
+@node Faces and Window-System Objects, Glyphs, Specifiers, Top
 @chapter Faces and Window-System Objects
 @cindex faces
 @cindex window-system objects
@@ -17,7 +17,7 @@
 @end menu
 
 
-@node Faces
+@node Faces, Fonts, Faces and Window-System Objects, Faces and Window-System Objects
 @section Faces
 
 A @dfn{face} is a named collection of graphical properties: font,
@@ -54,7 +54,7 @@ between point and mark.
 @end menu
 
 
-@node Merging Faces
+@node Merging Faces, Basic Face Functions, Faces, Faces
 @subsection Merging Faces for Display
 
   Here are all the ways to specify which face to use for display of text:
@@ -101,7 +101,7 @@ used; if it is a bitmap, the face's foreground and background colors are
 used to color it.
 
 
-@node Basic Face Functions
+@node Basic Face Functions, Face Properties, Merging Faces, Faces
 @subsection Basic Functions for Working with Faces
 
   The properties a face can specify include the font, the foreground
@@ -147,7 +147,7 @@ in @code{copy-specifier} (@pxref{Specifiers}).
 @end defun
 
 
-@node Face Properties
+@node Face Properties, Face Convenience Functions, Basic Face Functions, Faces
 @subsection Face Properties
 
   You can examine and modify the properties of an existing face with the
@@ -364,7 +364,7 @@ in @code{specifier-instance}.  @xref{Specifiers}.
 @end defun
 
 
-@node Face Convenience Functions
+@node Face Convenience Functions, Other Face Display Functions, Face Properties, Faces
 @subsection Face Convenience Functions
 
 @deffn Command set-face-foreground face color &optional locale tag-set how-to-add
@@ -455,7 +455,7 @@ This function returns the font specifier of face @var{face}.
 @end defun
 
 
-@node Other Face Display Functions
+@node Other Face Display Functions,  , Face Convenience Functions, Faces
 @subsection Other Face Display Functions
 
 @deffn Command invert-face face &optional locale
@@ -476,7 +476,7 @@ the default face.  @var{domain} is as in @code{face-property-instance}.
 @end defun
 
 
-@node Fonts
+@node Fonts, Colors, Faces, Faces and Window-System Objects
 @section Fonts
 @cindex fonts
 
@@ -495,7 +495,7 @@ font instance objects, which encapsulate fonts in the window system.
 @end menu
 
 
-@node Font Specifiers
+@node Font Specifiers, Font Instances, Fonts, Fonts
 @subsection Font Specifiers
 
 @defun font-specifier-p object
@@ -531,7 +531,7 @@ A vector of one element (a face to inherit from).
 @end defun
 
 
-@node Font Instances
+@node Font Instances, Font Instance Names, Font Specifiers, Fonts
 @subsection Font Instances
 
 @defun font-instance-p object
@@ -553,7 +553,7 @@ these objects are GCed, the underlying X data is deallocated as well.
 @end defun
 
 
-@node Font Instance Names
+@node Font Instance Names, Font Instance Size, Font Instances, Fonts
 @subsection Font Instance Names
 @cindex font instance name
 @cindex available fonts
@@ -577,7 +577,7 @@ the first found is used.  This returns an unambiguous name for that font
 @end defun
 
 
-@node Font Instance Size
+@node Font Instance Size, Font Instance Characteristics, Font Instance Names, Fonts
 @subsection Font Instance Size
 @cindex font instance size
 
@@ -606,7 +606,7 @@ that is defined.
 @end defun
 
 
-@node Font Instance Characteristics
+@node Font Instance Characteristics, Font Convenience Functions, Font Instance Size, Fonts
 @subsection Font Instance Characteristics
 @cindex font instance characteristics
 @cindex characteristics of font instances
@@ -646,7 +646,7 @@ font.  If it fails, it returns @code{nil}.
 @end defun
 
 
-@node Font Convenience Functions
+@node Font Convenience Functions,  , Font Instance Characteristics, Fonts
 @subsection Font Convenience Functions
 
 @defun font-name font &optional domain
@@ -674,7 +674,7 @@ applying @code{font-instance-properties} to the result.
 @end defun
 
 
-@node Colors
+@node Colors,  , Fonts, Faces and Window-System Objects
 @section Colors
 @cindex colors
 
@@ -688,7 +688,7 @@ applying @code{font-instance-properties} to the result.
 @end menu
 
 
-@node Color Specifiers
+@node Color Specifiers, Color Instances, Colors, Colors
 @subsection Color Specifiers
 
 @defun color-specifier-p object
@@ -752,7 +752,7 @@ sense of the inherited property.
 @end defun
 
 
-@node Color Instances
+@node Color Instances, Color Instance Properties, Color Specifiers, Colors
 @subsection Color Instances
 @cindex color instances
 
@@ -775,7 +775,7 @@ This function returns non-@code{nil} if @var{object} is a color-instance.
 @end defun
 
 
-@node Color Instance Properties
+@node Color Instance Properties, Color Convenience Functions, Color Instances, Colors
 @subsection Color Instance Properties
 
 @defun color-instance-name color-instance
@@ -793,7 +793,7 @@ and blue color components of @var{color-instance}.
 @end example
 @end defun
 
-@node Color Convenience Functions
+@node Color Convenience Functions,  , Color Instance Properties, Colors
 @subsection Color Convenience Functions
 
 @defun color-name color &optional domain

@@ -31,7 +31,7 @@ portions of it.
 @xref{Skipping Characters}.
 
 
-@node String Search
+@node String Search, Regular Expressions, Searching and Matching, Searching and Matching
 @section Searching for Strings
 @cindex string search
 
@@ -157,7 +157,7 @@ beginning of the match.
 @end deffn
 
 
-@node Regular Expressions
+@node Regular Expressions, Regexp Search, String Search, Searching and Matching
 @section Regular Expressions
 @cindex regular expression
 @cindex regexp
@@ -188,7 +188,7 @@ section.
 @end menu
 
 
-@node Syntax of Regexps
+@node Syntax of Regexps, Regexp Example, Regular Expressions, Regular Expressions
 @subsection Syntax of Regular Expressions
 
   Regular expressions have a syntax in which a few characters are
@@ -610,7 +610,7 @@ whitespace:
 @end defun
 
 
-@node Regexp Example
+@node Regexp Example,  , Syntax of Regexps, Regular Expressions
 @subsection Complex Regexp Example
 
   Here is a complicated regexp, used by SXEmacs to recognize the end of a
@@ -673,7 +673,7 @@ beyond the minimum needed to end a sentence.
 @end table
 
 
-@node Regexp Search
+@node Regexp Search, POSIX Regexps, Regular Expressions, Searching and Matching
 @section Regular Expression Searching
 @cindex regular expression searching
 @cindex regexp searching
@@ -865,7 +865,7 @@ comes back" twice.
 @end defun
 
 
-@node POSIX Regexps
+@node POSIX Regexps, Search and Replace, Regexp Search, Searching and Matching
 @section POSIX Regular Expression Searching
 
   The usual regular expression functions do backtracking when necessary
@@ -985,7 +985,7 @@ A positive number means to include that many lines both before and after.
 @end ignore
 
 
-@node Search and Replace
+@node Search and Replace, Match Data, POSIX Regexps, Searching and Matching
 @section Search and Replace
 @cindex replacement
 
@@ -1080,7 +1080,7 @@ Display some help, then ask again.
 @end table
 
 
-@node Match Data
+@node Match Data, Searching and Case, Search and Replace, Searching and Matching
 @section The Match Data
 @cindex match data
 
@@ -1105,7 +1105,7 @@ match data around it, to prevent it from being overwritten.
 @end menu
 
 
-@node Simple Match Data
+@node Simple Match Data, Replacing Match, Match Data, Match Data
 @subsection Simple Match Data Access
 
   This section explains how to use the match data to find out what was
@@ -1229,7 +1229,7 @@ I read "The cat @point{}in the hat comes back" twice.
 character of the buffer counts as 1.)
 
 
-@node Replacing Match
+@node Replacing Match, Entire Match Data, Simple Match Data, Match Data
 @subsection Replacing the Text That Matched
 
   This function replaces the text matched by the last search with
@@ -1293,7 +1293,7 @@ Subexpressions are those expressions grouped inside @samp{\(@dots{}\)}.
 @end defun
 
 
-@node Entire Match Data
+@node Entire Match Data, Saving Match Data, Replacing Match, Match Data
 @subsection Accessing the Entire Match Data
 
   The functions @code{match-data} and @code{set-match-data} read or
@@ -1360,7 +1360,7 @@ an error; that sets the match data in a meaningless but harmless way.
 @end defun
 
 
-@node Saving Match Data
+@node Saving Match Data,  , Entire Match Data, Match Data
 @subsection Saving and Restoring the Match Data
 
   When you call a function that may do a search, you may need to save
@@ -1429,7 +1429,7 @@ associated with it still exists.
 @end ignore
 
 
-@node Searching and Case
+@node Searching and Case, Standard Regexps, Match Data, Searching and Matching
 @section Searching and Case
 @cindex searching and case
 
@@ -1476,7 +1476,7 @@ same as @code{(default-value 'case-fold-search)}.
 @end defvar
 
 
-@node Standard Regexps
+@node Standard Regexps,  , Searching and Case, Searching and Matching
 @section Standard Regular Expressions Used in Editing
 @cindex regexps used standardly in editing
 @cindex standard regexps used in editing

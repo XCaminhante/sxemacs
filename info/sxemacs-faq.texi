@@ -492,7 +492,7 @@ Getting Started:
 
 @unnumberedsec 1.0: Introduction
 
-@node Q1.0.1
+@node Q1.0.1, Q1.0.2, Introduction, Introduction
 @unnumberedsec Q1.0.1: What is SXEmacs?
 
 SXEmacs is a powerful, highly customisable open source text editor and
@@ -506,14 +506,14 @@ SXEmacs is a recent fork of the popular XEmacs and runs on nearly all
 versions of Unix in existence.
 
 
-@node Q1.0.2
+@node Q1.0.2, Q1.0.3, Q1.0.1, Introduction
 @unnumberedsec Q1.0.2: What is the current version of SXEmacs?
 
 SXEmacs 22.1.15 is the latest released version.
 The current development line will become 22.1.16.
 
 
-@node Q1.0.3
+@node Q1.0.3, Q1.0.4, Q1.0.2, Introduction
 @unnumberedsec Q1.0.3: Where can I find it?
 
 The canonical source can be found on the web at:
@@ -530,7 +530,7 @@ available.  These can be found at:
 @end example
 
 
-@node Q1.0.4
+@node Q1.0.4, Q1.0.5, Q1.0.3, Introduction
 @unnumberedsec Q1.0.4: Why another version of Emacs?
 
 First of all, the situation got a little complicated.  With SXEmacs
@@ -670,7 +670,7 @@ network server stream.
 
 
 
-@node Q1.0.5
+@node Q1.0.5, Q1.0.6, Q1.0.4, Introduction
 @unnumberedsec Q1.0.5: Why haven't XEmacs/SXEmacs and GNU Emacs Merged?
 
 There are currently irreconcilable differences in the views about
@@ -679,7 +679,7 @@ and the SXEmacs/XEmacs development team which provide little hope for a
 merge to take place in the short-term future.
 
 
-@node Q1.0.6
+@node Q1.0.6, Q1.0.7, Q1.0.5, Introduction
 @unnumberedsec Q1.0.6: Where can I get help?
 
 Probably the easiest way, if everything is installed, is to use Info, by
@@ -701,7 +701,7 @@ there is a mailing at @email{sxemacs-devel@@sxemacs.org} for general
 and developing issues.
 
 
-@node Q1.0.7
+@node Q1.0.7, Q1.0.8, Q1.0.6, Introduction
 @unnumberedsec Q1.0.7: Where are the mailing lists archived?
 
 The archives can be found at
@@ -711,32 +711,32 @@ Subscription can be done via
 @uref{http://www.sxemacs.org/mailman/listinfo}
 
 
-@node Q1.0.8
+@node Q1.0.8, Q1.0.9, Q1.0.7, Introduction
 @unnumberedsec Q1.0.8: How do you pronounce SXEmacs?
 
 The most common pronounciation is @samp{sexy macs}.
 
 
-@node Q1.0.9
+@node Q1.0.9, Q1.0.10, Q1.0.8, Introduction
 @unnumberedsec Q1.0.9: What does SXEmacs look like?
 
 Look at the screenshot section at @uref{http://www.sxemacs.org}.
 
 
-@node Q1.0.10
+@node Q1.0.10, Q1.0.11, Q1.0.9, Introduction
 @unnumberedsec Q1.0.10: Is there a port of SXEmacs to Microsoft ('95 or NT)?
 
 Of course not!  The SXEmacs developers have so much fun stripping all of
 the erroneous code and workaround-hacks related to Microsoft Windows.
 
 
-@node Q1.0.11
+@node Q1.0.11, Q1.0.12, Q1.0.10, Introduction
 @unnumberedsec Q1.0.11: Is there a port of SXEmacs to the Macintosh?
 
 Good question. Is there?
 
 
-@node Q1.0.12
+@node Q1.0.12, Q1.0.13, Q1.0.11, Introduction
 @unnumberedsec Q1.0.12: Is there a port of SXEmacs to NextStep?
 
 @c Carl Edman, apparently no longer at @email{cedman@@princeton.edu}, did
@@ -746,7 +746,7 @@ Good question. Is there?
 A what?
 
 
-@node Q1.0.13
+@node Q1.0.13, Q1.0.14, Q1.0.12, Introduction
 @unnumberedsec Q1.0.13: Is there a port of SXEmacs to OS/2?
 
 @c No, but Alexander Nikolaev <avn_1251@@mail.ru> is working on it.
@@ -755,7 +755,7 @@ Aaaaargh. You could have also asked: Is there a port of SXEmacs to my
 hamster.
 
 
-@node Q1.0.14
+@node Q1.0.14, Q1.1.1, Q1.0.13, Introduction
 @unnumberedsec Q1.0.14: Where can I obtain a printed copy of the SXEmacs User's Manual?
 
 Pre-printed manuals are not available.  If you are familiar with
@@ -766,7 +766,7 @@ SXEmacs web site at @uref{http://www.sxemacs.org}.
 @c are they?
 @c HTML are, but they may be a little out of date. --SY
 
-@node Q1.1.1
+@node Q1.1.1, Q1.1.2, Q1.0.14, Introduction
 @unnumberedsec 1.1: Policies
 @unnumberedsec Q1.1.1: What is the FAQ editorial policy?
 
@@ -786,7 +786,7 @@ Questions and answers included into the FAQ will be edited for
 spelling and grammar and will be attributed.
 
 
-@node Q1.1.2
+@node Q1.1.2, Q1.1.3, Q1.1.1, Introduction
 @unnumberedsec Q1.1.2: How do I become a beta tester?
 
 We have no formal way.  Also there are no presumptions.  Just
@@ -797,7 +797,7 @@ Be prepared to get your hands dirty, as beta testers are expected to
 identify problems as best they can.
 
 
-@node Q1.1.3
+@node Q1.1.3, Q1.2.1, Q1.1.2, Introduction
 @unnumberedsec Q1.1.3: How do I contribute to SXEmacs itself?
 
 Quoting a famous developer:
@@ -806,7 +806,7 @@ I know the answer exactly.
 Gotta run.
 
 
-@node Q1.2.1
+@node Q1.2.1, Q1.2.2, Q1.1.3, Introduction
 @unnumberedsec 1.2: Credits
 @unnumberedsec Q1.2.1: Who wrote SXEmacs?
 
@@ -875,7 +875,7 @@ menu.
 @c @samp{About XEmacs} option in the Help menu.
 
 
-@node Q1.2.2
+@node Q1.2.2, Q1.2.3, Q1.2.1, Introduction
 @unnumberedsec Q1.2.2: Who contributed to this version of the FAQ?
 
 The following people contributed valuable suggestions to building this
@@ -893,7 +893,7 @@ version of the FAQ (listed in alphabetical order):
 @end itemize
 
 
-@node Q1.2.3
+@node Q1.2.3, Q1.3.1, Q1.2.2, Introduction
 @unnumberedsec Q1.2.3: Who contributed to the FAQ in the past?
 
 This is only a partial list, as many names were lost in a hard disk
@@ -940,7 +940,7 @@ crash some time ago.
 @end itemize
 
 
-@node Q1.3.1
+@node Q1.3.1, Q1.3.2, Q1.2.3, Introduction
 @unnumberedsec 1.3: Internationalisation
 @unnumberedsec Q1.3.1: What is the status of internationalisation support aka MULE (including Asian language support?
 
@@ -950,7 +950,7 @@ Unix and Linux systems.  Binaries compiled without MULE support run
 faster than MULE capable SXEmacsen.
 
 
-@node Q1.3.2
+@node Q1.3.2, Q1.3.3, Q1.3.1, Introduction
 @unnumberedsec Q1.3.2: How can I help with internationalisation?
 
 If you would like to help, you can use the usual ways to get into
@@ -968,7 +968,7 @@ does support multilingual menus, but we have few current translations.
 @xref{Q1.1.2}.
 
 
-@node Q1.3.3
+@node Q1.3.3, Q1.3.4, Q1.3.2, Introduction
 @unnumberedsec Q1.3.3: How do I type non-ASCII characters?
 
 See question 3.5.7 (@pxref{Q3.5.7}) in part 3 of this FAQ for some
@@ -979,7 +979,7 @@ MULE has more general capabilities.  @xref{Q1.3.5}.
 
 @xref{Q3.2.7}, which covers display of non-ASCII characters.
 
-@node Q1.3.4
+@node Q1.3.4, Q1.3.5, Q1.3.3, Introduction
 @unnumberedsec Q1.3.4: Can SXEmacs messages come out in a different language?
 
 The message-catalog support was written but is badly bit-rotted.
@@ -999,7 +999,7 @@ The name of the resource is derived from the non-localised entry by
 removing punctuation and capitalizing as above.
 
 
-@node Q1.3.5
+@node Q1.3.5, Q1.3.6, Q1.3.4, Introduction
 @unnumberedsec Q1.3.5: Please explain the various input methods in MULE/SXEmacs
 
 Mule supports a wide variety of input methods.  There are three basic
@@ -1091,7 +1091,7 @@ boiled-egg-like utilities.
 Much of this information was provided by @email{morioka@@jaist.ac.jp,
 MORIOKA Tomohiko}.
 
-@node Q1.3.6
+@node Q1.3.6, Q1.3.7, Q1.3.5, Introduction
 @unnumberedsec Q1.3.6: How do I portably code for MULE/SXEmacs?
 
 MULE has evolved rapidly over the last few years, and the original third
@@ -1157,7 +1157,7 @@ Following is a sample to distinguish mule variants:
 @end quotation
 
 
-@node Q1.3.7
+@node Q1.3.7, Q1.3.8, Q1.3.6, Introduction
 @unnumberedsec Q1.3.7: How about Cyrillic Modes?
 
 @email{ilya@@math.ohio-state.edu, Ilya Zakharevich} writes:
@@ -1196,7 +1196,7 @@ SXEmacs) is @uref{http://www.ibiblio.org/sergei/Software/Software.html}
 @end quotation
 
 
-@node Q1.3.8
+@node Q1.3.8, Q1.3.9, Q1.3.7, Introduction
 @unnumberedsec Q1.3.8: Does SXEmacs support Unicode?
 
 Partially, as an external encoding for files, processes, and terminals.
@@ -1223,7 +1223,7 @@ Mule-UCS also supports 16-bit forms of Unicode (UTF-16).  It does not
 support 31-bit forms of Unicode (UTF-32 or UCS-4).
 
 
-@node Q1.3.9
+@node Q1.3.9, Q1.4.1, Q1.3.8, Introduction
 @unnumberedsec Q1.3.9: How does SXEmacs display Unicode?
 
 Mule doesn't have a Unicode charset internally, so there's nothing to
@@ -1247,7 +1247,7 @@ Real Unicode support will be introduced in SXEmacs 22.2.
 @c will it?
 
 
-@node Q1.4.1
+@node Q1.4.1, Q1.4.2, Q1.3.9, Introduction
 @unnumberedsec 1.4: Getting Started, Backing up & Recovery
 @unnumberedsec Q1.4.1: What is an @file{init.el} or @file{.emacs} and is there a sample one?
 
@@ -1269,7 +1269,7 @@ submenu in the @samp{Help} menu.  To determine the location of the
 @key{RET}}.
 
 
-@node Q1.4.2
+@node Q1.4.2, Q1.4.3, Q1.4.1, Introduction
 @unnumberedsec Q1.4.2: Can I use the same @file{init.el}/@file{.emacs} with XEmacs or GNU Emacs?
 
 Yes.  The sample @file{init.el} included in the SXEmacs
@@ -1277,7 +1277,7 @@ distribution will show you how to handle different versions and flavours
 of Emacs.
 
 
-@node Q1.4.3
+@node Q1.4.3, Q1.4.4, Q1.4.2, Introduction
 @unnumberedsec Q1.4.3: Any good tutorials around?
 
 There's the SXEmacs tutorial available from the Help Menu under
@@ -1286,7 +1286,7 @@ it's available in a non-english language, type @kbd{C-u C-h t TAB}, type
 the first letters of your preferred language, then type @key{RET}.
 
 
-@node Q1.4.4
+@node Q1.4.4, Q1.4.5, Q1.4.3, Introduction
 @unnumberedsec Q1.4.4: May I see an example of a useful SXEmacs Lisp function?
 
 The following function does a little bit of everything useful.  It does
@@ -1322,7 +1322,7 @@ this will tell you that the @code{*} requires a writable buffer, and
 @code{interactive} allows you to execute the command with @kbd{M-x}.
 
 
-@node Q1.4.5
+@node Q1.4.5, Q1.4.6, Q1.4.4, Introduction
 @unnumberedsec Q1.4.5: And how do I bind it to a key?
 
 To bind to a key do:
@@ -1334,7 +1334,7 @@ To bind to a key do:
 Or interactively, @kbd{M-x global-set-key} and follow the prompts.
 
 
-@node Q1.4.6
+@node Q1.4.6,  , Q1.4.5, Introduction
 @unnumberedsec Q1.4.6: What's the difference between a macro and a function?
 
 Quoting from the Lisp Reference (a.k.a @dfn{Lispref}) Manual:
@@ -1409,7 +1409,7 @@ Trouble Shooting:
 @end menu
 
 
-@node Q2.0.1
+@node Q2.0.1, Q2.0.2, Installation, Installation
 @unnumberedsec 2.0: Installation
 @unnumberedsec Q2.0.1: Running SXEmacs without installing
 
@@ -1421,7 +1421,7 @@ flag.  It's the copying of the Lisp directories that requires so much
 space.  SXEmacs is largely written in Lisp.
 
 
-@node Q2.0.2
+@node Q2.0.2, Q2.0.3, Q2.0.1, Installation
 @unnumberedsec Q2.0.2: SXEmacs is too big
 
 The space required by the installation directories can be
@@ -1451,7 +1451,7 @@ to delete, and then @kbd{x} to delete them.
 
 Another method is to do @kbd{M-x package-get-delete-package}.
 
-@node Q2.0.3
+@node Q2.0.3, Q2.0.4, Q2.0.2, Installation
 @unnumberedsec Q2.0.3: Compiling SXEmacs with Netaudio.
 
 What is the best way to compile SXEmacs with the netaudio system,
@@ -1481,7 +1481,7 @@ same thing.  It also might be found at
 @uref{ftp://ftp.x.org/contrib/audio/nas/}.
 
 
-@node Q2.0.4
+@node Q2.0.4, Q2.0.5, Q2.0.3, Installation
 @unnumberedsec Q2.0.4: Problems with Linux and ncurses.
 
 @c On Linux 1.3.98 with termcap 2.0.8 and the ncurses that came with libc
@@ -1507,13 +1507,13 @@ same thing.  It also might be found at
 There are none!
 
 
-@node Q2.0.5
+@node Q2.0.5, Q2.0.6, Q2.0.4, Installation
 @unnumberedsec Q2.0.5: Do I need X11 to run SXEmacs?
 
 No.
 
 
-@node Q2.0.6
+@node Q2.0.6, Q2.0.7, Q2.0.5, Installation
 @unnumberedsec Q2.0.6: I'm having strange crashes.  What do I do?
 
 There have been a variety of reports of crashes due to compilers with
@@ -1521,7 +1521,7 @@ buggy optimisers.  Please see the @file{PROBLEMS} file that comes with
 SXEmacs to read what it says about your platform.
 
 
-@node Q2.0.7
+@node Q2.0.7, Q2.0.8, Q2.0.6, Installation
 @unnumberedsec Q2.0.7: Libraries in non-standard locations
 
 I have x-faces, jpeg, xpm etc. all in different places.  I've tried
@@ -1533,13 +1533,13 @@ avail.
 @end example
 
 
-@node Q2.0.8
+@node Q2.0.8, Q2.0.9, Q2.0.7, Installation
 @unnumberedsec Q2.0.8: can't resolve symbol _h_errno
 
 Does not apply anymore.
 
 
-@node Q2.0.9
+@node Q2.0.9, Q2.0.10, Q2.0.8, Installation
 @unnumberedsec Q2.0.9: Where do I find external libraries?
 
 Oh well ... we support far too many external libraries to list them
@@ -1547,7 +1547,7 @@ here.  Have a glance at INSTALL to check if there are special
 instructions for some of the libraries you intend to use.
 
 
-@node Q2.0.10
+@node Q2.0.10, Q2.0.11, Q2.0.9, Installation
 @unnumberedsec Q2.0.10: After I run configure I find a core dump, is something wrong?
 
 @c @c WHOOOOOOOAT?!?!
@@ -1570,7 +1570,7 @@ instructions for some of the libraries you intend to use.
 Send a build report.
 
 
-@node Q2.0.11
+@node Q2.0.11, Q2.0.12, Q2.0.10, Installation
 @unnumberedsec Q2.0.11: SXEmacs doesn't resolve hostnames.
 
 This is the result of a long-standing problem with SunOS and the fact
@@ -1592,7 +1592,7 @@ to link against the DNS resolver library code.
 @end quotation
 
 
-@node Q2.0.12
+@node Q2.0.12, Q2.0.13, Q2.0.11, Installation
 @unnumberedsec Q2.0.12: Why can't I strip SXEmacs?
 
 @email{cognot@@fronsac.ensg.u-nancy.fr, Richard Cognot} writes:
@@ -1642,7 +1642,7 @@ cp src/sxemacs /usr/local/bin/sxemacs
 @end quotation
 
 
-@node Q2.0.13
+@node Q2.0.13, Q2.0.14, Q2.0.12, Installation
 @unnumberedsec Q2.0.13: I don't need no steenkin' packages.  Do I?
 
 Strictly speaking, no.  SXEmacs will build and install just fine
@@ -1652,7 +1652,7 @@ packages is an essential part of making your installed SXEmacs
 _useful_.
 
 
-@node Q2.0.14
+@node Q2.0.14, Q2.0.15, Q2.0.13, Installation
 @unnumberedsec Q2.0.14: How do I figure out which packages to install?
 
 Many people really liked the old way that packages were bundled and do
@@ -1681,7 +1681,7 @@ packages, it is recommended that you use the automatic package tools
 afterwards to pick up any recent updates.
 
 
-@node Q2.0.15
+@node Q2.0.15, Q2.1.1, Q2.0.14, Installation
 @unnumberedsec Q2.0.15: EFS fails with "500 AUTH not understood"
 
 A typical error: FTP Error: USER request failed; 500 AUTH not understood.
@@ -1698,7 +1698,7 @@ verify the needed flag with @code{man ftp} or other local
 documentation.
 
 
-@node Q2.1.1
+@node Q2.1.1, Q2.1.2, Q2.0.15, Installation
 @unnumberedsec 2.1: Trouble Shooting
 @unnumberedsec Q2.1.1: Help!  SXEmacs just crashed on me!
 
@@ -1788,7 +1788,7 @@ default used by @code{build-report}), and executing @kbd{M-x
 build-rpt}.
 
 
-@node Q2.1.2
+@node Q2.1.2, Q2.1.3, Q2.1.1, Installation
 @unnumberedsec Q2.1.2: Cryptic Minibuffer messages.
 
 When I try to use some particular option of some particular package, I
@@ -1819,7 +1819,7 @@ Message Log (recent versions)from the menubar to see the most recent
 messages.  This command is bound to @kbd{C-h l} by default.
 
 
-@node Q2.1.3
+@node Q2.1.3, Q2.1.4, Q2.1.2, Installation
 @unnumberedsec Q2.1.3: Translation Table Syntax messages at Startup
 
 I get tons of translation table syntax error messages during startup.
@@ -1853,7 +1853,7 @@ described above.
 @end itemize
 
 
-@node Q2.1.4
+@node Q2.1.4, Q2.1.5, Q2.1.3, Installation
 @unnumberedsec Q2.1.4: Startup warnings about deducing proper fonts?
 
 How can I avoid the startup warnings about deducing proper fonts?
@@ -1882,7 +1882,7 @@ time, you can set this:
 The buffer still exists; it just isn't in your face.
 
 
-@node Q2.1.5
+@node Q2.1.5, Q2.1.6, Q2.1.4, Installation
 @unnumberedsec Q2.1.5: SXEmacs cannot connect to my X Terminal!
 
 Help!  I can not get SXEmacs to display on my Envizex X-terminal!
@@ -1891,7 +1891,7 @@ Try setting the @code{DISPLAY} variable using the numeric IP address of
 the host you are running SXEmacs from.
 
 
-@node Q2.1.6
+@node Q2.1.6, Q2.1.7, Q2.1.5, Installation
 @unnumberedsec Q2.1.6: SXEmacs just locked up my Linux X server!
 
 There have been several reports of the X server locking up under
@@ -1902,7 +1902,7 @@ command @code{xset}.
 It is possible that using a font server may also solve the problem.
 
 
-@node Q2.1.7
+@node Q2.1.7, Q2.1.8, Q2.1.6, Installation
 @unnumberedsec Q2.1.7: HP Alt key as Meta.
 
 How can I make SXEmacs recognize the Alt key of my HP workstation as a
@@ -1916,7 +1916,7 @@ remove Mod1 = Mode_switch
 @end example
 
 
-@node Q2.1.8
+@node Q2.1.8, Q2.1.9, Q2.1.7, Installation
 @unnumberedsec Q2.1.8: got (wrong-type-argument color-instance-p nil)
 
 @email{nataliek@@rd.scitec.com.au, Natalie Kershaw} writes:
@@ -1968,7 +1968,7 @@ SXEmacs startup, which says @samp{Color Red3} not defined.
 @end quotation
 
 
-@node Q2.1.9
+@node Q2.1.9, Q2.1.10, Q2.1.8, Installation
 @unnumberedsec Q2.1.9: SXEmacs causes my OpenWindows 3.0 server to crash.
 
 The OpenWindows 3.0 server is incredibly buggy.  Your best bet is to
@@ -1977,7 +1977,7 @@ try disabling parts of your @file{init.el}, like those that enable
 background pixmaps.
 
 
-@node Q2.1.10
+@node Q2.1.10, Q2.1.11, Q2.1.9, Installation
 @unnumberedsec Q2.1.10: Warnings from incorrect key modifiers.
 
 The following information comes from the @file{PROBLEMS} file that comes
@@ -2004,7 +2004,7 @@ EOF
 @end example
 
 
-@node Q2.1.11
+@node Q2.1.11, Q2.1.12, Q2.1.10, Installation
 @unnumberedsec Q2.1.11: @samp{Can't instantiate image error...} in toolbar
 @c New
 
@@ -2031,7 +2031,7 @@ in @file{XF86Config} gets rid of the problem.
 @end quotation
 
 
-@node Q2.1.12
+@node Q2.1.12, Q2.1.13, Q2.1.11, Installation
 @unnumberedsec Q2.1.12: Problems with Regular Expressions on DEC OSF1.
 
 @c I have xemacs 19.13 running on an alpha running OSF1 V3.2 148 and ispell
@@ -2067,7 +2067,7 @@ in @file{XF86Config} gets rid of the problem.
 Does not apply anymore.
 
 
-@node Q2.1.13
+@node Q2.1.13, Q2.1.14, Q2.1.12, Installation
 @unnumberedsec Q2.1.13: HP/UX 10.10 and @code{create_process} failure.
 
 @c @email{Dave.Carrigan@@ipl.ca, Dave Carrigan} writes:
@@ -2100,7 +2100,7 @@ Does not apply anymore.
 Does not apply anymore.
 
 
-@node Q2.1.14
+@node Q2.1.14, Q2.1.15, Q2.1.13, Installation
 @unnumberedsec Q2.1.14: @kbd{C-g} doesn't work for me.  Is it broken?
 
 @email{ben@@xemacs.org, Ben Wing} writes:
@@ -2134,7 +2134,7 @@ error} then it does.
 @end quotation
 
 
-@node Q2.1.15
+@node Q2.1.15, Q2.1.16, Q2.1.14, Installation
 @unnumberedsec Q2.1.15: How to debug a SXEmacs problem with a debugger
 
 If SXEmacs does crash on you, one of the most productive things you
@@ -2314,7 +2314,7 @@ something useful.
 @end itemize
 
 
-@node Q2.1.16
+@node Q2.1.16, Q2.1.17, Q2.1.15, Installation
 @unnumberedsec Q2.1.16: SXEmacs crashes in @code{strcat} on HP/UX 10
 
 From the problems database (through
@@ -2338,14 +2338,14 @@ causing a segmentation violation.
 @end example
 
 
-@node Q2.1.17
+@node Q2.1.17, Q2.1.18, Q2.1.16, Installation
 @unnumberedsec Q2.1.17: @samp{Marker does not point anywhere}
 
 As with other errors, set @code{debug-on-error} to @code{t} to get the
 backtrace when the error occurs.
 
 
-@node Q2.1.18
+@node Q2.1.18, Q2.1.19, Q2.1.17, Installation
 @unnumberedsec Q2.1.18: SXEmacs is outputting lots of X errors.
 
 If this is happening, we would very much like to know what's causing
@@ -2353,7 +2353,7 @@ them.  To find this out, see @ref{Q2.1.15}.  Try to get both a C and Lisp
 backtrace, and send them to @email{sxemacs-devel@@sxemacs.org}.
 
 
-@node Q2.1.19
+@node Q2.1.19, Q2.1.20, Q2.1.18, Installation
 @unnumberedsec Q2.1.19: SXEmacs does not follow the local timezone.
 
 When using one of the prebuilt binaries many users have observed that
@@ -2368,7 +2368,7 @@ to your @file{init.el} or the @file{site-start.el} file if you can.
 Replace @code{MET} with your local timezone.
 
 
-@node Q2.1.20
+@node Q2.1.20, Q2.1.21, Q2.1.19, Installation
 @unnumberedsec Q2.1.20: @samp{Symbol's function definition is void: hkey-help-show.}
 
 This is a problem with a partially loaded hyperbole.  Try adding:
@@ -2380,11 +2380,11 @@ This is a problem with a partially loaded hyperbole.  Try adding:
 where you load hyperbole and the problem should go away.
 
 
-@node Q2.1.21
+@node Q2.1.21, Q2.1.22, Q2.1.20, Installation
 @unnumberedsec Q2.1.21: [This question intentionally left blank]
 
 
-@node Q2.1.22
+@node Q2.1.22, Q2.1.23, Q2.1.21, Installation
 @unnumberedsec Q2.1.22: SXEmacs seems to take a really long time to do some things
 
 @email{dmoore@@ucsd.edu, David Moore} writes:
@@ -2420,7 +2420,7 @@ some other strange cases.
 @end quotation
 
 
-@node Q2.1.23
+@node Q2.1.23, Q2.1.24, Q2.1.22, Installation
 @unnumberedsec Q2.1.23:  Movemail on Linux does not work for SXEmacs
 
 @email{steve@@xemacs.org, SL Baur} writes:
@@ -2437,7 +2437,7 @@ that reads:
 @end quotation
 
 
-@node Q2.1.24
+@node Q2.1.24, Q2.1.25, Q2.1.23, Installation
 @unnumberedsec Q2.1.24:  SXEmacs won't start without network.
 
 If SXEmacs starts when you're on the network, but fails when you're not
@@ -2451,7 +2451,7 @@ on the network, you may be missing a "localhost" entry in your
 Add that line, and SXEmacs will be happy.
 
 
-@node Q2.1.25
+@node Q2.1.25,  , Q2.1.24, Installation
 @unnumberedsec Q2.1.25::  After upgrading, SXEmacs won't do `foo' any more!
 
 You have been used to doing `foo', but now when you invoke it (or click
@@ -2562,7 +2562,7 @@ Text Selections:
 * Q3.10.6::     Why is killing so slow?
 @end menu
 
-@node Q3.0.1
+@node Q3.0.1, Q3.0.2, Customisation, Customisation
 @unnumberedsec 3.0: Customisation -- Emacs Lisp and @file{init.el}
 @unnumberedsec Q3.0.1: What version of Emacs am I running?
 
@@ -2592,7 +2592,7 @@ to use xemacs-exclusive features.  Both, the variable
 to @code{t} within SXEmacs.  This is due to compatibility reasons.
 
 
-@node Q3.0.2
+@node Q3.0.2, Q3.0.3, Q3.0.1, Customisation
 @unnumberedsec Q3.0.2: How can I evaluate Emacs-Lisp expressions?
 
 I know I can evaluate Elisp expressions from @code{*scratch*} buffer
@@ -2603,7 +2603,7 @@ Press @kbd{M-:} (the default binding of @code{eval-expression}), and
 enter the expression to the minibuffer.
 
 
-@node Q3.0.3
+@node Q3.0.3, Q3.0.4, Q3.0.2, Customisation
 @unnumberedsec Q3.0.3: @code{(setq tab-width 6)} behaves oddly.
 
 If you put @code{(setq tab-width 6)} in your @file{init.el} file it
@@ -2614,7 +2614,7 @@ Use @code{setq-default} instead, since @code{tab-width} is
 all-buffer-local.
 
 
-@node Q3.0.4
+@node Q3.0.4, Q3.0.5, Q3.0.3, Customisation
 @unnumberedsec Q3.0.4: How can I add directories to the @code{load-path}?
 
 Here are two ways to do that, one that puts your directories at the
@@ -2643,7 +2643,7 @@ To add directories using Unix shell metacharacters use
 @end quotation
 
 
-@node Q3.0.5
+@node Q3.0.5, Q3.0.6, Q3.0.4, Customisation
 @unnumberedsec Q3.0.5: How to check if a lisp function is defined?
 
 Use the following elisp:
@@ -2669,7 +2669,7 @@ much better more often in more places if it did the above instead of
 trying to divine its environment from the value of one variable.
 
 
-@node Q3.0.6
+@node Q3.0.6, Q3.0.7, Q3.0.5, Customisation
 @unnumberedsec Q3.0.6: Can I force the output of @code{(face-list)} to a buffer?
 
 It would be good having it in a buffer, as the output of
@@ -2683,7 +2683,7 @@ simply press @kbd{C-h l} to get the former minibuffer contents in a
 buffer.
 
 
-@node Q3.0.7
+@node Q3.0.7, Q3.0.8, Q3.0.6, Customisation
 @unnumberedsec Q3.0.7: Font selections in don't get saved after @code{Save Options}.
 
 @email{mannj@@ll.mit.edu, John Mann} writes:
@@ -2702,7 +2702,7 @@ Also, set the following in your @file{init.el}:
 @end lisp
 
 
-@node Q3.0.8
+@node Q3.0.8, Q3.0.9, Q3.0.7, Customisation
 @unnumberedsec Q3.0.8: How do I get a single minibuffer frame?
 
 @email{acs@@acm.org, Vin Shelton} writes:
@@ -2729,7 +2729,7 @@ taste, and there any number of other SXEmacs options settings that may
 make it difficult or inconvenient to use.
 
 
-@node Q3.0.9
+@node Q3.0.9, Q3.1.1, Q3.0.8, Customisation
 @unnumberedsec Q3.0.9: What is @code{Customize}?
 
 Starting with XEmacs 20.2 there is new system 'Customize' for customising
@@ -2743,7 +2743,7 @@ or invoking one of customize commands by typing eg.
 Also try out with @kbd{M-x customize-browse}
 
 
-@node Q3.1.1
+@node Q3.1.1, Q3.1.2, Q3.0.9, Customisation
 @unnumberedsec 3.1: X Window System & Resources
 @unnumberedsec Q3.1.1: Where is a list of X resources?
 
@@ -2759,7 +2759,7 @@ installing the contents of this file into your @file{.Xresources} (or
 legacy @file{.Xdefaults}) file if you use GNU Emacs under X11 as well.
 
 
-@node Q3.1.2
+@node Q3.1.2, Q3.1.3, Q3.1.1, Customisation
 @unnumberedsec Q3.1.2: How can I detect a color display?
 
 You can test the return value of the function @code{(device-class)}, as
@@ -2774,14 +2774,14 @@ in:
 @end lisp
 
 
-@node Q3.1.3
+@node Q3.1.3, Q3.1.4, Q3.1.2, Customisation
 @unnumberedsec Q3.1.3: [This question intentionally left blank]
 
-@node Q3.1.4
+@node Q3.1.4, Q3.1.5, Q3.1.3, Customisation
 @unnumberedsec Q3.1.4: [This question intentionally left blank]
 
 
-@node Q3.1.5
+@node Q3.1.5, Q3.1.6, Q3.1.4, Customisation
 @unnumberedsec Q3.1.5: How can I get the icon to just say @samp{SXEmacs}?
 
 I'd like the icon to just say @samp{SXEmacs}, and not include the name of
@@ -2794,7 +2794,7 @@ Add the following line to your @file{init.el}:
 @end lisp
 
 
-@node Q3.1.6
+@node Q3.1.6, Q3.1.7, Q3.1.5, Customisation
 @unnumberedsec Q3.1.6: How can I have the window title area display the full path?
 
 I'd like to have the window title area display the full directory/name
@@ -2817,7 +2817,7 @@ A more sophisticated title might be:
 That is, use the file name, or the dired-directory, or the buffer name.
 
 
-@node Q3.1.7
+@node Q3.1.7, Q3.1.8, Q3.1.6, Customisation
 @unnumberedsec Q3.1.7: @samp{sxemacs -name junk} doesn't work?
 
 When I run @samp{xterm -name junk}, I get an xterm whose class name
@@ -2869,7 +2869,7 @@ To make a frame with a particular name use:
 @end lisp
 
 
-@node Q3.1.8
+@node Q3.1.8, Q3.2.1, Q3.1.7, Customisation
 @unnumberedsec Q3.1.8: @samp{-iconic} doesn't work.
 
 When I start up SXEmacs using @samp{-iconic} it doesn't work right.
@@ -2885,7 +2885,7 @@ bugs...
 @end quotation
 
 
-@node Q3.2.1
+@node Q3.2.1, Q3.2.2, Q3.1.8, Customisation
 @unnumberedsec 3.2: Textual Fonts & Colors
 @unnumberedsec Q3.2.1: How can I set color options from @file{init.el}?
 
@@ -2919,7 +2919,7 @@ Like this:
 @end lisp
 
 
-@node Q3.2.2
+@node Q3.2.2, Q3.2.3, Q3.2.1, Customisation
 @unnumberedsec Q3.2.2: How do I set the text, menu and modeline fonts?
 
 Note that you should use @samp{Emacs.} and not @samp{Emacs*} when
@@ -2945,7 +2945,7 @@ configurations with Mule it @emph{is} necessary to use @samp{fontSet}
 instead of @samp{font}.  (Sorry, there just is no simple recipe here.)
 
 
-@node Q3.2.3
+@node Q3.2.3, Q3.2.4, Q3.2.2, Customisation
 @unnumberedsec Q3.2.3: How can I set the colors when highlighting a region?
 
 How can I set the background/foreground colors when highlighting a
@@ -2967,7 +2967,7 @@ or in your @file{init.el}:
 @end lisp
 
 
-@node Q3.2.4
+@node Q3.2.4, Q3.2.5, Q3.2.3, Customisation
 @unnumberedsec Q3.2.4: How can I limit color map usage?
 
 I'm using Netscape (or another color grabber like SXEmacs);
@@ -2983,7 +2983,7 @@ If you have the money, another solution would be to use a truecolor or
 direct color video.
 
 
-@node Q3.2.5
+@node Q3.2.5, Q3.2.6, Q3.2.4, Customisation
 @unnumberedsec Q3.2.5: My tty supports color, but SXEmacs doesn't use them.
 
 SXEmacs tries to automatically determine whether your tty supports color,
@@ -2996,7 +2996,7 @@ Right Thing using this Lisp code:
 @end lisp
 
 
-@node Q3.2.6
+@node Q3.2.6, Q3.2.7, Q3.2.5, Customisation
 @unnumberedsec Q3.2.6: Can I have pixmap backgrounds in SXEmacs?
 @c New
 @email{jvillaci@@wahnsinnig.extreme.indiana.edu, Juan Villacis} writes:
@@ -3025,7 +3025,7 @@ and so on.  You can also do this interactively via @kbd{M-x edit-faces}.
 @end quotation
 
 
-@node Q3.2.7
+@node Q3.2.7, Q3.3.1, Q3.2.6, Customisation
 @unnumberedsec Q3.2.7: How do I display non-ASCII characters?
 @c New
 
@@ -3053,7 +3053,7 @@ For the related problem of @emph{inputting} non-ASCII characters in a
 non-Mule SXEmacs, @xref{Q3.5.7}.
 
 
-@node Q3.3.1
+@node Q3.3.1, Q3.3.2, Q3.2.7, Customisation
 @unnumberedsec 3.3: The Modeline
 @unnumberedsec Q3.3.1: How can I make the modeline go away?
 
@@ -3062,7 +3062,7 @@ non-Mule SXEmacs, @xref{Q3.5.7}.
 @end lisp
 
 
-@node Q3.3.2
+@node Q3.3.2, Q3.3.3, Q3.3.1, Customisation
 @unnumberedsec Q3.3.2: How do you have SXEmacs display the line number in the modeline?
 
 Add the following line to your @file{init.el} file to
@@ -3092,7 +3092,7 @@ and/or
 Or type @kbd{M-x customize @key{RET} editing-basics @key{RET}}.
 
 
-@node Q3.3.3
+@node Q3.3.3, Q3.3.4, Q3.3.2, Customisation
 @unnumberedsec Q3.3.3: How do I get SXEmacs to put the time of day on the modeline?
 
 Add the following line to your @file{init.el}/@file{.emacs} file to
@@ -3105,7 +3105,7 @@ display the time:
 See @code{Customize} from the @code{Options} menu for customisation.
 
 
-@node Q3.3.4
+@node Q3.3.4, Q3.3.5, Q3.3.3, Customisation
 @unnumberedsec Q3.3.4: How do I turn off current chapter from AUC TeX modeline?
 
 With AUC TeX, fast typing is hard because the current chapter, section
@@ -3141,7 +3141,7 @@ Buffer} option in the function-menu.
 @end quotation
 
 
-@node Q3.3.5
+@node Q3.3.5, Q3.4.1, Q3.3.4, Customisation
 @unnumberedsec Q3.3.5: How can one change the modeline color based on the mode used?
 
 You can use something like the following:
@@ -3185,7 +3185,7 @@ There are additional modeline faces, @code{modeline-buffer-id},
 you may want to customize.
 
 
-@node Q3.4.1
+@node Q3.4.1, Q3.4.2, Q3.3.5, Customisation
 @unnumberedsec 3.4: Multiple Device Support
 @unnumberedsec Q3.4.1: How do I open a frame on another screen of my multi-headed display?
 
@@ -3197,7 +3197,7 @@ connection to any tty-like device.  Opening the TTY devices should be
 left to @code{gnuclient}, though.
 
 
-@node Q3.4.2
+@node Q3.4.2, Q3.5.1, Q3.4.1, Customisation
 @unnumberedsec Q3.4.2: Can I really connect to a running SXEmacs after calling up over a modem?  How?
 
 Yes.  Use @code{gnuclient -nw}.
@@ -3205,7 +3205,7 @@ Yes.  Use @code{gnuclient -nw}.
 Also see @ref{Q5.0.12}.
 
 
-@node Q3.5.1
+@node Q3.5.1, Q3.5.2, Q3.4.2, Customisation
 @unnumberedsec 3.5: The Keyboard
 @unnumberedsec Q3.5.1: How can I bind complex functions (or macros) to keys?
 
@@ -3247,7 +3247,7 @@ If you're doing more it's cleaner to define a separate function as in
 question 3.5.3 (@pxref{Q3.5.3}).
 
 
-@node Q3.5.2
+@node Q3.5.2, Q3.5.3, Q3.5.1, Customisation
 @unnumberedsec Q3.5.2: How can I stop down-arrow from adding empty lines to the bottom of my buffers?
 
 Add the following line to your @file{init.el} file:
@@ -3259,7 +3259,7 @@ Add the following line to your @file{init.el} file:
 This has been the default setting in SXEmacs for some time.
 
 
-@node Q3.5.3
+@node Q3.5.3, Q3.5.4, Q3.5.2, Customisation
 @unnumberedsec Q3.5.3: How do I bind C-. and C-; to scroll one line up and down?
 
 Add the following (Thanks to @email{mly@@adoc.xerox.com, Richard Mlynarik} and
@@ -3283,7 +3283,7 @@ can not bind a key to a function that you're also passing arguments to.
 (@pxref{Q3.5.1} for a better answer).
 
 
-@node Q3.5.4
+@node Q3.5.4, Q3.5.5, Q3.5.3, Customisation
 @unnumberedsec Q3.5.4: Globally binding @kbd{Delete}?
 
 I cannot manage to globally bind my @kbd{Delete} key to something other
@@ -3304,7 +3304,7 @@ get around this, try the following:
 Also see @ref{Q3.5.10}.
 
 
-@node Q3.5.5
+@node Q3.5.5, Q3.5.6, Q3.5.4, Customisation
 @unnumberedsec Q3.5.5: Scrolling one line at a time.
 
 Can the cursor keys scroll the screen a line at a time, rather than the
@@ -3340,7 +3340,7 @@ Select from the @code{Options} menu
 @kbd{M-x customize @key{RET} windows @key{RET}}.
 
 
-@node Q3.5.6
+@node Q3.5.6, Q3.5.7, Q3.5.5, Customisation
 @unnumberedsec Q3.5.6: How to map @kbd{Help} key alone on Sun type4 keyboard?
 
 The following works in GNU Emacs 19:
@@ -3371,7 +3371,7 @@ can also cause fix this by telling OLWM to not grab the help key, with
 the null binding @code{OpenWindows.KeyboardCommand.Help:}.
 
 
-@node Q3.5.7
+@node Q3.5.7, Q3.5.8, Q3.5.6, Customisation
 @unnumberedsec Q3.5.7: How can you type in special characters in SXEmacs?
 @c Changed
 One way is to use the package @code{x-compose}.  Then you can use
@@ -3424,13 +3424,13 @@ For the related problem of @emph{displaying} non-ASCII characters in a
 non-Mule SXEmacs, @xref{Q3.2.7}.
 
 
-@node Q3.5.8
+@node Q3.5.8, Q3.5.9, Q3.5.7, Customisation
 @unnumberedsec Q3.5.8: [This question intentionally left blank]
 
 Obsolete question, left blank to avoid renumbering.
 
 
-@node Q3.5.9
+@node Q3.5.9, Q3.5.10, Q3.5.8, Customisation
 @unnumberedsec Q3.5.9: How do I make the Delete key delete forward?
 
 A solution is to set variable @code{delete-key-deletes-forward} to t.
@@ -3442,7 +3442,7 @@ type @kbd{M-x customize @key{RET} editing-basics @key{RET}}.
 Also see @ref{Q3.5.4}.
 
 
-@node Q3.5.10
+@node Q3.5.10, Q3.5.11, Q3.5.9, Customisation
 @unnumberedsec Q3.5.10: Can I turn on @dfn{sticky} modifier keys?
 
 Yes, with @code{(setq modifier-keys-are-sticky t)}.  This will give the
@@ -3457,7 +3457,7 @@ One thing about the sticky modifiers is that if you move the mouse out
 of the frame and back in, it cancels all currently ``stuck'' modifiers.
 @end quotation
 
-@node Q3.5.11
+@node Q3.5.11, Q3.6.1, Q3.5.10, Customisation
 @unnumberedsec Q3.5.11: How do I map the arrow keys?
 @c New
 Say you want to map @kbd{C-@key{right}} to forward-word:
@@ -3483,7 +3483,7 @@ or
 
 
 
-@node Q3.6.1
+@node Q3.6.1, Q3.6.2, Q3.5.11, Customisation
 @unnumberedsec 3.6: The Cursor
 @unnumberedsec Q3.6.1: Is there a way to make the bar cursor thicker?
 
@@ -3514,7 +3514,7 @@ Emacs*cursorColor:      Red
 @end example
 
 
-@node Q3.6.2
+@node Q3.6.2, Q3.6.3, Q3.6.1, Customisation
 @unnumberedsec Q3.6.2: Is there a way to get back the block cursor?
 
 @lisp
@@ -3527,7 +3527,7 @@ You can also change this with Customize.  Select from the
 @kbd{M-x customize @key{RET} display @key{RET}}.
 
 
-@node Q3.6.3
+@node Q3.6.3, Q3.7.1, Q3.6.2, Customisation
 @unnumberedsec Q3.6.3: Can I make the cursor blink?
 
 Yes, like this:
@@ -3541,7 +3541,7 @@ You may also set this mode from the menu bar by selecting @samp{Options
 => Frame Appearance => Blinking Cursor}.  Remember to save options.
 
 
-@node Q3.7.1
+@node Q3.7.1, Q3.7.2, Q3.6.3, Customisation
 @unnumberedsec 3.7: The Mouse and Highlighting
 @unnumberedsec Q3.7.1: How can I turn off Mouse pasting?
 
@@ -3563,7 +3563,7 @@ use @code{define-key} or @code{global-set-key}.
 @end lisp
 
 
-@node Q3.7.2
+@node Q3.7.2, Q3.7.3, Q3.7.1, Customisation
 @unnumberedsec Q3.7.2: How do I set control/meta/etc modifiers on mouse buttons?
 
 Use, for instance, @code{[(meta button1)]}. For example, here is a common
@@ -3580,7 +3580,7 @@ ilisp-mode-hook]
 @end lisp
 
 
-@node Q3.7.3
+@node Q3.7.3, Q3.7.4, Q3.7.2, Customisation
 @unnumberedsec Q3.7.3: Clicking the left button does not do anything in buffer list.
 
 I do @kbd{C-x C-b} to get a list of buffers and the entries get
@@ -3590,7 +3590,7 @@ does not do anything.
 Use the middle mouse button.
 
 
-@node Q3.7.4
+@node Q3.7.4, Q3.7.5, Q3.7.3, Customisation
 @unnumberedsec Q3.7.4: How can I get a list of buffers when I hit mouse button 3?
 
 The following code will replace the default popup on button3:
@@ -3600,7 +3600,7 @@ The following code will replace the default popup on button3:
 @end lisp
 
 
-@node Q3.7.5
+@node Q3.7.5, Q3.7.6, Q3.7.4, Customisation
 @unnumberedsec Q3.7.5: Why does cut-and-paste not work between SXEmacs and a cmdtool?
 
 We don't know.  It's a bug.  There does seem to be a work-around,
@@ -3608,7 +3608,7 @@ however.  Try running xclipboard first.  It appears to fix the problem
 even if you exit it..
 
 
-@node Q3.7.6
+@node Q3.7.6, Q3.7.7, Q3.7.5, Customisation
 @unnumberedsec Q3.7.6: How I can set SXEmacs up so that it pastes where the text cursor is?
 
 By default SXEmacs pastes X selections where the mouse pointer is.  How
@@ -3629,7 +3629,7 @@ You can also change this with Customize.  Select from the
 customize @key{RET} mouse @key{RET}}.
 
 
-@node Q3.7.7
+@node Q3.7.7, Q3.7.8, Q3.7.6, Customisation
 @unnumberedsec Q3.7.7: How do I select a rectangular region?
 
 Just select the region normally, then use the rectangle commands (e.g.
@@ -3660,7 +3660,7 @@ You can also change this with Customize.  Select from the
 @end example
 
 
-@node Q3.7.8
+@node Q3.7.8, Q3.8.1, Q3.7.7, Customisation
 @unnumberedsec Q3.7.8: Why does @kbd{M-w} take so long?
 
 It actually doesn't.  It leaves the region visible for a second so that
@@ -3669,7 +3669,7 @@ will immediately complete its operation.  In other words, it will only
 delay for a second if you let it.
 
 
-@node Q3.8.1
+@node Q3.8.1, Q3.8.2, Q3.7.8, Customisation
 @unnumberedsec 3.8: The Menubar and Toolbar
 @unnumberedsec Q3.8.1: How do I get rid of the menu (or menubar)?
 
@@ -3687,7 +3687,7 @@ delay for a second if you let it.
 @end lisp
 
 
-@node Q3.8.2
+@node Q3.8.2, Q3.8.3, Q3.8.1, Customisation
 @unnumberedsec Q3.8.2: Can I customise the basic menubar?
 
 For an extensive menubar, add this line to your @file{init.el}:
@@ -3701,7 +3701,7 @@ examples as any to start from.  The file is located in edit-utils
 package.
 
 
-@node Q3.8.3
+@node Q3.8.3, Q3.8.4, Q3.8.2, Customisation
 @unnumberedsec Q3.8.3: How do I control how many buffers are listed in the menu @code{Buffers List}?
 
 Add the following to your @file{init.el} (suit to fit):
@@ -3718,7 +3718,7 @@ You can also change this with Customize.  Select from the
 type @kbd{M-x customize @key{RET} buffers-menu @key{RET}}.
 
 
-@node Q3.8.4
+@node Q3.8.4, Q3.8.5, Q3.8.3, Customisation
 @unnumberedsec Q3.8.4: Resources like @code{Emacs*menubar*font} are not working?
 
 I am trying to use a resource like @code{Emacs*menubar*font} to set the
@@ -3761,7 +3761,7 @@ Example:
 @end example
 
 
-@node Q3.8.5
+@node Q3.8.5, Q3.9.1, Q3.8.4, Customisation
 @unnumberedsec Q3.8.5: How can I bind a key to a function to toggle the toolbar?
 
 Try something like:
@@ -3775,7 +3775,7 @@ Try something like:
 @end lisp
 
 
-@node Q3.9.1
+@node Q3.9.1, Q3.9.2, Q3.8.5, Customisation
 @unnumberedsec 3.9: Scrollbars
 @unnumberedsec Q3.9.1: How can I disable the scrollbar?
 
@@ -3805,7 +3805,7 @@ turn the scrollbars off only in a single buffer:
 @end lisp
 
 
-@node Q3.9.2
+@node Q3.9.2, Q3.9.3, Q3.9.1, Customisation
 @unnumberedsec Q3.9.2: How can one use resources to change scrollbar colors?
 
 Here's a recap of how to use resources to change your scrollbar colors:
@@ -3825,7 +3825,7 @@ Emacs*Scrollbar.Background: lightgray
 Note the capitalisation of @code{Scrollbar} for the Athena widget.
 
 
-@node Q3.9.3
+@node Q3.9.3, Q3.9.4, Q3.9.2, Customisation
 @unnumberedsec Q3.9.3: Moving the scrollbar can move the point; can I disable this?
 
 When I move the scrollbar in a SXEmacs window, it moves the point as
@@ -3840,7 +3840,7 @@ hand corner.
 This cannot be changed.
 
 
-@node Q3.9.4
+@node Q3.9.4, Q3.10.1, Q3.9.3, Customisation
 @unnumberedsec Q3.9.4: How can I turn off automatic horizontal scrolling in specific modes?
 
 Do @code{(setq truncate-lines t)} in the mode-hooks for any modes
@@ -3859,7 +3859,7 @@ then horizontal scrollbars will not appear in truncated buffers unless
 the package specifically asked for them.
 
 
-@node Q3.10.1
+@node Q3.10.1, Q3.10.2, Q3.9.4, Customisation
 @unnumberedsec 3.10: Text Selections
 @unnumberedsec Q3.10.1: How can I turn off or change highlighted selections?
 
@@ -3881,7 +3881,7 @@ To change the face for selection, look at @code{Options->Customize} on
 the menubar.
 
 
-@node Q3.10.2
+@node Q3.10.2, Q3.10.3, Q3.10.1, Customisation
 @unnumberedsec Q3.10.2: How do I get that typing on an active region removes it?
 
 I want to change things so that if I select some text and start typing,
@@ -3909,7 +3909,7 @@ tad more complicated than it has to be for SXEmacs in order to make it
 more portable.
 
 
-@node Q3.10.3
+@node Q3.10.3, Q3.10.4, Q3.10.2, Customisation
 @unnumberedsec Q3.10.3: Can I turn off the highlight during isearch?
 
 I do not like my text highlighted while I am doing isearch as I am not
@@ -3929,7 +3929,7 @@ Instead of disabling isearch-highlight you may find that a better
 solution consists of customizing the @code{isearch} face.
 
 
-@node Q3.10.4
+@node Q3.10.4, Q3.10.5, Q3.10.3, Customisation
 @unnumberedsec Q3.10.4: How do I turn off highlighting after @kbd{C-x C-p} (mark-page)?
 
 Put this in your @file{init.el}:
@@ -3943,13 +3943,13 @@ Put this in your @file{init.el}:
 Also see @ref{Q3.10.1}.
 
 
-@node Q3.10.5
+@node Q3.10.5, Q3.10.6, Q3.10.4, Customisation
 @unnumberedsec Q3.10.5: The region disappears when I hit the end of buffer while scrolling.
 
 Does not apply anymore.
 
 
-@node Q3.10.6
+@node Q3.10.6,  , Q3.10.5, Customisation
 @unnumberedsec Q3.10.6: Why is killing so slow?
 
 This actually is an X Windows question, although you'll notice it with
@@ -4076,7 +4076,7 @@ Other Unbundled Packages:
 * Q4.7.7::      Can I edit files on other hosts?
 @end menu
 
-@node Q4.0.1
+@node Q4.0.1, Q4.0.2, Subsystems, Subsystems
 @unnumberedsec 4.0: Reading Mail with VM
 @unnumberedsec Q4.0.1: How do I set up VM to retrieve mail from a remote site using POP?
 
@@ -4090,7 +4090,7 @@ Use @code{vm-spool-files}, like this for example:
 Of course substitute your actual password for MYPASS.
 
 
-@node Q4.0.2
+@node Q4.0.2, Q4.0.3, Q4.0.1, Subsystems
 @unnumberedsec Q4.0.2: How do I get VM to filter mail for me?
 
 One possibility is to use procmail to split your mail before it gets to
@@ -4108,7 +4108,7 @@ Also see the Mail Filtering FAQ at:
 @c was dead.
 
 
-@node Q4.0.3
+@node Q4.0.3, Q4.0.4, Q4.0.2, Subsystems
 @unnumberedsec Q4.0.3: How can I get VM to automatically check for new mail?
 
 @email{turner@@lanl.gov, John Turner} writes:
@@ -4122,13 +4122,13 @@ Use the following:
 @end quotation
 
 
-@node Q4.0.4
+@node Q4.0.4, Q4.0.5, Q4.0.3, Subsystems
 @unnumberedsec Q4.0.4: [This question intentionally left blank]
 
 Obsolete question, left blank to avoid renumbering.
 
 
-@node Q4.0.5
+@node Q4.0.5, Q4.0.6, Q4.0.4, Subsystems
 @unnumberedsec Q4.0.5: How do I get my outgoing mail archived?
 
 @lisp
@@ -4136,7 +4136,7 @@ Obsolete question, left blank to avoid renumbering.
 @end lisp
 
 
-@node Q4.0.6
+@node Q4.0.6, Q4.0.7, Q4.0.5, Subsystems
 @unnumberedsec Q4.0.6: I have various addresses at which I receive mail.  How can I tell VM to ignore them when doing a "reply-all"?
 
 Set @code{vm-reply-ignored-addresses} to a list, like
@@ -4150,7 +4150,7 @@ Set @code{vm-reply-ignored-addresses} to a list, like
 Note that each string is a regular expression.
 
 
-@node Q4.0.7
+@node Q4.0.7, Q4.0.8, Q4.0.6, Subsystems
 @unnumberedsec Q4.0.7: Is there a mailing list or FAQ for VM?
 
 A FAQ for VM exists at @uref{http://www.wonderworks.com/vm/FAQ.html}.
@@ -4158,7 +4158,7 @@ A FAQ for VM exists at @uref{http://www.wonderworks.com/vm/FAQ.html}.
 VM has its own newsgroups gnu.emacs.vm.info and gnu.emacs.vm.bug.
 
 
-@node Q4.0.8
+@node Q4.0.8, Q4.0.9, Q4.0.7, Subsystems
 @unnumberedsec Q4.0.8: Remote mail reading with VM.
 
 My mailbox lives at the office on a big honkin server.  My regular INBOX
@@ -4197,7 +4197,7 @@ the time back at IU.
 @end quotation
 
 
-@node Q4.0.9
+@node Q4.0.9, Q4.0.10, Q4.0.8, Subsystems
 @unnumberedsec Q4.0.9: rmail or VM gets an error incorporating new mail.
 
 Quoting the SXEmacs PROBLEMS file:
@@ -4237,7 +4237,7 @@ directory copy is ineffective.
 @end quotation
 
 
-@node Q4.0.10
+@node Q4.0.10, Q4.0.11, Q4.0.9, Subsystems
 @unnumberedsec Q4.0.10: How do I make VM stay in a single frame?
 
 John.@email{Cooper@@Eng.Sun.COM, John S Cooper} writes:
@@ -4253,7 +4253,7 @@ John.@email{Cooper@@Eng.Sun.COM, John S Cooper} writes:
 @end quotation
 
 
-@node Q4.0.11
+@node Q4.0.11, Q4.0.12, Q4.0.10, Subsystems
 @unnumberedsec Q4.0.11: How do I make VM or mh-e display graphical smilies?
 @c Changed June
 For mh-e use the following:
@@ -4281,7 +4281,7 @@ For tm use the following:
 @end lisp
 
 
-@node Q4.0.12
+@node Q4.0.12, Q4.1.1, Q4.0.11, Subsystems
 @unnumberedsec Q4.0.12: Customisation of VM not covered in the manual, or here.
 
 @email{boffi@@hp735.stru.polimi.it, giacomo boffi} writes:
@@ -4305,7 +4305,7 @@ appropriate variables, copy and experiment.
 @end quotation
 
 
-@node Q4.1.1
+@node Q4.1.1, Q4.1.2, Q4.0.12, Subsystems
 @unnumberedsec 4.1: Web browsing with W3
 @unnumberedsec Q4.1.1: What is W3?
 
@@ -4316,21 +4316,21 @@ It has a home web page at
 @uref{http://www.cs.indiana.edu/elisp/w3/docs.html}.
 
 
-@node Q4.1.2
+@node Q4.1.2, Q4.1.3, Q4.1.1, Subsystems
 @unnumberedsec Q4.1.2: How do I run W3 from behind a firewall?
 
 There is a long, well-written, detailed section in the W3 manual that
 describes how to do this.  Look in the section entitled "Firewalls".
 
 
-@node Q4.1.3
+@node Q4.1.3, Q4.2.1, Q4.1.2, Subsystems
 @unnumberedsec Q4.1.3: Is it true that W3 supports style sheets and tables?
 
 Yes, and much more.  W3, as distributed with the latest SXEmacs is a
 full-featured web browser.
 
 
-@node Q4.2.1
+@node Q4.2.1, Q4.2.2, Q4.1.3, Subsystems
 @unnumberedsec 4.2: Reading Netnews and Mail with Gnus
 @unnumberedsec Q4.2.1: GNUS, (ding) Gnus, Gnus 5, September Gnus, Red Gnus, Quassia Gnus, Pterodactyl Gnus, Oort Gnus, argh!
 
@@ -4348,13 +4348,13 @@ See the Gnus home page
 @end example
 
 
-@node Q4.2.2
+@node Q4.2.2, Q4.2.3, Q4.2.1, Subsystems
 @unnumberedsec Q4.2.2: This question intentionally left blank.
 
 Obsolete question, left blank to avoid renumbering.
 
 
-@node Q4.2.3
+@node Q4.2.3, Q4.2.4, Q4.2.2, Subsystems
 @unnumberedsec Q4.2.3: How do I make Gnus stay within a single frame?
 
 The toolbar code to start Gnus opens the new frame---and it's a feature
@@ -4370,7 +4370,7 @@ It will redefine the callback function of the icon to just call
 @code{gnus}, without all the fancy frame stuff.
 
 
-@node Q4.2.4
+@node Q4.2.4, Q4.3.1, Q4.2.3, Subsystems
 @unnumberedsec Q4.2.4: How do I customize the From: line?
 
 How do I change the @code{From:} line?  I have set gnus-user-from-line
@@ -4395,7 +4395,7 @@ Set @code{user-mail-address} to @samp{gail.gurman@@sybase.com} or
 @end quotation
 
 
-@node Q4.3.1
+@node Q4.3.1, Q4.3.2, Q4.2.4, Subsystems
 @unnumberedsec 4.3: Other Mail & News
 @unnumberedsec Q4.3.1: How can I read and/or compose MIME messages?
 @c Changed June
@@ -4419,7 +4419,7 @@ Another possibility is RMIME.  You may find RMIME at
 @uref{http://www.cinti.net/~rmoody/rmime/index.html}.
 
 
-@node Q4.3.2
+@node Q4.3.2, Q4.3.3, Q4.3.1, Subsystems
 @unnumberedsec Q4.3.2: What is TM and where do I get it?
 
 TM stands for @dfn{Tools for MIME} and not Tiny MIME.  TM integrates
@@ -4471,7 +4471,7 @@ in these packages.
 @end quotation
 
 
-@node Q4.3.3
+@node Q4.3.3, Q4.3.4, Q4.3.2, Subsystems
 @unnumberedsec Q4.3.3: Why isn't this @code{movemail} program working?
 
 Ben Wing @email{ben@@xemacs.org} writes:
@@ -4481,7 +4481,7 @@ It wasn't chown'ed/chmod'd correctly.
 @end quotation
 
 
-@node Q4.3.4
+@node Q4.3.4, Q4.3.5, Q4.3.3, Subsystems
 @unnumberedsec Q4.3.4: Movemail is also distributed by Netscape?  Can that cause problems?
 
 @email{steve@@xemacs.org, Steve Baur} writes:
@@ -4501,7 +4501,7 @@ version of movemail configured for your system by the person who built
 SXEmacs.
 
 
-@node Q4.3.5
+@node Q4.3.5, Q4.4.1, Q4.3.4, Subsystems
 @unnumberedsec Q4.3.5: Where do I find pstogif (required by tm)?
 
 pstogif is part of the latex2html package.
@@ -4529,7 +4529,7 @@ There is a good mirror at ftp.cdrom.com;
 @uref{ftp://ftp.cdrom.com/pub/tex/ctan/support/latex2html/}.
 
 
-@node Q4.4.1
+@node Q4.4.1, Q4.5.1, Q4.3.5, Subsystems
 @unnumberedsec 4.4: Sparcworks, EOS, and WorkShop
 @unnumberedsec Q4.4.1: What is SPARCworks, EOS, and WorkShop?
 
@@ -4573,7 +4573,7 @@ called Sun WorkShop.  For more details, check out
 @end quotation
 
 
-@node Q4.5.1
+@node Q4.5.1, Q4.6.1, Q4.4.1, Subsystems
 @unnumberedsec 4.5: Energize
 @unnumberedsec Q4.5.1: What is/was Energize?
 
@@ -4590,7 +4590,7 @@ did so.)
 @end quotation
 
 
-@node Q4.6.1
+@node Q4.6.1, Q4.7.1, Q4.5.1, Subsystems
 @unnumberedsec 4.6: Infodock
 @unnumberedsec Q4.6.1: What is Infodock?
 
@@ -4749,7 +4749,7 @@ Read the @file{ID-INSTALL} file which you just retrieved for
 step-by-step installation instructions.
 
 
-@node Q4.7.1
+@node Q4.7.1, Q4.7.2, Q4.6.1, Subsystems
 @unnumberedsec 4.7: Other Unbundled Packages
 @unnumberedsec Q4.7.1: What is AUC TeX?  Where do you get it?
 
@@ -4774,7 +4774,7 @@ WWW users may want to check out the AUC TeX page at
 @uref{http://sunsite.dk/auctex/}.
 
 
-@node Q4.7.2
+@node Q4.7.2, Q4.7.3, Q4.7.1, Subsystems
 @unnumberedsec Q4.7.2: Are there any Emacs Lisp Spreadsheets?
 
 Yes.  Check out @dfn{dismal} (which stands for Dis' Mode Ain't Lotus) at
@@ -4784,11 +4784,11 @@ Yes.  Check out @dfn{dismal} (which stands for Dis' Mode Ain't Lotus) at
 @uref{ftp://cs.nyu.edu/pub/local/fox/dismal/}.
 
 
-@node Q4.7.3
+@node Q4.7.3, Q4.7.4, Q4.7.2, Subsystems
 @unnumberedsec Q4.7.3: [This question intentionally left blank]
 
 
-@node Q4.7.4
+@node Q4.7.4, Q4.7.5, Q4.7.3, Subsystems
 @unnumberedsec Q4.7.4: Problems installing AUC TeX.
 
 @email{vroonhof@@math.ethz.ch, Jan Vroonhof} writes:
@@ -4818,7 +4818,7 @@ Fix: use @code{locate-library} and remove old versions to make sure it
 @end itemize
 
 
-@node Q4.7.5
+@node Q4.7.5, Q4.7.6, Q4.7.4, Subsystems
 @unnumberedsec Q4.7.5: Is there a reason for an Emacs package not to be included in SXEmacs?
 
 The reason for an Emacs package not to be included in SXEmacs is
@@ -4858,7 +4858,7 @@ appreciated.
 @end enumerate
 
 
-@node Q4.7.6
+@node Q4.7.6, Q4.7.7, Q4.7.5, Subsystems
 @unnumberedsec Q4.7.5: Is there a MatLab mode?
 
 Yes, a matlab mode and other items are available at the
@@ -4866,7 +4866,7 @@ Yes, a matlab mode and other items are available at the
 MathWorks' emacs_add_ons ftp directory}.
 
 
-@node Q4.7.7
+@node Q4.7.7,  , Q4.7.6, Subsystems
 @unnumberedsec Q4.7.7: Can I edit files on other hosts?
 
 Yes.  Of course SXEmacs can use any network file system (such as NFS)
@@ -4950,7 +4950,7 @@ Miscellaneous:
 @end menu
 
 
-@node Q5.0.1
+@node Q5.0.1, Q5.0.2, Miscellaneous, Miscellaneous
 @unnumberedsec 5.0: Major & Minor Modes
 @unnumberedsec Q5.0.1: How can I do source code highlighting using font-lock?
 
@@ -4973,7 +4973,7 @@ See also @code{Syntax Highlighting} from the @code{Options} menu.
 Remember to save options.
 
 
-@node Q5.0.2
+@node Q5.0.2, Q5.0.3, Q5.0.1, Miscellaneous
 @unnumberedsec Q5.0.2: I do not like cc-mode.  How do I use the old c-mode?
 
 Well, first off, consider if you really want to do this.  cc-mode is
@@ -4997,7 +4997,7 @@ This must be done before any other reference is made to either c-mode or
 c++-mode.
 
 
-@node Q5.0.3
+@node Q5.0.3, Q5.0.4, Q5.0.2, Miscellaneous
 @unnumberedsec Q5.0.3: How do I get @samp{More} Syntax Highlighting on by default?
 
 Use the following code in your @file{init.el}:
@@ -5010,7 +5010,7 @@ See also @code{Syntax Highlighting} from the @code{Options} menu.
 Remember to save options.
 
 
-@node Q5.0.4
+@node Q5.0.4, Q5.0.5, Q5.0.3, Miscellaneous
 @unnumberedsec Q5.0.4: How can I enable auto-indent and/or Filladapt?
 
 Put the following line in your @file{init.el}:
@@ -5049,7 +5049,7 @@ the nasty ones, you'll have to provide the @code{add-hook}s yourself.
 Please note that the @code{fa-extras} package is no longer useful.
 
 
-@node Q5.0.5
+@node Q5.0.5, Q5.0.6, Q5.0.4, Miscellaneous
 @unnumberedsec Q5.0.5: How can I get SXEmacs to come up in text/auto-fill mode by default?
 
 Try the following lisp in your @file{init.el}:
@@ -5095,7 +5095,7 @@ message might get fontified in a strange foreign manner, e.g. as code in
 some programming language).
 
 
-@node Q5.0.6
+@node Q5.0.6, Q5.0.7, Q5.0.5, Miscellaneous
 @unnumberedsec Q5.0.6: How do I start up a second shell buffer?
 
 In the @code{*shell*} buffer:
@@ -5115,7 +5115,7 @@ If the value of this variable is non-nil, each time shell mode is invoked,
 a new shell is made
 
 
-@node Q5.0.7
+@node Q5.0.7, Q5.0.8, Q5.0.6, Miscellaneous
 @unnumberedsec Q5.0.7: Telnet from shell filters too much
 
 I'm using the Emacs @kbd{M-x shell} function, and I would like to invoke
@@ -5128,7 +5128,7 @@ use @kbd{M-x ssh} to open secure remote session if you have @code{ssh}
 installed.
 
 
-@node Q5.0.8
+@node Q5.0.8, Q5.0.9, Q5.0.7, Miscellaneous
 @unnumberedsec Q5.0.8: Why does edt emulation not work?
 
 We don't know, but you can use tpu-edt emulation instead, which works
@@ -5147,7 +5147,7 @@ add this as well:
 @end lisp
 
 
-@node Q5.0.9
+@node Q5.0.9, Q5.0.10, Q5.0.8, Miscellaneous
 @unnumberedsec Q5.0.9: How can I emulate VI and use it as my default mode?
 
 Our recommended VI emulator is viper. To make viper-mode the default,
@@ -5165,19 +5165,19 @@ it, otherwise some minor modes may not get viper-ized.
 @end quotation
 
 
-@node Q5.0.10
+@node Q5.0.10, Q5.0.11, Q5.0.9, Miscellaneous
 @unnumberedsec Q5.0.10: [This question intentionally left blank]
 
 Obsolete question, left blank to avoid renumbering
 
 
-@node Q5.0.11
+@node Q5.0.11, Q5.0.12, Q5.0.10, Miscellaneous
 @unnumberedsec Q5.0.11: [This question intentionally left blank]
 
 Obsolete question, left blank to avoid renumbering
 
 
-@node Q5.0.12
+@node Q5.0.12, Q5.0.13, Q5.0.11, Miscellaneous
 @unnumberedsec Q5.0.12: How do I disable gnuserv from opening a new frame?
 
 If you set the @code{gnuserv-frame} variable to the frame that should be
@@ -5200,7 +5200,7 @@ You can also change this with Customize.  Select from the
 @kbd{M-x customize @key{RET} gnuserv @key{RET}}.
 
 
-@node Q5.0.13
+@node Q5.0.13, Q5.0.14, Q5.0.12, Miscellaneous
 @unnumberedsec Q5.0.13: How do I start gnuserv so that each subsequent SXEmacs is a client?
 
 Put the following in your @file{init.el} file to start the server:
@@ -5223,7 +5223,7 @@ of the frame.
 See also man page of gnuclient.
 
 
-@node Q5.0.14
+@node Q5.0.14, Q5.0.15, Q5.0.13, Miscellaneous
 @unnumberedsec Q5.0.14: Strange things are happening in Shell Mode.
 
 Sometimes (i.e. it's not repeatable, and I can't work out why it
@@ -5245,13 +5245,13 @@ if ( "$TERM" == emacs || "$TERM" == unknown ) unset filec
 @end quotation
 
 
-@node Q5.0.15
+@node Q5.0.15, Q5.0.16, Q5.0.14, Miscellaneous
 @unnumberedsec Q5.0.15: Where do I get the latest CC Mode?
 
 See @uref{http://cc-mode.sourceforge.net/}.
 
 
-@node Q5.0.16
+@node Q5.0.16, Q5.0.17, Q5.0.15, Miscellaneous
 @unnumberedsec Q5.0.16: I find auto-show-mode disconcerting.  How do I turn it off?
 
 @code{auto-show-mode} controls whether or not a horizontal scrollbar
@@ -5265,17 +5265,17 @@ enabled by default.  To turn it off, put the following in your
 @end lisp
 
 
-@node Q5.0.17
+@node Q5.0.17, Q5.0.18, Q5.0.16, Miscellaneous
 @unnumberedsec Q5.0.17: How can I get two instances of info?
 
 Good question.
 
 
-@node Q5.0.18
+@node Q5.0.18, Q5.0.19, Q5.0.17, Miscellaneous
 @unnumberedsec Q5.0.18: [This question intentionally left blank]
 
 
-@node Q5.0.19
+@node Q5.0.19, Q5.0.20, Q5.0.18, Miscellaneous
 @unnumberedsec Q5.0.19: Is there something better than LaTeX mode?
 
 @email{dak@@fsnif.neuroinformatik.ruhr-uni-bochum.de, David Kastrup} writes:
@@ -5286,7 +5286,7 @@ leniently maintained.  Serious TeX users use AUC TeX (@pxref{Q4.7.1}).
 @end quotation
 
 
-@node Q5.0.20
+@node Q5.0.20, Q5.1.1, Q5.0.19, Miscellaneous
 @unnumberedsec Q5.0.20: Is there a way to start a new SXEmacs if there's no gnuserv running, and otherwise use gnuclient?
 
 @email{vroonhof@@math.ethz.ch, Jan Vroonhof} writes:
@@ -5313,7 +5313,7 @@ Note that there is a known problem when running SXEmacs and
 @end quotation
 
 
-@node Q5.1.1
+@node Q5.1.1, Q5.1.2, Q5.0.20, Miscellaneous
 @unnumberedsec 5.1: Emacs Lisp Programming Techniques
 @unnumberedsec Q5.1.1: What is the difference in key sequences between XEmacs/SXEmacs and GNU Emacs?
 
@@ -5348,7 +5348,7 @@ Another (even safer) way to be sure of the key-sequences is to use the
 you use.  The function is available under all Emacsen.
 
 
-@node Q5.1.2
+@node Q5.1.2, Q5.1.3, Q5.1.1, Miscellaneous
 @unnumberedsec Q5.1.2: Can I generate "fake" keyboard events?
 
 I wonder if there is an interactive function that can generate
@@ -5370,7 +5370,7 @@ This seems to work:
 @end lisp
 
 
-@node Q5.1.3
+@node Q5.1.3, Q5.1.4, Q5.1.2, Miscellaneous
 @unnumberedsec Q5.1.3: Could you explain @code{read-kbd-macro} in more detail?
 
 The @code{read-kbd-macro} function returns the internal Emacs
@@ -5462,7 +5462,7 @@ use whitespace.
 @end quotation
 
 
-@node Q5.1.4
+@node Q5.1.4, Q5.1.5, Q5.1.3, Miscellaneous
 @unnumberedsec Q5.1.4: What is the performance hit of @code{let}?
 
 In most cases, not noticeable.  Besides, there's no avoiding
@@ -5473,7 +5473,7 @@ future implementation), @code{let}-s should be used (nested) in a way to
 provide the clearest code.
 
 
-@node Q5.1.5
+@node Q5.1.5, Q5.1.6, Q5.1.4, Miscellaneous
 @unnumberedsec Q5.1.5: What is the recommended use of @code{setq}?
 
 @itemize @bullet
@@ -5537,7 +5537,7 @@ returns the value of @code{inbox}, which can be reused, for instance:
 @end itemize
 
 
-@node Q5.1.6
+@node Q5.1.6, Q5.1.7, Q5.1.5, Miscellaneous
 @unnumberedsec Q5.1.6: What is the typical misuse of @code{setq} ?
 
 A typical misuse is probably @code{setq}ing a variable that was meant to
@@ -5580,7 +5580,7 @@ While compiling toplevel forms:
 @end lisp
 
 
-@node Q5.1.7
+@node Q5.1.7, Q5.1.8, Q5.1.6, Miscellaneous
 @unnumberedsec Q5.1.7: I like the @code{do} form of cl, does it slow things down?
 
 It shouldn't.  Here is what Dave Gillespie has to say about cl.el
@@ -5623,7 +5623,7 @@ function.
 @end quotation
 
 
-@node Q5.1.8
+@node Q5.1.8, Q5.1.9, Q5.1.7, Miscellaneous
 @unnumberedsec Q5.1.8: I like recursion, does it slow things down?
 
 Yes.  Emacs byte-compiler cannot do much to optimize recursion.  But
@@ -5635,7 +5635,7 @@ Please try not to make your code much uglier to gain a very small speed
 gain.  It's not usually worth it.
 
 
-@node Q5.1.9
+@node Q5.1.9, Q5.1.10, Q5.1.8, Miscellaneous
 @unnumberedsec Q5.1.9: How do I put a glyph as annotation in a buffer?
 
 Here is a solution that will insert the glyph annotation at the
@@ -5663,7 +5663,7 @@ name), and inserts the glyph at @code{(point)} instead of
 @code{(point-min)}.
 
 
-@node Q5.1.10
+@node Q5.1.10, Q5.1.11, Q5.1.9, Miscellaneous
 @unnumberedsec Q5.1.10: @code{map-extents} won't traverse all of my extents!
 
 I tried to use @code{map-extents} to do an operation on all the extents
@@ -5695,7 +5695,7 @@ is:
 @end lisp
 
 
-@node Q5.1.11
+@node Q5.1.11, Q5.2.1, Q5.1.10, Miscellaneous
 @unnumberedsec Q5.1.11: My elisp program is horribly slow.  Is there
 an easy way to find out where it spends time?
 @c New
@@ -5709,7 +5709,7 @@ where the time is being spent.
 @end quotation
 
 
-@node Q5.2.1
+@node Q5.2.1, Q5.2.2, Q5.1.11, Miscellaneous
 @unnumberedsec Q5.2.1: How do I turn off the sound?
 @c hehe, this is neat
 @c should i mention that if nothing's done, sound is off entirely?
@@ -5730,7 +5730,7 @@ You can also change these with Customize.  Select from the
 customize @key{RET} sound @key{RET}}.
 
 
-@node Q5.2.2
+@node Q5.2.2, Q5.2.3, Q5.2.1, Miscellaneous
 @unnumberedsec Q5.2.2: How do I get funky sounds instead of a boring beep?
 
 Make sure your SXEmacs was compiled with audio and media support, and
@@ -5741,13 +5741,13 @@ then put this in your @file{init.el}:
 @end lisp
 
 
-@node Q5.2.3
+@node Q5.2.3, Q5.2.4, Q5.2.2, Miscellaneous
 @unnumberedsec Q5.2.3: What's NAS, how do I get it?
 
 @xref{Q2.0.3}, for an explanation of the @dfn{Network Audio System}.
 
 
-@node Q5.2.4
+@node Q5.2.4, Q5.3.1, Q5.2.3, Miscellaneous
 @unnumberedsec Q5.2.4: Sunsite sounds don't play.
 
 I'm having some trouble with sounds I've downloaded from sunsite.  They
@@ -5767,7 +5767,7 @@ need to perform a 'null' conversion from SunAudio to SunAudio.
 @end quotation
 
 
-@node Q5.3.1
+@node Q5.3.1, Q5.3.2, Q5.2.4, Miscellaneous
 @unnumberedsec 5.3: Miscellaneous
 @unnumberedsec Q5.3.1: How do you make SXEmacs indent CL if-clauses correctly?
 
@@ -5800,13 +5800,13 @@ Here's how:
 @end lisp
 
 
-@node Q5.3.2
+@node Q5.3.2, Q5.3.3, Q5.3.1, Miscellaneous
 @unnumberedsec Q5.3.2: [This question intentionally left blank]
 
 Obsolete question, left blank to avoid renumbering.
 
 
-@node Q5.3.3
+@node Q5.3.3, Q5.3.4, Q5.3.2, Miscellaneous
 @unnumberedsec Q5.3.3: How can I print WYSIWYG a font-locked buffer?
 
 Font-lock looks nice.  How can I print (WYSIWYG) the highlighted
@@ -5819,7 +5819,7 @@ on its use, in
 being the default location of an installed ps-print package.
 
 
-@node Q5.3.4
+@node Q5.3.4, Q5.3.5, Q5.3.3, Miscellaneous
 @unnumberedsec Q5.3.4: Getting @kbd{M-x lpr} to work with postscript printer.
 
 My printer is a Postscript printer and @code{lpr} only works for
@@ -5838,7 +5838,7 @@ free?), replace with the command you do use.  Note also that some
 versions of a2ps require a @samp{-Pprinter} to ensure spooling.
 
 
-@node Q5.3.5
+@node Q5.3.5, Q5.3.6, Q5.3.4, Miscellaneous
 @unnumberedsec Q5.3.5: How do I specify the paths that SXEmacs uses for finding files?
 
 You can specify what paths to use by using a number of different flags
@@ -5854,13 +5854,13 @@ description of the SXEmacs install tree, please consult the @file{NEWS}
 file.
 
 
-@node Q5.3.6
+@node Q5.3.6, Q5.3.7, Q5.3.5, Miscellaneous
 @unnumberedsec Q5.3.6: [This question intentionally left blank]
 
 Obsolete question, left blank to avoid renumbering.
 
 
-@node Q5.3.7
+@node Q5.3.7, Q5.3.8, Q5.3.6, Miscellaneous
 @unnumberedsec Q5.3.7: Can I have the end of the buffer delimited in some way?
 
 Say, with: @samp{[END]}?
@@ -5923,7 +5923,7 @@ Note that you might want to make this a function, and put it to a hook.
 We leave that as an exercise for the reader.
 
 
-@node Q5.3.8
+@node Q5.3.8, Q5.3.9, Q5.3.7, Miscellaneous
 @unnumberedsec Q5.3.8: How do I insert today's date into a buffer?
 
 Like this:
@@ -5933,7 +5933,7 @@ Like this:
 @end lisp
 
 
-@node Q5.3.9
+@node Q5.3.9, Q5.3.10, Q5.3.8, Miscellaneous
 @unnumberedsec Q5.3.9: Are only certain syntactic character classes available for abbrevs?
 
 @c @email{gutschk@@uni-muenster.de, Markus Gutschke} writes:
@@ -5956,7 +5956,7 @@ Like this:
 Does not apply anymore.
 
 
-@node Q5.3.10
+@node Q5.3.10, Q5.3.11, Q5.3.9, Miscellaneous
 @unnumberedsec Q5.3.10: How can I get those oh-so-neat X-Face lines?
 
 Firstly there is an ftp site which describes X-faces and has the
@@ -6044,7 +6044,7 @@ Paul Harrison, and
 Vegard Vesterheim
 
 
-@node Q5.3.11
+@node Q5.3.11, Q5.3.12, Q5.3.10, Miscellaneous
 @unnumberedsec Q5.3.11: How do I add new Info directories?
 
 You use something like:
@@ -6090,7 +6090,7 @@ texi2html and read it from a web browser like Lynx or W3.
 @end quotation
 
 
-@node Q5.3.12
+@node Q5.3.12,  , Q5.3.11, Miscellaneous
 @unnumberedsec Q5.3.12: What do I need to change to make printing work?
 
 For regular printing there are two variables that can be customized.
@@ -6145,7 +6145,7 @@ by Sebastian Freundt and others.
 * Q6.0.1::      Why did SXEmacs cut all support for Windows?
 @end menu
 
-@node Q6.0.1
+@node Q6.0.1,  , MS Windows, MS Windows
 @unnumberedsec Q6.0.1: Why did SXEmacs cut all support for Windows?
 
 Short answer:
@@ -6164,7 +6164,7 @@ been optimised (or sometimes even de-optimised) merely to take some
 windows concept into account.
 
 
-@node Current Events, , MS Windows, Top
+@node Current Events,  , MS Windows, Top
 @unnumbered 7 What the Future Holds
 
 This is part 7 of the SXEmacs Frequently Asked Questions list.  This
@@ -6191,13 +6191,13 @@ in the same directory, or @file{OONEWS} for really old versions.
 * Q7.0.6::      What's new in SXEmacs 22.1.4?
 @end menu
 
-@node Q7.0.1
+@node Q7.0.1, Q7.0.2, Current Events, Current Events
 @unnumberedsec Q7.0.1: What new features will be in SXEmacs soon?
 
 @strong{YOU} tell @strong{ME}!
 
 
-@node Q7.0.2
+@node Q7.0.2, Q7.0.3, Q7.0.1, Current Events
 @unnumberedsec Q7.0.2: What's new in SXEmacs 22.1.0?
 
 This is the first release of SXEmacs.  It is a fork of XEmacs
@@ -6205,7 +6205,7 @@ This is the first release of SXEmacs.  It is a fork of XEmacs
 the code it descended from, XEmacs 21.4.16, are purely renaming
 "XEmacs" to "SXEmacs".
 
-@node Q7.0.3
+@node Q7.0.3, Q7.0.4, Q7.0.2, Current Events
 @unnumberedsec Q7.0.3: What's new in SXEmacs 22.1.1?
 
 @itemize @bullet
@@ -6262,7 +6262,7 @@ Sync up with XEmacs 21.4 -- Various Developers.
 @end itemize
 
 
-@node Q7.0.4
+@node Q7.0.4, Q7.0.5, Q7.0.3, Current Events
 @unnumberedsec Q7.0.4: What's new in SXEmacs 22.1.2?
 
 @itemize @bullet
@@ -6385,7 +6385,7 @@ PostgreSQL updates (mainly doc updates) -- Frenudt.
 @end itemize
 
 
-@node Q7.0.5
+@node Q7.0.5, Q7.0.6, Q7.0.4, Current Events
 @unnumberedsec Q7.0.5: What's new in SXEmacs 22.1.3?
 
 @itemize @bullet
@@ -6533,7 +6533,7 @@ GTK (version 1.2) build fixes -- Youngs.
 @end itemize
 
 
-@node Q7.0.6
+@node Q7.0.6,  , Q7.0.5, Current Events
 @unnumberedsec Q7.0.6: What's new in SXEmacs 22.1.4?
 
 @itemize @bullet

@@ -40,7 +40,7 @@ this case, @xref{Enhanced Number Types}.
 @end menu
 
 
-@node Integer Basics
+@node Integer Basics, Float Basics, Numbers, Numbers
 @section Integer Basics
 
   The range of values for an integer depends on the machine.  The
@@ -1080,7 +1080,7 @@ This returns the cube root of @var{number}.
 @end defun
 
 
-@node Random Numbers
+@node Random Numbers,  , Math Functions, Numbers
 @section Random Numbers
 @cindex random numbers
 

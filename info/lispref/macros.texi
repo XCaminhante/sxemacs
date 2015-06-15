@@ -35,7 +35,7 @@ instead.  @xref{Inline Functions}.
 @end menu
 
 
-@node Simple Macro
+@node Simple Macro, Expansion, Macros, Macros
 @section A Simple Example of a Macro
 
   Suppose we would like to define a Lisp construct to increment a
@@ -58,7 +58,7 @@ x (1+ x))}.  Once the macro definition returns this expansion, Lisp
 proceeds to evaluate it, thus incrementing @code{x}.
 
 
-@node Expansion
+@node Expansion, Compiling Macros, Simple Macro, Macros
 @section Expansion of a Macro Call
 @cindex expansion of macros
 @cindex macro call
@@ -140,7 +140,7 @@ uses this feature.
 @end defun
 
 
-@node Compiling Macros
+@node Compiling Macros, Defining Macros, Expansion, Macros
 @section Macros and Byte Compilation
 @cindex byte-compiling macros
 
@@ -175,7 +175,7 @@ when someone @emph{runs} the compiled program, write
 During Compile}).
 
 
-@node Defining Macros
+@node Defining Macros, Backquote, Compiling Macros, Macros
 @section Defining Macros
 
   A Lisp macro is a list whose @sc{car} is @code{macro}.  Its @sc{cdr} should
@@ -209,7 +209,7 @@ called interactively.
 @end defspec
 
 
-@node Backquote
+@node Backquote, Problems with Macros, Defining Macros, Macros
 @section Backquote
 @cindex backquote (list substitution)
 @cindex ` (list substitution)
@@ -291,7 +291,7 @@ Here are some examples:
 
 
 
-@node Problems with Macros
+@node Problems with Macros,  , Backquote, Macros
 @section Common Problems Using Macros
 
   The basic facts of macro expansion have counterintuitive consequences.
@@ -307,7 +307,7 @@ trouble, and rules to follow to avoid trouble.
 @end menu
 
 
-@node Argument Evaluation
+@node Argument Evaluation, Surprising Local Vars, Problems with Macros, Problems with Macros
 @subsection Evaluating Macro Arguments Repeatedly
 
   When defining a macro you must pay attention to the number of times
@@ -414,7 +414,7 @@ Proceed to the following node.
 @end ifinfo
 
 
-@node Surprising Local Vars
+@node Surprising Local Vars, Eval During Expansion, Argument Evaluation, Problems with Macros
 @subsection Local Variables in Macro Expansions
 
 @ifinfo
@@ -484,7 +484,7 @@ expansion instead of the usual interned symbol @code{max} that appears
 in expressions ordinarily.
 
 
-@node Eval During Expansion
+@node Eval During Expansion, Repeated Expansion, Surprising Local Vars, Problems with Macros
 @subsection Evaluating Macro Arguments in Expansion
 
   Another problem can happen if you evaluate any of the macro argument
@@ -530,7 +530,7 @@ put the expression into the macro expansion, so that its value is
 computed as part of executing the expansion.
 
 
-@node Repeated Expansion
+@node Repeated Expansion,  , Eval During Expansion, Problems with Macros
 @subsection How Many Times is the Macro Expanded?
 
   Occasionally problems result from the fact that a macro call is

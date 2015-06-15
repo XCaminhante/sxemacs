@@ -36,7 +36,7 @@ Lisp programs use strings more often than individual characters.
 @end menu
 
 
-@node String Basics
+@node String Basics, Predicates for Strings, Strings and Characters, Strings and Characters
 @section String and Character Basics
 
   Strings in SXEmacs Lisp are arrays that contain an ordered sequence of
@@ -1141,7 +1141,7 @@ You can load the library @file{iso-syntax} to set up the standard syntax
 table and define a case table for the 8-bit ISO Latin 1 character set.
 
 
-@node Char Tables
+@node Char Tables,  , Case Tables, Strings and Characters
 @section The Char Table
 
 A char table is a table that maps characters (or ranges of characters)

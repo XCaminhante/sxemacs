@@ -5,7 +5,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/internationalization.info
 
-@node MULE, Tips, Foreign Functions, top
+@node MULE, Tips, Foreign Functions, Top
 @chapter MULE
 
   @dfn{MULE} is the name originally given to the version of GNU Emacs

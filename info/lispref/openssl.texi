@@ -4,7 +4,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/openssl.info
 
-@node OpenSSL Support, Enhanced Number Types, PostgreSQL Support, top
+@node OpenSSL Support, Enhanced Number Types, PostgreSQL Support, Top
 @comment  node-name,  next,  previous,  up
 @chapter OpenSSL Support
 @cindex OpenSSL
@@ -25,7 +25,7 @@ functions are highly likely.
 @end menu
 
 
-@node Building SXEmacs with OpenSSL support
+@node Building SXEmacs with OpenSSL support, SXEmacs OpenSSL API, OpenSSL Support, OpenSSL Support
 @section Building SXEmacs with OpenSSL support
 
 SXEmacs OpenSSL support requires linking to the OpenSSL libcrypto and libssl
@@ -62,7 +62,7 @@ location of your OpenSSL installation via the @samp{--site-prefixes}
 flag when you run the SXEmacs configure script.
 
 
-@node SXEmacs OpenSSL API
+@node SXEmacs OpenSSL API,  , Building SXEmacs with OpenSSL support, OpenSSL Support
 @section SXEmacs OpenSSL API
 
 @c Explaining cryptographical details behind OpenSSL API functions is
@@ -101,7 +101,7 @@ is denoted OpenSSL.
 @end menu
 
 
-@node openssl General
+@node openssl General, openssl RAND, SXEmacs OpenSSL API, SXEmacs OpenSSL API
 @subsection General information
 
 In this section we deal with informative functions which kind of
@@ -268,7 +268,7 @@ available
 @end itemize
 
 
-@node openssl RAND
+@node openssl RAND, openssl MD, openssl General, SXEmacs OpenSSL API
 @subsection (Pseudo) Random Numbers
 
 Random numbers are necessary for cryptographically secure
@@ -326,7 +326,7 @@ obtain random numbers.  The built-in @code{random} function of SXEmacs
 is @emph{not} cryptographically secure.
 
 
-@node openssl MD
+@node openssl MD, openssl HMAC, openssl RAND, SXEmacs OpenSSL API
 @subsection Message Digests (aka hashes)
 
   Message digests are widely used in modern information
@@ -543,7 +543,7 @@ sha1 (taken from `No Gnus v0.4') to the one from the OpenSSL API
 other implementations.
 
 
-@node openssl HMAC
+@node openssl HMAC, openssl CIPHER, openssl MD, SXEmacs OpenSSL API
 @subsection Message Authentication Codes (aka keyed hashes)
 
   Ordinary message digests only offer data integrity verification,
@@ -588,7 +588,7 @@ digest.
 @end example
 
 
-@node openssl CIPHER
+@node openssl CIPHER, openssl PKEY, openssl HMAC, SXEmacs OpenSSL API
 @subsection Symmetric Cryptography
 
   Symmetric-key algorithms can be divided into stream ciphers and
@@ -794,7 +794,7 @@ decrypted data redirected.
 
 
 
-@node openssl PKEY
+@node openssl PKEY, openssl SSL/TLS, openssl CIPHER, SXEmacs OpenSSL API
 @subsection public key crypto systems
 
 While keys for symmetric ciphers can be easily stored as strings, keys
@@ -1312,7 +1312,7 @@ ocNNE7QyxF/GOgW9iTQr/yOp9A==
 @end example
 
 
-@node openssl SSL/TLS
+@node openssl SSL/TLS,  , openssl PKEY, SXEmacs OpenSSL API
 @subsection Secure Network Layers
 
 The SSL/TLS support in this API is definitely not a copy of the

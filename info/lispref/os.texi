@@ -30,12 +30,12 @@ pertaining to the terminal and the screen.
 * Flow Control::        How to turn output flow control on or off.
 * Batch Mode::          Running SXEmacs without terminal interaction.
 @end menu
-@ignore
-* Special Keysyms::     Defining system-specific key symbols for X windows.
-@end ignore
+@c @ignore
+@c * Special Keysyms::     Defining system-specific key symbols for X windows.
+@c @end ignore
 
 
-@node Starting Up
+@node Starting Up, Getting Out, System Interface, System Interface
 @section Starting Up SXEmacs
 
   This section describes what SXEmacs does when it is started, and how you
@@ -50,7 +50,7 @@ can customize these actions.
 @end menu
 
 
-@node Start-up Summary
+@node Start-up Summary, Init File, Starting Up, Starting Up
 @subsection Summary: Sequence of Actions at Start Up
 @cindex initialization
 @cindex start up of SXEmacs
@@ -171,7 +171,7 @@ message for someone else.
 @end defopt
 
 
-@node Init File
+@node Init File, Terminal-Specific, Start-up Summary, Starting Up
 @subsection The Init File: @file{init.el}
 @cindex init file
 @cindex @file{init.el}
@@ -261,7 +261,7 @@ the user's init file, @file{default.el}, and/or @file{site-start.el}.
 @end defvar
 
 
-@node Terminal-Specific
+@node Terminal-Specific, Command Line Arguments, Init File, Starting Up
 @subsection Terminal-Specific Initialization
 @cindex terminal-specific initialization
 
@@ -338,7 +338,7 @@ loading terminal-specific Lisp code, and after running the hook
 @end defvar
 
 
-@node Command Line Arguments
+@node Command Line Arguments,  , Terminal-Specific, Starting Up
 @subsection Command Line Arguments
 @cindex command line arguments
 
@@ -444,7 +444,7 @@ as a file name to visit.
 @end defvar
 
 
-@node Getting Out
+@node Getting Out, System Environment, Starting Up, System Interface
 @section Getting out of SXEmacs
 @cindex exiting SXEmacs
 
@@ -460,7 +460,7 @@ common.
 @end menu
 
 
-@node Killing SXEmacs
+@node Killing SXEmacs, Suspending SXEmacs, Getting Out, Getting Out
 @subsection Killing SXEmacs
 @cindex killing SXEmacs
 
@@ -502,7 +502,7 @@ this hook.
 @end defvar
 
 
-@node Suspending SXEmacs
+@node Suspending SXEmacs,  , Killing SXEmacs, Getting Out
 @subsection Suspending SXEmacs
 @cindex suspending SXEmacs
 
@@ -606,7 +606,7 @@ This variable is a normal hook run after suspending.
 @end defvar
 
 
-@node System Environment
+@node System Environment, User Identification, Getting Out, System Interface
 @section Operating System Environment
 @cindex operating system environment
 
@@ -814,7 +814,7 @@ This function returns the process @sc{id} of the SXEmacs process.
 @end defun
 
 
-@node User Identification
+@node User Identification, Time of Day, System Environment, System Interface
 @section User Identification
 
 @defvar user-mail-address
@@ -918,7 +918,7 @@ SXEmacs will also attempt to lookup the @code{HOME} directory via
 @end defun
 
 
-@node Time of Day
+@node Time of Day, Time Conversion, User Identification, System Interface
 @section Time of Day
 
   This section explains how to determine the current time and the time
@@ -992,7 +992,7 @@ integers.  Thus, you can use times obtained from @code{current-time}
 @end defun
 
 
-@node Time Conversion
+@node Time Conversion, Timers, Time of Day, System Interface
 @section Time Conversion
 
   These functions convert time values (lists of two or three integers)
@@ -1140,7 +1140,7 @@ any further alteration for daylight savings time.
 @end defun
 
 
-@node Timers
+@node Timers, Terminal Input, Time Conversion, System Interface
 @section Timers for Delayed Execution
 
 You can set up a timer to call a function at a specified future time.
@@ -1187,7 +1187,7 @@ NOTE: In FSF Emacs, this function is called @code{cancel-timer}.
 @end defun
 
 
-@node Terminal Input
+@node Terminal Input, Terminal Output, Timers, System Interface
 @section Terminal Input
 @cindex terminal input
 
@@ -1203,7 +1203,7 @@ functions.
 @end menu
 
 
-@node Input Modes
+@node Input Modes, Translating Input, Terminal Input, Terminal Input
 @subsection Input Modes
 @cindex input modes
 @cindex terminal input modes
@@ -1265,7 +1265,7 @@ is the character SXEmacs currently uses for quitting, usually @kbd{C-g}.
 @end defun
 
 
-@node Translating Input
+@node Translating Input, Recording Input, Input Modes, Terminal Input
 @subsection Translating Input Events
 @cindex translating input events
 
@@ -1455,7 +1455,7 @@ The @file{iso-transl} library uses this feature to provide a way of
 inputting non-ASCII Latin-1 characters.
 
 
-@node Recording Input
+@node Recording Input,  , Translating Input, Terminal Input
 @subsection Recording Input
 
 @defun recent-keys &optional number
@@ -1514,7 +1514,7 @@ trigger an SXEmacs bug, for the sake of a bug report.
   See also the @code{open-termscript} function (@pxref{Terminal Output}).
 
 
-@node Terminal Output
+@node Terminal Output, Flow Control, Terminal Input, System Interface
 @section Terminal Output
 @cindex terminal output
 
@@ -1609,34 +1609,34 @@ See also @code{open-dribble-file} in @ref{Terminal Input}.
 @end example
 @end deffn
 
-@ignore Not in SXEmacs
-@node Special Keysyms
-@section System-Specific X11 Keysyms
+@c @ignore Not in SXEmacs
+@c @node Special Keysyms, Flow Control, Terminal Output, System Interface
+@c @section System-Specific X11 Keysyms
 
-To define system-specific X11 keysyms, set the variable
-@code{system-key-alist}.
+@c To define system-specific X11 keysyms, set the variable
+@c @code{system-key-alist}.
 
-@defvar system-key-alist
-This variable's value should be an alist with one element for each
-system-specific keysym.  An element has this form: @code{(@var{code}
-. @var{symbol})}, where @var{code} is the numeric keysym code (not
-including the ``vendor specific'' bit, 1 << 28), and @var{symbol} is the
-name for the function key.
+@c @defvar system-key-alist
+@c This variable's value should be an alist with one element for each
+@c system-specific keysym.  An element has this form: @code{(@var{code}
+@c . @var{symbol})}, where @var{code} is the numeric keysym code (not
+@c including the ``vendor specific'' bit, 1 << 28), and @var{symbol} is the
+@c name for the function key.
 
-For example @code{(168 . mute-acute)} defines a system-specific key used
-by HP X servers whose numeric code is (1 << 28) + 168.
+@c For example @code{(168 . mute-acute)} defines a system-specific key used
+@c by HP X servers whose numeric code is (1 << 28) + 168.
 
-It is not a problem if the alist defines keysyms for other X servers, as
-long as they don't conflict with the ones used by the X server actually
-in use.
+@c It is not a problem if the alist defines keysyms for other X servers, as
+@c long as they don't conflict with the ones used by the X server actually
+@c in use.
 
-The variable is always local to the current X terminal and cannot be
-buffer-local.  @xref{Multiple Displays}.
-@end defvar
-@end ignore
+@c The variable is always local to the current X terminal and cannot be
+@c buffer-local.  @xref{Multiple Displays}.
+@c @end defvar
+@c @end ignore
 
 
-@node Flow Control
+@node Flow Control, Batch Mode, Terminal Output, System Interface
 @section Flow Control
 @cindex flow control characters
 
@@ -1732,7 +1732,7 @@ smaller speed when calculating the padding needed.
 @xref{Terminal Output}.
 
 
-@node Batch Mode
+@node Batch Mode,  , Flow Control, System Interface
 @section Batch Mode
 @cindex batch mode
 @cindex noninteractive use

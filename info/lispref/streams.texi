@@ -26,7 +26,7 @@ reading) or where to put it (if printing).
 @end menu
 
 
-@node Streams Intro
+@node Streams Intro, Input Streams, Read and Print, Read and Print
 @section Introduction to Reading and Printing
 @cindex Lisp reader
 @cindex printing

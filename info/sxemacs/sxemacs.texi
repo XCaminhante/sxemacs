@@ -27,7 +27,8 @@ results, provided the printed document carries copying permission
 notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
 
-@end ignore Permission is granted to copy and distribute modified
+@end ignore
+Permission is granted to copy and distribute modified
 versions of this manual under the conditions for verbatim copying,
 provided also that the sections entitled ``Distribution'' and ``GNU
 General Public License'' are included exactly as in the original, and

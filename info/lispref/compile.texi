@@ -56,7 +56,7 @@ byte compilation.
 @end menu
 
 
-@node Speed of Byte-Code
+@node Speed of Byte-Code, Compilation Functions, Byte Compilation, Byte Compilation
 @section Performance of Byte-Compiled Code
 
   A byte-compiled function is not as efficient as a primitive function
@@ -1116,7 +1116,7 @@ The @code{silly-loop} function is somewhat more complex:
 @end example
 
 
-@node Different Behaviour
+@node Different Behaviour,  , Disassembly, Byte Compilation
 @section Different Behaviour
 
 The intent is that compiled byte-code and the corresponding code

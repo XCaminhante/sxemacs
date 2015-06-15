@@ -25,7 +25,7 @@ deleted, so that it stays with the two characters on either side of it.
 @end menu
 
 
-@node Overview of Markers
+@node Overview of Markers, Predicates on Markers, Markers, Markers
 @section Overview of Markers
 
   A marker specifies a buffer and a position in that buffer.  The marker
@@ -670,7 +670,7 @@ location.
 @end deffn
 
 
-@node The Region
+@node The Region,  , The Mark, Markers
 @section The Region
 @cindex region, the
 

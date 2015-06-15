@@ -31,7 +31,7 @@ functions in this chapter.
 @end menu
 
 
-@node Syntax Basics
+@node Syntax Basics, Syntax Descriptors, Syntax Tables, Syntax Tables
 @section Syntax Table Concepts
 
 @ifinfo
@@ -91,7 +91,7 @@ syntax table, no matter what its contents.
 @end defun
 
 
-@node Syntax Descriptors
+@node Syntax Descriptors, Syntax Table Functions, Syntax Basics, Syntax Tables
 @section Syntax Descriptors
 @cindex syntax classes
 
@@ -132,7 +132,7 @@ comment-starter, second character of a comment-ender).
 @end menu
 
 
-@node Syntax Class Table
+@node Syntax Class Table, Syntax Flags, Syntax Descriptors, Syntax Descriptors
 @subsection Table of Syntax Classes
 
   Here is a table of syntax classes, the characters that stand for them,
@@ -273,7 +273,7 @@ designator for this syntax code is @samp{@@}.
 @end deffn
 
 
-@node Syntax Flags
+@node Syntax Flags,  , Syntax Class Table, Syntax Descriptors
 @subsection Syntax Flags
 @cindex syntax flags
 
@@ -423,7 +423,7 @@ character has the @samp{b} flag.
 @end table
 
 
-@node Syntax Table Functions
+@node Syntax Table Functions, Motion and Syntax, Syntax Descriptors, Syntax Tables
 @section Syntax Table Functions
 
   In this section we describe functions for creating, accessing and
@@ -545,7 +545,7 @@ to the current buffer if omitted.
 @end defun
 
 
-@node Motion and Syntax
+@node Motion and Syntax, Parsing Expressions, Syntax Table Functions, Syntax Tables
 @section Motion and Syntax
 
   This section describes functions for moving across characters in
@@ -586,7 +586,7 @@ omitted.
 @end defun
 
 
-@node Parsing Expressions
+@node Parsing Expressions, Standard Syntax Tables, Motion and Syntax, Syntax Tables
 @section Parsing Balanced Expressions
 
   Here are several functions for parsing and scanning balanced
@@ -744,7 +744,7 @@ argument to use, because the number of comments in the buffer cannot
 exceed that many.
 
 
-@node Standard Syntax Tables
+@node Standard Syntax Tables, Syntax Table Internals, Parsing Expressions, Syntax Tables
 @section Some Standard Syntax Tables
 
   Most of the major modes in SXEmacs have their own syntax tables.  Here
@@ -770,7 +770,7 @@ function.)
 @end defvar
 
 
-@node Syntax Table Internals
+@node Syntax Table Internals,  , Standard Syntax Tables, Syntax Tables
 @section Syntax Table Internals
 @cindex syntax table internals
 

@@ -6,7 +6,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/extents.info
 
-@node Extents, Specifiers, Abbrevs, top
+@node Extents, Specifiers, Abbrevs, Top
 @chapter Extents
 @cindex extent
 
@@ -39,7 +39,7 @@ This returns @code{t} if @var{object} is an extent.
 @end menu
 
 
-@node Intro to Extents
+@node Intro to Extents, Creating and Modifying Extents, Extents, Extents
 @section Introduction to Extents
 @cindex extent priority
 @cindex priority of an extent
@@ -951,7 +951,7 @@ consulted for mouse clicks on the extent and keypresses made while
 keystrokes not defined in the keymap is as normal for the buffer.
 
 
-@node Atomic Extents
+@node Atomic Extents,  , Extents and Events, Extents
 @section Atomic Extents
 @cindex atomic extent
 

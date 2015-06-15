@@ -5,7 +5,7 @@
 @c See the file lispref.texi for copying conditions.
 @setfilename ../../info/internationalization.info
 
-@node Internationalization, Foreign Functions, Enhanced Number Types, top
+@node Internationalization, Foreign Functions, Enhanced Number Types, Top
 @chapter Internationalization
 
 @menu
@@ -15,7 +15,7 @@
 @end menu
 
 
-@node I18N Levels 1 and 2
+@node I18N Levels 1 and 2, I18N Level 3, Internationalization, Internationalization
 @section I18N Levels 1 and 2
 
 SXEmacs is now compliant with I18N levels 1 and 2.  Specifically, this means
@@ -192,7 +192,7 @@ between pre-loaded documentation and add-on documentation:  For add-on
 packages, the final carriage returns in the strings produced by
 @code{make-docfile} must be ignored.)
 
-@node I18N Level 4
+@node I18N Level 4,  , I18N Level 3, Internationalization
 @section I18N Level 4
 
 The Asian-language support in XEmacs is called ``MULE''.  @xref{MULE}.

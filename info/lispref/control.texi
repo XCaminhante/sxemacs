@@ -44,7 +44,7 @@ structure constructs (@pxref{Macros}).
 @end menu
 
 
-@node Sequencing
+@node Sequencing, Conditionals, Control Structures, Control Structures
 @section Sequencing
 
   Evaluating forms in the order they appear is the most common way
@@ -142,7 +142,7 @@ following @var{forms}, in textual order, returning the result of
 @end defspec
 
 
-@node Conditionals
+@node Conditionals, Combining Conditions, Sequencing, Control Structures
 @section Conditionals
 @cindex conditional evaluation
 
@@ -259,7 +259,7 @@ For example:
 @end example
 
 
-@node Combining Conditions
+@node Combining Conditions, Iteration, Conditionals, Control Structures
 @section Constructs for Combining Conditions
 
   This section describes three constructs that are often used together
@@ -378,7 +378,7 @@ This is not completely equivalent because it can evaluate @var{arg1} or
 @end defspec
 
 
-@node Iteration
+@node Iteration, Nonlocal Exits, Combining Conditions, Control Structures
 @section Iteration
 @cindex iteration
 @cindex recursion
@@ -442,7 +442,7 @@ loaded.
 @c description here anyway?
 
 
-@node Nonlocal Exits
+@node Nonlocal Exits,  , Iteration, Control Structures
 @section Nonlocal Exits
 @cindex nonlocal exits
 
@@ -460,7 +460,7 @@ constructs being exited.
 @end menu
 
 
-@node Catch and Throw
+@node Catch and Throw, Examples of Catch, Nonlocal Exits, Nonlocal Exits
 @subsection Explicit Nonlocal Exits: @code{catch} and @code{throw}
 
   Most control constructs affect only the flow of control within the
@@ -554,7 +554,7 @@ error is signaled with data @code{(@var{tag} @var{value})}.
 @end defun
 
 
-@node Examples of Catch
+@node Examples of Catch, Errors, Catch and Throw, Nonlocal Exits
 @subsection Examples of @code{catch} and @code{throw}
 
   One way to use @code{catch} and @code{throw} is to exit from a doubly
@@ -637,7 +637,7 @@ Therefore, @code{throw} makes the outer @code{catch} return the value
 body-form @code{'no} is never evaluated.
 
 
-@node Errors
+@node Errors, Cleanups, Examples of Catch, Nonlocal Exits
 @subsection Errors
 @cindex errors
 
@@ -673,7 +673,7 @@ instead.  @xref{Catch and Throw}.
 @end menu
 
 
-@node Signaling Errors
+@node Signaling Errors, Processing of Errors, Errors, Errors
 @subsubsection How to Signal an Error
 @cindex signaling errors
 
@@ -917,7 +917,7 @@ proceeding.
 @end defmac
 
 
-@node Processing of Errors
+@node Processing of Errors, Handling Errors, Signaling Errors, Errors
 @subsubsection How SXEmacs Processes Errors
 
 When an error is signaled, @code{signal} searches for an active
@@ -966,7 +966,7 @@ in the environment of the error, so that you can examine values of
 variables precisely as they were at the time of the error.
 
 
-@node Handling Errors
+@node Handling Errors, Error Symbols, Processing of Errors, Errors
 @subsubsection Writing Code to Handle Errors
 @cindex error handler
 @cindex handling errors
@@ -1158,7 +1158,7 @@ including those signaled with @code{error}:
 @end smallexample
 
 
-@node Error Symbols
+@node Error Symbols,  , Handling Errors, Errors
 @subsubsection Error Symbols and Condition Names
 @cindex error symbol
 @cindex error name
@@ -1264,7 +1264,7 @@ eliminate all but the narrowest level of classification.
 and their conditions.
 
 
-@node Cleanups
+@node Cleanups,  , Errors, Nonlocal Exits
 @subsection Cleaning Up from Nonlocal Exits
 
   The @code{unwind-protect} construct is essential whenever you

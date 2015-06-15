@@ -28,7 +28,7 @@ define them.
 @end menu
 
 
-@node What Is a Function
+@node What Is a Function, Lambda Expressions, Functions and Commands, Functions and Commands
 @section What Is a Function?
 
   In a general sense, a function is a rule for carrying on a computation
@@ -154,7 +154,7 @@ function.  For example:
 @end defun
 
 
-@node Lambda Expressions
+@node Lambda Expressions, Function Names, What Is a Function, Functions and Commands
 @section Lambda Expressions
 @cindex lambda expression
 
@@ -182,7 +182,7 @@ expression, but to be called as a function.
 @end menu
 
 
-@node Lambda Components
+@node Lambda Components, Simple Lambda, Lambda Expressions, Lambda Expressions
 @subsection Components of a Lambda Expression
 
 @ifinfo
@@ -230,7 +230,7 @@ code to do the work of the function (or, as a Lisp programmer would say,
 function is the value returned by the last element of the body.
 
 
-@node Simple Lambda
+@node Simple Lambda, Argument List, Lambda Components, Lambda Expressions
 @subsection A Simple Lambda-Expression Example
 
   Consider for example the following function:
@@ -285,7 +285,7 @@ that time, they were the only way to bind and initialize local
 variables.
 
 
-@node Argument List
+@node Argument List, Function Documentation, Simple Lambda, Lambda Expressions
 @subsection Advanced Features of Argument Lists
 @kindex wrong-number-of-arguments
 @cindex argument binding
@@ -387,7 +387,7 @@ arguments (either required or optional) after a @code{&rest} argument.
 @end smallexample
 
 
-@node Function Documentation
+@node Function Documentation,  , Argument List, Lambda Expressions
 @subsection Documentation Strings of Functions
 @cindex documentation of function
 
@@ -424,7 +424,7 @@ documentation string; if the only body form is a string then it serves both
 as the return value and as the documentation.
 
 
-@node Function Names
+@node Function Names, Defining Functions, Lambda Expressions, Functions and Commands
 @section Naming a Function
 @cindex function definition
 @cindex named function
@@ -476,7 +476,7 @@ equally well a name for the same function.
 these two uses of a symbol are independent and do not conflict.
 
 
-@node Defining Functions
+@node Defining Functions, Calling Functions, Function Names, Functions and Commands
 @section Defining Functions
 @cindex defining a function
 
@@ -577,7 +577,7 @@ records.
 and tells the Lisp compiler to open-code it.  @xref{Inline Functions}.
 
 
-@node Calling Functions
+@node Calling Functions, Mapping Functions, Defining Functions, Functions and Commands
 @section Calling Functions
 @cindex function invocation
 @cindex calling a function
@@ -698,7 +698,7 @@ This function ignores any arguments and returns @code{nil}.
 @end deffn
 
 
-@node Mapping Functions
+@node Mapping Functions, Anonymous Functions, Calling Functions, Functions and Commands
 @section Mapping Functions
 @cindex mapping functions
 
@@ -869,7 +869,7 @@ sets the currently processed character to @code{^@@} (octal value:
 
 
 
-@node Anonymous Functions
+@node Anonymous Functions, Function Cells, Mapping Functions, Functions and Commands
 @section Anonymous Functions
 @cindex anonymous function
 
@@ -976,7 +976,7 @@ comment.
 realistic example using @code{function} and an anonymous function.
 
 
-@node Function Cells
+@node Function Cells, Inline Functions, Anonymous Functions, Functions and Commands
 @section Accessing Function Cell Contents
 
   The @dfn{function definition} of a symbol is the object stored in the
@@ -1154,7 +1154,7 @@ file is loaded before moving aside the old definition of @code{foo}.
 redefine a function defined elsewhere.
 
 
-@node Inline Functions
+@node Inline Functions, Related Topics, Function Cells, Functions and Commands
 @section Inline Functions
 @cindex inline functions
 
@@ -1193,7 +1193,7 @@ following the definition, just like macros.
 @c Emacs versions prior to 19 did not have inline functions.
 
 
-@node Related Topics
+@node Related Topics,  , Inline Functions, Functions and Commands
 @section Other Topics Related to Functions
 
   Here is a table of several functions that do things related to

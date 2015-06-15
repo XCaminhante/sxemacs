@@ -33,7 +33,7 @@ are done, and the subroutines that allow Lisp programs to do them.
 @end menu
 
 
-@node Command Overview
+@node Command Overview, Defining Commands, Command Loop, Command Loop
 @section Command Loop Overview
 
   The command loop in SXEmacs is a standard event loop, reading events
@@ -99,7 +99,7 @@ these hooks, it terminates execution of the hook, but that is all it
 does.
 
 
-@node Defining Commands
+@node Defining Commands, Interactive Call, Command Overview, Command Loop
 @section Defining Commands
 @cindex defining commands
 @cindex commands, defining
@@ -120,7 +120,7 @@ controls the reading of arguments for an interactive call.
 @end menu
 
 
-@node Using Interactive
+@node Using Interactive, Interactive Codes, Defining Commands, Defining Commands
 @subsection Using @code{interactive}
 
   This section describes how to write the @code{interactive} form that
@@ -252,7 +252,7 @@ as the list of the symbol @code{interactive} and the specs.  If
 @var{function} is not interactive, @code{nil} will be returned.
 @end defun
 
-@node Interactive Codes
+@node Interactive Codes, Interactive Examples, Using Interactive, Defining Commands
 @subsection Code Characters for @code{interactive}
 @cindex interactive code description
 @cindex description for interactive codes
@@ -432,7 +432,7 @@ A Lisp form is read as with @kbd{x}, but then evaluated so that its
 value becomes the argument for the command.  Prompt.
 @end table
 
-@node Interactive Examples
+@node Interactive Examples,  , Interactive Codes, Defining Commands
 @subsection Examples of Using @code{interactive}
 @cindex examples of using @code{interactive}
 @cindex @code{interactive}, examples of using
@@ -483,7 +483,7 @@ Put them into three windows, selecting the last one."
 @end example
 
 
-@node Interactive Call
+@node Interactive Call, Command Loop Info, Defining Commands, Command Loop
 @section Interactive Call
 @cindex interactive call
 
@@ -637,7 +637,7 @@ foobar
 @end defun
 
 
-@node Command Loop Info
+@node Command Loop Info, Events, Interactive Call, Command Loop
 @section Information from the Command Loop
 
 The editor command loop sets several Lisp variables to keep status
@@ -785,7 +785,7 @@ If the value is zero, then command input is not echoed.
 @end defvar
 
 
-@node Events
+@node Events, Reading Input, Command Loop Info, Command Loop
 @section Events
 @cindex events
 @cindex input events
@@ -826,7 +826,7 @@ This function returns non-@code{nil} if @var{object} is an input event.
 @end menu
 
 
-@node Event Types
+@node Event Types, Event Contents, Events, Events
 @subsection Event Types
 
 Events represent keyboard or mouse activity or status changes of various
@@ -877,7 +877,7 @@ This kind of event should generally just be passed off to
 @end table
 
 
-@node Event Contents
+@node Event Contents, Event Predicates, Event Types, Events
 @subsection Contents of the Different Types of Events
 
   Every event, no matter what type it is, contains a timestamp (which is
@@ -1024,7 +1024,7 @@ Some window-system-specific event has occurred.
 @end table
 @end defun
 
-@node Event Predicates
+@node Event Predicates, Accessing Mouse Event Positions, Event Contents, Events
 @subsection Event Predicates
 
 The following predicates return whether an object is an event of a
@@ -1077,7 +1077,7 @@ This is true if @var{object} is any event that has not been deallocated.
 @end defun
 
 
-@node Accessing Mouse Event Positions
+@node Accessing Mouse Event Positions, Accessing Other Event Info, Event Predicates, Events
 @subsection Accessing the Position of a Mouse Event
 
 Unlike other events, mouse events (i.e. motion, button-press,
@@ -1096,7 +1096,7 @@ location.
 @end menu
 
 
-@node Frame-Level Event Position Info
+@node Frame-Level Event Position Info, Window-Level Event Position Info, Accessing Mouse Event Positions, Accessing Mouse Event Positions
 @subsubsection Frame-Level Event Position Info
 
 The following functions return frame-level information about where
@@ -1120,7 +1120,7 @@ The value returned is relative to the frame the event occurred in.
 This will signal an error if the event is not a mouse event.
 @end defun
 
-@node Window-Level Event Position Info
+@node Window-Level Event Position Info, Event Text Position Info, Frame-Level Event Position Info, Accessing Mouse Event Positions
 @subsubsection Window-Level Event Position Info
 
 The following functions return window-level information about where
@@ -1156,7 +1156,7 @@ This will signal an error if the event is not a mouse-motion,
 button-press, button-release, or misc-user event.
 @end defun
 
-@node Event Text Position Info
+@node Event Text Position Info, Event Glyph Position Info, Window-Level Event Position Info, Accessing Mouse Event Positions
 @subsubsection Event Text Position Info
 
 The following functions return information about the text (including the
@@ -1209,7 +1209,7 @@ it is below a window, the value of @code{(window-end)} is returned.
 @end defun
 
 
-@node Event Glyph Position Info
+@node Event Glyph Position Info, Event Toolbar Position Info, Event Text Position Info, Accessing Mouse Event Positions
 @subsubsection Event Glyph Position Info
 
 The following functions return information about the glyph (if any) that
@@ -1242,7 +1242,7 @@ glyph, it returns @code{nil}.
 @end defun
 
 
-@node Event Toolbar Position Info
+@node Event Toolbar Position Info, Other Event Position Info, Event Glyph Position Info, Accessing Mouse Event Positions
 @subsubsection Event Toolbar Position Info
 
 @defun event-over-toolbar-p event
@@ -1258,7 +1258,7 @@ button.  Otherwise, @code{nil} is returned.
 @end defun
 
 
-@node Other Event Position Info
+@node Other Event Position Info,  , Event Toolbar Position Info, Accessing Mouse Event Positions
 @subsubsection Other Event Position Info
 
 @defun event-over-border-p event
@@ -1267,7 +1267,7 @@ this function returns @code{t} if the event is over an internal toolbar.
 Otherwise, @code{nil} is returned.
 @end defun
 
-@node Accessing Other Event Info
+@node Accessing Other Event Info, Working With Events, Accessing Mouse Event Positions, Events
 @subsection Accessing the Other Contents of Events
 
 The following functions allow access to the contents of events other
@@ -1316,7 +1316,7 @@ This function returns the process of the given process event.
 @end defun
 
 
-@node Working With Events
+@node Working With Events, Converting Events, Accessing Other Event Info, Events
 @subsection Working With Events
 
   SXEmacs provides primitives for creating, copying, and destroying
@@ -1482,7 +1482,7 @@ safe to do so.
 @end defun
 
 
-@node Converting Events
+@node Converting Events,  , Working With Events, Events
 @subsection Converting Events
 
 SXEmacs provides some auxiliary functions for converting between events
@@ -1555,7 +1555,7 @@ Optional arg @var{no-mice} means that button events are not allowed.
 @end defun
 
 
-@node Reading Input
+@node Reading Input, Waiting, Events, Command Loop
 @section Reading Input
 
   The editor command loop reads keyboard input using the function
@@ -1580,7 +1580,7 @@ debugging terminal input.
 @end menu
 
 
-@node Key Sequence Input
+@node Key Sequence Input, Reading One Event, Reading Input, Reading Input
 @subsection Key Sequence Input
 @cindex key sequence input
 
@@ -1656,7 +1656,7 @@ but its lower-case equivalent has one, then @code{read-key-sequence}
 converts the character to lower case.  Note that @code{lookup-key} does
 not perform case conversion in this way.
 
-@node Reading One Event
+@node Reading One Event, Dispatching an Event, Key Sequence Input, Reading Input
 @subsection Reading One Event
 
   The lowest level functions for command input are those which read a
@@ -1729,7 +1729,7 @@ This function adds an eval event to the back of the queue.  The
 eval event will be the next event read after all pending events.
 @end defun
 
-@node Dispatching an Event
+@node Dispatching an Event, Quoted Character Input, Reading One Event, Reading Input
 @subsection Dispatching an Event
 @cindex dispatching an event
 
@@ -1741,7 +1741,7 @@ user input; it also deals with notifications from the window system
 @end defun
 
 
-@node Quoted Character Input
+@node Quoted Character Input, Peeking and Discarding, Dispatching an Event, Reading Input
 @subsection Quoted Character Input
 @cindex quoted character input
 
@@ -1784,7 +1784,7 @@ What character-@kbd{177}
 
 
 @need 2000
-@node Peeking and Discarding
+@node Peeking and Discarding,  , Quoted Character Input, Reading Input
 @subsection Miscellaneous Event Input Features
 
 This section describes how to ``peek ahead'' at events without using
@@ -1900,7 +1900,7 @@ during the sleep.
 @end defun
 
 
-@node Waiting
+@node Waiting, Quitting, Reading Input, Command Loop
 @section Waiting for Elapsed Time or Input
 @cindex pausing
 @cindex waiting
@@ -1970,7 +1970,7 @@ Use @code{sleep-for} when you wish to guarantee a delay.
   @xref{Time of Day}, for functions to get the current time.
 
 
-@node Quitting
+@node Quitting, Prefix Command Arguments, Waiting, Command Loop
 @section Quitting
 @cindex @kbd{C-g}
 @cindex quitting
@@ -2071,7 +2071,7 @@ in @ref{Errors}.)
 See the function @code{set-input-mode} in @ref{Terminal Input}.
 
 
-@node Prefix Command Arguments
+@node Prefix Command Arguments, Recursive Editing, Quitting, Command Loop
 @section Prefix Command Arguments
 @cindex prefix argument
 @cindex raw prefix argument
@@ -2217,7 +2217,7 @@ call this command yourself unless you know what you are doing.
 @end deffn
 
 
-@node Recursive Editing
+@node Recursive Editing, Disabling Commands, Prefix Command Arguments, Command Loop
 @section Recursive Editing
 @cindex recursive command loop
 @cindex recursive editing level
@@ -2331,7 +2331,7 @@ This function returns the current depth of recursive edits.  When no
 recursive edit is active, it returns 0.
 @end defun
 
-@node Disabling Commands
+@node Disabling Commands, Command History, Recursive Editing, Command Loop
 @section Disabling Commands
 @cindex disabled command
 
@@ -2390,7 +2390,7 @@ the user whether to proceed.
 @end defvar
 
 
-@node Command History
+@node Command History, Keyboard Macros, Disabling Commands, Command Loop
 @section Command History
 @cindex command history
 @cindex complex command
@@ -2435,7 +2435,7 @@ minibuffer, the history commands used are the same ones available in any
 minibuffer.
 
 
-@node Keyboard Macros
+@node Keyboard Macros,  , Command History, Command Loop
 @section Keyboard Macros
 @cindex keyboard macros
 

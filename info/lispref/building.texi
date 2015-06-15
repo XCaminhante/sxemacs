@@ -23,7 +23,7 @@ aspects related to the internals of SXEmacs.
 @end menu
 
 
-@node Building SXEmacs
+@node Building SXEmacs, Garbage Collection, Building SXEmacs and Object Allocation, Building SXEmacs and Object Allocation
 @appendixsec Building SXEmacs
 @cindex building SXEmacs
 @pindex temacs

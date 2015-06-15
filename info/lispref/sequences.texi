@@ -67,7 +67,7 @@ are the numbers 0 and 1.
 @end menu
 
 
-@node Sequence Functions
+@node Sequence Functions, Arrays, Sequences Arrays Vectors, Sequences Arrays Vectors
 @section Sequences
 
   In SXEmacs Lisp, a @dfn{sequence} is either a list, a double-linked
