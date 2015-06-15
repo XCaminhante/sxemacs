@@ -16,7 +16,7 @@ Steve
 @end macro
 
 @macro syc
-Copyright @copyright{} 2004 - 2012 @sy{}
+Copyright @copyright{} 2004 - 2015 @sy{}
 @end macro
 
 @macro sye
@@ -33,7 +33,7 @@ Copyright @copyright{} 2004 - 2012 @sy{}
 
 
 @set EDITION First
-@set UPDATED March 14, 2011
+@set UPDATED June 13, 2015
 
 @c Things would be a lot easier if everything supported the `@copying'
 @c command, I wouldn't have to put in these conditionals.  --SY.
@@ -296,7 +296,7 @@ side.  It is merely up to the project lead who has control over it.
 @item
 Host cloaks
 
-The only way to get one is to ask the project lead (JackaLX).
+The only way to get one is to ask the project lead (SteveYoungs).
 @item
 No IRC client
 
@@ -368,6 +368,9 @@ postponement.  The idea here is to give everyone a chance to cool down
 so that reasonable discussion can continue.
 @end itemize
 
+To date, we've not ever had to resort to these.  We tend to sort
+things out pretty quickly and amicably most of the time.
+
 @menu
 * Voting::                      Deciding things via ballot
 @end menu
@@ -425,25 +428,9 @@ the results to the SXEmacs Developers' mailing list,
 @email{sxemacs-devel@@sxemacs.org}.  This post will have the email
 subject @dfn{[Vote Results] Subject of vote}.
 
-For an issue to be decided via vote it must receive the majority of the
-total number of votes with a minimum of four votes.
-
-@smallexample
-Issue decided:
-
-  A - 5 votes
-  B - 2 votes
-
-A - wins
-@end smallexample
-
-@smallexample
-Issue undecided:
-
-  A - 3 votes
-  B - 2 votes
-@end smallexample
-
+The issue will be decided by simple majority.  For a hung vote (no
+side has a majority) the Project Lead will either decide the outcome,
+call a postponement, or even call another vote.
 
 @node Coding Style, Patches, Dispute Resolution, Top
 @comment  node-name,  next,  previous,  up
@@ -597,7 +584,7 @@ opening brace at the beginning of the next line, thus:
 @end smallexample
 
 Heretic people all over the world have claimed that this inconsistency
-is ...  well ...  inconsistent, but all right-thinking people know that
+is@dots{}  well@dots{}  inconsistent, but all right-thinking people know that
 (a) K&R are @emph{right} and (b) K&R are right.  Besides, functions are
 special anyway (you can't nest them in C).
 
@@ -947,6 +934,10 @@ accessible repo}.  It will make things so much easier for everyone.
 We do understand that there may be some valid reasons why you can't,
 and that is okay, this section still provides a valid workflow.
 
+Before you do anything, we recommend that you run the
+@code{git-for-steve.sh} script which you'll find in the @code{contrib}
+directory.  It will ensure that some basic git config settings are
+correct, and set up your ``for-steve'' tracking branch.
 
 @subheading Preparing a patch from a git repo
 
@@ -959,7 +950,7 @@ Your workflow should run something along these lines@dots{}
 
 @enumerate
 @item
-@code{git pull} from your master branch to sync up with the main
+@code{git pull} from your ``for-steve'' branch to sync up with the main
 SXEmacs repo.
 @item
 @code{git checkout -b mybugfix} to create and checkout a new branch.
@@ -971,6 +962,13 @@ hack hack edit edit fix fix hack
 @item
 Test!  If all is good, proceed.  If not, return to the previous step.
 @item
+The next step is to commit your changes, and at this point I'd like to
+note that, although not mandatory, we encourage and prefer it if
+you sign all of your commits with GnuPG.  This can be easily set up
+via @code{git config commit.gpgSign true}@footnote{Already done for
+you if you ran the @code{git-for-steve.sh} script and it found your
+key}. 
+
 Depending on how you like to deal with change logs, and if the changes
 were small and trivial or detailed and large:
 
@@ -1004,20 +1002,18 @@ sub-developers working for you), the @dfn{Signed-off-by} entry also
 indicates that you have reviewed, tested, and approved the patch.  And
 also, the original author has permission to submit it.
 @item
-@code{git checkout master}  To flip back to your master branch.
+@code{git checkout for-steve}  To flip back to your for-steve branch.
 @item
-@code{git merge --no-ff mybugfix}  To merge the changes from the
-@dfn{mybugfix} branch into master.  The @code{--no-ff} forces git to
-create a new commit object even if a fast-forward could have been used
-to carry out the merge.
+@code{git merge mybugfix}  To merge the changes from the
+@dfn{mybugfix} branch into your for-steve branch.
 
 At this point everything that was in the @dfn{mybugfix} branch is now
-in your master branch, so you no longer need it. You can safely delete
+in your for-steve branch, so you no longer need it. You can safely delete
 it with @code{git branch -d mybugfix}.
 
 Now if you have a publicly accessible repo, you should do:
 @item
-@code{git push myremote master}  To push the changes to your publicly
+@code{git push myremote for-steve}  To push the changes to your publicly
 accessible repo, @dfn{myremote}.
 @end enumerate
 
@@ -1027,15 +1023,18 @@ to the next step.
 @subheading Patch Submission
 
 @anchor{Patch Submission}
-At this point, your changes are ready for @s{} to be incorporated into
+At this point, your changes are ready for @s{} to incorporate into
 the main SXEmacs code base.  All you need to do is let him know, and
-you can easily do that with the following 2 git commands:
+you can easily do that with the following 2 git commands@footnote{The
+@code{git-for-steve.sh} contrib script will set a lot of these for you.}:
 
 @enumerate
 @item
 @code{git format-patch --add-header="X-Git-Repo: REPO-URL" \@*
 @indent
---subject-prefix="P-Req" --numbered -o DIR origin}
+--add-header="X-Git-Branch: for-steve" \@*
+@indent
+--subject-prefix="P-Req" --minimal --numbered -o DIR origin/master}
 @item
 @code{git send-email \@*
 @indent
@@ -1046,8 +1045,8 @@ you can easily do that with the following 2 git commands:
 
 If you not have have a publicly accessible repository, the SXEmacs
 developers can't pull in your changesets directly from you.  Instead,
-once your patch hits the mailing list and is approved, it will be
-applied manually to the SXEmacs code base.
+once your patch hits the mailing list and is approved, it will have to
+be applied manually to the SXEmacs code base.
 
 You could, in theory, use a post-commit hook, but I'd not recommend
 it.  Think about the situation where you are working on something
@@ -1232,7 +1231,7 @@ Update @file{etc/NEWS}
 To get the numbers for the "Developer Stats" section, first get a list
 of unique committers for this release with@dots{}
 
-@code{git log --format=full v@cver{}..|grep Author|sort|uniq}
+@code{git log --format=full v@cver{}..|grep Author|sort -u}
 
 And then for the number of actual commits for each developer do@dots{}
 
@@ -1301,37 +1300,47 @@ git log --stat v@cver{}..v@nver{} > ~/upload/sxemacs-@nver{}/ChangeLog
 Create a diff against the previous version.
 
 @smallexample
-git diff v@cver{}..v@nver{} | \
-    gzip > ~/upload/sxemacs-@cver{}-@nver{}.diff.gz
+    git diff v@cver{}..v@nver{} > ~/upload/sxemacs-@cver{}-@nver{}.diff
 @end smallexample
 
 @item
-Create the tarball:
+Create the tarballs, md5sums, and sigs:
 
 @smallexample
 cd ~/upload
+for compressor in bzip2 gzip lzma xz; do
+    $@{compressor@} --keep sxemacs-@cver{}-@nver{}.diff
+done &&
 for type in bz2 gz lzma xz; do
     tar --create --owner=0 --group=0 --auto-compress --file \
-        sxemacs-@nver{}.tar.$@{type@} sxemacs-@nver{}
-    md5sum sxemacs-@nver{}.tar.$@{type@} > sxemacs-@nver{}.tar.$@{type@}.md5
-    gpg --detach-sign --armor \
-      --output sxemacs-@nver{}.tar.$@{type@}.asc sxemacs-@nver{}.tar.$@{type@}
+      sxemacs-@nver{}.tar.$@{type@} sxemacs-@nver{}
+    md5sum sxemacs-@nver{}.tar.$@{type@} > \
+      sxemacs-@nver{}.tar.$@{type@}.md5
+    md5sum sxemacs-@cver{}-@nver{}.diff.$@{type@} > \
+      sxemacs-@cver{}-@nver{}.diff.$@{type@}.md5
+    gpg --detach-sign --armor --output \
+      sxemacs-@nver{}.tar.$@{type@}.asc sxemacs-@nver{}.tar.$@{type@}
+    gpg --detach-sign --armor --output \
+      sxemacs-@cver{}-@nver{}.diff.$@{type@}.asc \
+      sxemacs-@cver{}-@nver{}.diff.$@{type@}
 done
 @end smallexample
 @item
-Create md5 and gpg sig for diff file.
-
-See items describing this for the release tarball.
-
-@item
-Move the tarball, diff, GnuPG sigs, and md5sums to
+Move the tarballs, diffs, GnuPG sigs, and md5sums to
 @uref{http://downloads.sxemacs.org/releases/, SXEmacs Download Site}.
+
+@smallexample
+for file in *.@{bz2,gz,lzma,xz,md5,asc@}; do
+    scp $@{file@} downloads.sxemacs.org:downloads.sxemacs.org/releases
+done
+@end smallexample
 
 @item
 Rename the @file{LATEST-IS-VER} file.
-@example
-mv LATEST-IS-@cver{} LATEST-IS-@nver{}
-@end example
+@smallexample
+ssh downloads.sxemacs.org \
+  mv downloads.sxemacs.org/releases/LATEST-IS-@{@cver{},@nver{}@}
+@end smallexample
 
 @item
 Update www.sxemacs.org:
@@ -1348,9 +1357,6 @@ Update @file{index.html}
 @item
 Send a release announcement to @email{sxemacs-devel@@sxemacs.org,
 SXEmacs Devel} and comp.emacs.xemacs.
-
-@item
-Make a new release and  announcement on Freshmeat (our FM id: 52281)
 
 @item
 Commit the first patch to the next version, which would be adding a
@@ -1380,7 +1386,7 @@ code.
 @item
 An idea with a willingness to help test any code resulting from it.
 @item
-@dfn{Hey, wouldn't it be cool if...}
+``Hey, wouldn't it be cool if...''
 @end enumerate
 
 Don't be disheartened if you aren't a master programmer, quite often
@@ -1408,7 +1414,9 @@ If you find a place where this isn't true, you should report it as a
 bug, @xref{Bug Reports}.
 
 If you find areas where SXEmacs is incompatible with GNU/Emacs at the
-emacs lisp level, that is an issue between GNU/Emacs and XEmacs.
+emacs lisp level, that is an issue between GNU/Emacs and XEmacs.  That
+doesn't mean that we won't ever port GNU/Emacs things to SXEmacs,
+we'll just do it in a way that doesn't break compatibility with XEmacs.
 
 @node Copyright and Licencing, Developer Recruitment, Compatibility, Top
 @comment  node-name,  next,  previous,  up
@@ -1515,7 +1523,8 @@ Checking out a copy of SXEmacs is as easy as:
   git clone http://git.sxemacs.org/sxemacs
 @end smallexample
 
-See how to patches in chapter @xref{Patches}.
+The chapter on patches @pxref{Patches} will show you how to prepare
+and send in your contributions. 
 
 @menu
 * Setting up a publicly accessible repo::
@@ -1552,15 +1561,14 @@ user@@host ~/sxemacs $ echo @dfn{Your Name's SXEmacs Repo} > description
 user@@host ~/sxemacs $ exit
 user@@localhost ~ $ git clone http://git.sxemacs.org/sxemacs
 user@@localhost ~ $ cd sxemacs
-user@@localhost ~/sxemacs $ git remote add myremote \
-    ssh://user@@your.host/~/sxemacs
+user@@localhost ~/sxemacs $ contrib/git-for-steve.sh
 @end smallexample
 
 And that's it!  Told you it was easy, didn't I?  All you have to do
 now is push your local copy to your remote@dots{}
 
 @smallexample
-git push myremote master
+git push @var{myremote} master
 @end smallexample
 
 
@@ -1622,7 +1630,8 @@ Also be aware that using this @dfn{post-receive} hook will mean that
 every time you push to your publicly accessible repo, a message will be
 sent to sxemacs-patches; this includes instances where you merely
 are pulling the latest from mainline and mirroring. Hence, the use of
-aliases as discussed below may be preferable.
+aliases as discussed below may be preferable.  We are looking into
+ways of avoiding this sort of annoyance.
 
 @subsection Automating with Aliases
 
@@ -1669,6 +1678,10 @@ Be careful when setting up aliases and config settings that you only
 make them global if you absolutely have to.  All the ones I've shown
 here have been repo-specific.
 
+The @file{git-for-steve.sh} script in our @file{contrib} directory is
+an easy (and recommended) way to set up your git repo.  It'll make
+sure that you have everything set up correctly and in an optimal way.
+
 @node  Setting up a private repos, Other Developers' Repositories, Setting up a publicly accessible repo, Version Control
 @comment  node-name,  next,  previous,  up
 @chapter Setting up a private repos
@@ -1677,16 +1690,15 @@ here have been repo-specific.
 @cindex git
 @cindex contributions
 
-Git makes it as easy to create a private repos as getting a checkout
-of the source code. In fact, all you need to do is to actually
-checkout and you have a repos:
+Git makes it as easy to create a private repo as getting a checkout
+of the source code. In fact, that is all you have to do.
 
 @smallexample
   git clone http://git.sxemacs.org/sxemacs
 @end smallexample
 
 You may want to follow some of the steps in @xref{Automating with
-Aliases}, to easy your life when sending patches if you plan to
+Aliases}, to ease your life when sending patches if you plan to
 contribute frequently from this repo. Please note that in this case
 you should not reference any REPO-URL.
 
@@ -1715,40 +1727,22 @@ accessible 24/7.
 Nelson
 @item
 http://git.nelsonferreira.com/sxemacs
+Horst
+@item
+http://midcom.steveyoungs.com/oss-vc/sxemacs.git
+lg
+@item
+git://github.com/zevlg/SXEmacs.git
+Rudi
+@item
+git://github.com/rudimeier/sxemacs.git
+Aidan
+@item
+http://bitbucket.org/kehoea/sxemacs/
 Sebastian
 @item
 git://github.com/hroptatyr/sxemacs.git
 @end itemize
-
-And that is it for now.  We've only just moved to git and the
-main SXEmacs developers haven't set up their repos.
-
-@c @itemize @bullet
-@c Sebastian
-@c @item
-@c http://www.math.tu-berlin.de/~freundt/archives/sxemacs/
-@c Evgeny
-@c @item
-@c http://arch.xwem.org/2006/
-@c Norbert
-@c @item
-@c http://arafel.viteno.net:33080/arch/sxemacs/
-@c Martin K@"uhl
-@c @item
-@c http://www.informatik.uni-bremen.de/~mkhl/sxemacs-mirror/
-@c Alexey Mikhailov (karma)
-@c @item
-@c http://karma.ezunix.org/arch/2005/
-@c Hynek
-@c @item
-@c http://hynek.in-berlin.de/archive/
-@c Horst Burkhardt (PeanutHorst)
-@c @item
-@c http://midcom.steveyoungs.com/oss-vc/sxemacs/
-@c Nick Granado
-@c @item
-@c http://www.heatxsink.com/2005/
-@c @end itemize
 
 And of course the main repo (Steve's) is at:
 
