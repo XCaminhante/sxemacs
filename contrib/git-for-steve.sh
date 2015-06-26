@@ -455,7 +455,7 @@ set_formats()
         git config format.numbered auto
     [ -n "$(git config format.to)" ] || git config format.to \
 	"SXEmacs Patches <sxemacs-patches@sxemacs.org>"
-    [ -n "$(git config format.subjecprefix)" ] ||
+    [ -n "$(git config format.subjectprefix)" ] ||
         git config format.subjectprefix Patch
     git config format.headers || git config format.headers \
 	"X-Git-Repo: $(git config remote.$(git config sxemacs.remote).url)
@@ -559,7 +559,7 @@ set_aliases()
         git config alias.alias "config --get-regexp ^alias"
     [ -n "$(git config alias.bi)" ] || git config alias.bi bisect
     [ -n "$(git config alias.co)" ] || git config alias.co checkout
-    [ -n "$(git config alias.cob)" ] || git config alias.co "checkout -b"
+    [ -n "$(git config alias.cob)" ] || git config alias.cob "checkout -b"
     [ -n "$(git config alias.ci)" ] || git config alias.ci commit
     [ -n "$(git config alias.cam)" ] || git config alias.cam "commit -sam"
 
@@ -574,7 +574,7 @@ set_aliases()
     fi
 
     [ -n "$(git config alias.rbi)" ] || git config alias.rbi "rebase -i"
-    [ -n "$(git config alias.prb)" ] || git config alias.co "pull --rebase"
+    [ -n "$(git config alias.prb)" ] || git config alias.prb "pull --rebase"
     [ -n "$(git config alias.pfs)" ] ||
         git config alias.pfs "push $(git config sxemacs.remote) for-steve"
     [ -n "$(git config alias.fp)" ] || git config alias.fp \
