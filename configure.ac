@@ -333,8 +333,8 @@ OG_MULTIARG_WITH([modules], [dnl
 	[all], [all], [dnl
 	OG_MULTIARG_ITEM([ase], [ase], [algebraic structures])
 	OG_MULTIARG_ITEM([cl], [cl], [fast Common Lisp implementation])
-	OG_MULTIARG_ITEM([dbus], [dbus], [D-BUS bindings])
 ])
+	dnl OG_MULTIARG_ITEM([dbus], [dbus], [D-BUS bindings])
 
 OG_MULTIARG_WITH([static-modules], [dnl
 	AS_HELP_STRING([--with-static-modules], [
@@ -345,8 +345,8 @@ OG_MULTIARG_WITH([static-modules], [dnl
 	[none], [NONE], [dnl
 	OG_MULTIARG_ITEM([ase], [ase], [algebraic structures])
 	OG_MULTIARG_ITEM([cl], [cl], [fast Common Lisp implementation])
-	OG_MULTIARG_ITEM([dbus], [dbus], [D-BUS bindings])
 ])
+	dnl OG_MULTIARG_ITEM([dbus], [dbus], [D-BUS bindings])
 
 OG_MULTIARG_WITH([ent], [dnl
 	AS_HELP_STRING([--with-ent], [
@@ -1813,19 +1813,19 @@ fi
 SXE_EMOD_STATMOD([cl])
 
 dnl D-Bus
-SXE_CHECK_DBUS
-if test "$have_dbus" = "yes"; then
-	if test "$with_modules_dbus" = "yes"; then
-		have_modules_dbus=yes
-	fi
-	if test "$with_static_modules_dbus" = "yes"; then
-		have_static_modules_dbus=yes
-	fi
-else
-	AC_MSG_WARN([I cannot believe you do not have d-bus.])
-fi
+dnl SXE_CHECK_DBUS
+dnl if test "$have_dbus" = "yes"; then
+dnl 	if test "$with_modules_dbus" = "yes"; then
+dnl 		have_modules_dbus=yes
+dnl 	fi
+dnl 	if test "$with_static_modules_dbus" = "yes"; then
+dnl 		have_static_modules_dbus=yes
+dnl 	fi
+dnl else
+dnl 	AC_MSG_WARN([I cannot believe you do not have d-bus.])
+dnl fi
 
-SXE_EMOD_STATMOD([dbus])
+dnl SXE_EMOD_STATMOD([dbus])
 
 AM_CONDITIONAL([AUTARKIC], [test "0" = "1"])
 MODARCHDIR=
