@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # A script to setup your git area to contribute back to SXEmacs
 #
