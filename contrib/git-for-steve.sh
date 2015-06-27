@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # A script to setup your git area to contribute back to SXEmacs
 #
@@ -250,7 +250,7 @@ one already.
                             Hit [RETURN] to continue, or C-c to abort.
 EOF
     read junk
-    REMOTES=($(git remote | grep -v origin))
+    REMOTES=("$(git remote | grep -v origin)")
     echo
     echo "**********************************************************************"
     echo "          Currently configured remotes (possibly empty list)"
