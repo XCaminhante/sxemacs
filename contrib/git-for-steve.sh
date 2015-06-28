@@ -257,13 +257,13 @@ one already.
                             Hit [RETURN] to continue, or C-c to abort.
 EOF
     read junk
-    REMOTES=("$(git remote | grep -v origin)")
+    REMOTES=($(git remote | grep -v origin))
     echo
     echo "**[Remotes]***********************************************************"
     echo "          Currently configured remotes (possibly empty list)"
     echo
-    for (( i = 1; i <= ${#REMOTES}; i++ )); do
-	echo -n "\t"${i} -- ${REMOTES[${i}]}" at: "
+    for (( i = 0; i <= ${#REMOTES}; i++ )); do
+	echo -en "\t"${i} -- ${REMOTES[${i}]}" at: "
 	echo $(git config remote.${REMOTES[${i}]}.url)
     done
     echo
