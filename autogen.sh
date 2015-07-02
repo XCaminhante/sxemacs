@@ -151,12 +151,12 @@ autoreconf --force --verbose --install -Wall
 guess=$(grep GMP config.guess)
 sub=$(grep GMP config.sub)
 if test -z "${guess}"; then
-    mv -vf config.guess configfsf.guess
-    cp -v configgmp.guess config.guess
+    mv -f config.guess configfsf.guess
+    cp configgmp.guess config.guess
 fi
 if test -z "${sub}"; then
-    mv -vf config.sub configfsf.sub
-    cp -v configgmp.sub config.sub
+    mv -f config.sub configfsf.sub
+    cp configgmp.sub config.sub
 fi
 
 cd $olddir
