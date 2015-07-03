@@ -84,7 +84,7 @@ SXEDMP = $(SXEMACS).dmp
 testdir = $(srcdir)
 testautomdir = $(testdir)/automated
 tests_environment = $(BATCHENV) \
-	$(SXEMACS) -batch -l ${testautomdir}/test-harness.el \
+	$(SXEMACS) -batch -vanilla -l ${testautomdir}/test-harness.el \
 		-f batch-test-emacs $(testautomdir)
 
 ## Use our former check target
@@ -92,19 +92,19 @@ check-am: $(SXEMACS) $(SXEDMP)
 	$(tests_environment)
 
 check-formats: $(SXEMACS) $(SXEDMP)
-	$(BATCHENV) $(SXEMACS) -l ${testautomdir}/test-harness.el \
+	$(BATCHENV) $(SXEMACS) -vanilla -l ${testautomdir}/test-harness.el \
 	-f batch-test-emacs $(testautomdir)/format-tests.el
 
 check-map: $(SXEMACS) $(SXEDMP)
-	$(BATCHENV) $(SXEMACS) -l ${testautomdir}/test-harness.el \
+	$(BATCHENV) $(SXEMACS) -vanilla -l ${testautomdir}/test-harness.el \
 	-f batch-test-emacs $(testautomdir)/map-tests.el
 
 check-skiplists: $(SXEMACS) $(SXEDMP)
-	$(BATCHENV) $(SXEMACS) -l ${testautomdir}/test-harness.el \
+	$(BATCHENV) $(SXEMACS) -vanilla -l ${testautomdir}/test-harness.el \
 	-f batch-test-emacs $(testautomdir)/skiplist-tests.el
 
 check-%: $(SXEMACS) $(SXEDMP)
-	$(BATCHENV) $(SXEMACS) -l ${testautomdir}/test-harness.el \
+	$(BATCHENV) $(SXEMACS) -vanilla -l ${testautomdir}/test-harness.el \
 	-f batch-test-emacs $(testautomdir)/$*-tests.el
 
 
