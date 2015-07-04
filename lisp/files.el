@@ -249,6 +249,15 @@ Loading an abbrev file sets this to t."
   :type 'boolean
   :group 'find-file)
 
+;;; Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+(defcustom find-directory-functions '(cvs-dired-noselect dired-noselect)
+  "*List of functions to try in sequence to visit a directory.
+Each function is called with the directory name as the sole argument
+and should return either a buffer or nil."
+  :type '(hook :options (cvs-dired-noselect dired-noselect))
+  :group 'find-file)
+;;; End Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+
 ;;;It is not useful to make this a local variable.
 ;;;(put 'find-file-not-found-hooks 'permanent-local t)
 (defvar find-file-not-found-hooks nil
@@ -607,93 +616,231 @@ bottom of the buffer stack."
     (make-frame-visible frame)
     buffer))
 
-(defun find-file (filename &optional codesys)
+;;; Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+(defun switch-to-next-buffer (&optional n)
+  "Switch to the next-most-recent buffer.
+This essentially rotates the buffer list forward.
+N (interactively, the prefix arg) specifies how many times to rotate
+forward, and defaults to 1.  Buffers whose name begins with a space
+\(i.e. \"invisible\" buffers) are ignored."
+  ;; Here is a different interactive spec.  Look up the function
+  ;; `interactive' (i.e. `C-h f interactive') to understand how this
+  ;; all works.
+  (interactive "p")
+  (dotimes (n (or n 1))
+    (loop
+      do (bury-buffer (car (buffer-list)))
+      while (funcall buffers-tab-omit-function (car (buffer-list))))
+    (switch-to-buffer (car (buffer-list)))))
+
+(defun switch-to-previous-buffer (&optional n)
+  "Switch to the previously most-recent buffer.
+This essentially rotates the buffer list backward.
+N (interactively, the prefix arg) specifies how many times to rotate
+backward, and defaults to 1.  Buffers whose name begins with a space
+\(i.e. \"invisible\" buffers) are ignored."
+  (interactive "p")
+  (dotimes (n (or n 1))
+    (loop
+      do (switch-to-buffer (car (last (buffer-list))))
+      while (funcall buffers-tab-omit-function (car (buffer-list))))))
+
+;;; FIXME: Could this looping be done with #'mapfam in a nicer way.
+(defun switch-to-next-buffer-in-group (&optional n)
+  "Switch to the next-most-recent buffer in the current group.
+This essentially rotates the buffer list forward.
+N (interactively, the prefix arg) specifies how many times to rotate
+forward, and defaults to 1.  Buffers whose name begins with a space
+\(i.e. \"invisible\" buffers) are ignored."
+  (interactive "p")
+  (dotimes (n (or n 1))
+    (let ((curbuf (car (buffer-list))))
+      (loop
+	do (bury-buffer (car (buffer-list)))
+	while (or (funcall buffers-tab-omit-function (car (buffer-list)))
+		  (not (mapcar
+			#'(lambda (f)
+			    (funcall f curbuf (car (buffer-list))))
+			buffers-tab-filter-functions)))))
+    (switch-to-buffer (car (buffer-list)))))
+
+;;; FIXME: Could this looping be done with #'mapfam in a nicer way.
+(defun switch-to-previous-buffer-in-group (&optional n)
+  "Switch to the previously most-recent buffer in the current group.
+This essentially rotates the buffer list backward.
+N (interactively, the prefix arg) specifies how many times to rotate
+backward, and defaults to 1.  Buffers whose name begins with a space
+\(i.e. \"invisible\" buffers) are ignored."
+  (interactive "p")
+  (dotimes (n (or n 1))
+    (let ((curbuf (car (buffer-list))))
+      (loop
+	do (switch-to-buffer (car (last (buffer-list))))
+	while (or (funcall buffers-tab-omit-function (car (buffer-list)))
+		  (not (mapcar
+			#'(lambda (f)
+			    (funcall f curbuf (car (buffer-list))))
+			buffers-tab-filter-functions)))))))
+
+(defmacro find-file-create-switch-thunk (switch-function)
+  "Mark buffer modified if needed, then call SWITCH-FUNCTION.
+
+The buffer will be marked modified if the file associated with the buffer
+does not exist.  This means that \\[find-file] on a non-existent file will
+create a modified buffer, making \\[save-buffer] sufficient to create the
+file.
+
+SWITCH-FUNCTION should be `switch-to-buffer' or a related function.  This
+function (that is, `find-file-create-switch-thunk') is implemented as a macro
+because we don't have built-in lexical scope, a closure created with
+`lexical-let' will always run as interpreted code.  Though functions created
+by this macro are unlikely to be called in performance-critical contexts.
+
+This function may be called from functions related to `find-file', as well
+as `find-file' itself."
+  `(function
+    (lambda (buffer)
+      (unless (and (buffer-file-name buffer)
+		   (file-exists-p (buffer-file-name buffer)))
+	;; XEmacs: nonexistent file--qualifies as a modification to the
+	;; buffer.
+	(set-buffer-modified-p t buffer))
+      (,switch-function buffer))))
+
+(defun find-file (filename &optional codesys wildcards)
   "Edit file FILENAME.
-Switch to a buffer visiting file FILENAME,
-creating one if none already exists.
-Under XEmacs/Mule, optional second argument specifies the
-coding system to use when decoding the file.  Interactively,
-with a prefix argument, you will be prompted for the coding system."
-  (interactive "FFind file: \nZCoding system: ")
-  (if codesys
-      (let ((coding-system-for-read
-	     (get-coding-system codesys)))
-	(switch-to-buffer (find-file-noselect filename)))
-    (switch-to-buffer (find-file-noselect filename))))
+Switch to a buffer visiting file FILENAME, creating one if none already
+exists.  Optional second argument specifies the coding system to use when
+decoding the file.  Interactively, with a prefix argument, you will be
+prompted for the coding system.
 
-(defun find-file-other-window (filename &optional codesys)
+If you do not explicitly specify a coding system, the coding system
+is determined as follows:
+
+1. `coding-system-for-read', if non-nil. (This is used by Lisp programs to
+      temporarily set an overriding coding system and should almost never
+      apply here in `find-file'.)
+2. The result of `insert-file-contents-pre-hook', if non-nil. (This is a
+      complex interface for handling special cases.)
+3. The matching value for this filename from `file-coding-system-alist',
+      if any. (This lets you specify the coding system to be used for
+      files with particular extensions, names, etc.)
+4. `buffer-file-coding-system-for-read', if non-nil. (This is the global
+      default -- normally `undecided', so the built-in auto-detection
+      mechanism can do its thing.)
+5. The coding system 'raw-text.
+
+See `insert-file-contents' for more details about how the process of
+determining the coding system works.
+
+Interactively, or if WILDCARDS is non-nil in a call from Lisp,
+expand wildcards (if any) and visit multiple files.  Wildcard expansion
+can be suppressed by setting `find-file-wildcards' to `nil'."
+  (interactive (list (read-file-name "Find file: ")
+		     (and current-prefix-arg
+			  (read-coding-system "Coding system: "))
+		     t))
+  (and codesys (setq codesys (check-coding-system codesys)))
+  (let* ((coding-system-for-read (or codesys coding-system-for-read))
+	 (value (find-file-noselect filename nil nil wildcards))
+	 (thunk (find-file-create-switch-thunk switch-to-buffer)))
+    (if (listp value)
+	(mapcar thunk (nreverse value))
+      (funcall thunk value))))
+
+(defun find-file-other-window (filename &optional codesys wildcards)
   "Edit file FILENAME, in another window.
-May create a new window, or reuse an existing one.
-See the function `display-buffer'.
-Under XEmacs/Mule, optional second argument specifies the
-coding system to use when decoding the file.  Interactively,
-with a prefix argument, you will be prompted for the coding system."
-  (interactive "FFind file in other window: \nZCoding system: ")
-  (if codesys
-      (let ((coding-system-for-read
-	     (get-coding-system codesys)))
-	(switch-to-buffer-other-window (find-file-noselect filename)))
-    (switch-to-buffer-other-window (find-file-noselect filename))))
+May create a new window, or reuse an existing one.  See the function
+`display-buffer'.  Optional second argument specifies the coding system to
+use when decoding the file.  Interactively, with a prefix argument, you
+will be prompted for the coding system."
+  (interactive (list (read-file-name "Find file in other window: ")
+		     (and current-prefix-arg
+			  (read-coding-system "Coding system: "))
+		     t))
+  (and codesys (setq codesys (check-coding-system codesys)))
+  (let* ((coding-system-for-read (or codesys coding-system-for-read))
+	 (value (find-file-noselect filename nil nil wildcards))
+	 (list (and (listp value) (nreverse value)))
+	 (other-window-thunk (find-file-create-switch-thunk
+			      switch-to-buffer-other-window)))
+    (if list
+	(cons
+	 (funcall other-window-thunk (car list))
+	 (mapcar (find-file-create-switch-thunk switch-to-buffer) (cdr list)))
+      (funcall other-window-thunk value))))
 
-(defun find-file-other-frame (filename &optional codesys)
+(defun find-file-other-frame (filename &optional codesys wildcards)
   "Edit file FILENAME, in a newly-created frame.
-Under XEmacs/Mule, optional second argument specifies the
-coding system to use when decoding the file.  Interactively,
-with a prefix argument, you will be prompted for the coding system."
-  (interactive "FFind file in other frame: \nZCoding system: ")
-  (if codesys
-      (let ((coding-system-for-read
-	     (get-coding-system codesys)))
-	(switch-to-buffer-other-frame (find-file-noselect filename)))
-    (switch-to-buffer-other-frame (find-file-noselect filename))))
+Optional second argument specifies the coding system to use when decoding
+the file.  Interactively, with a prefix argument, you will be prompted for
+the coding system."
+  (interactive (list (read-file-name "Find file in other frame: ")
+		     (and current-prefix-arg
+			  (read-coding-system "Coding system: "))
+		     t))
+  (and codesys (setq codesys (check-coding-system codesys)))
+  (let* ((coding-system-for-read (or codesys coding-system-for-read))
+	 (value (find-file-noselect filename nil nil wildcards))
+	 (list (and (listp value) (nreverse value)))
+	 (other-frame-thunk (find-file-create-switch-thunk
+			     switch-to-buffer-other-frame)))
+    (if list
+	(cons
+	 (funcall other-frame-thunk (car list))
+	 (mapcar (find-file-create-switch-thunk switch-to-buffer) (cdr list)))
+      (funcall other-frame-thunk value))))
 
-(defun find-file-read-only (filename &optional codesys)
+;; No need to keep this macro around in the dumped executable.
+(unintern 'find-file-create-switch-thunk)
+
+(defun find-file-read-only (filename &optional codesys wildcards)
   "Edit file FILENAME but don't allow changes.
 Like \\[find-file] but marks buffer as read-only.
 Use \\[toggle-read-only] to permit editing.
-Under XEmacs/Mule, optional second argument specifies the
-coding system to use when decoding the file.  Interactively,
-with a prefix argument, you will be prompted for the coding system."
-  (interactive "fFind file read-only: \nZCoding system: ")
-  (if codesys
-      (let ((coding-system-for-read
-	     (get-coding-system codesys)))
-	(find-file filename))
-    (find-file filename))
-  (setq buffer-read-only t)
-  (current-buffer))
+Optional second argument specifies the coding system to use when decoding
+the file.  Interactively, with a prefix argument, you will be prompted for
+the coding system."
+  (interactive (list (read-file-name "Find file read-only: ")
+		     (and current-prefix-arg
+			  (read-coding-system "Coding system: "))
+		     t))
+  (let ((value (find-file filename codesys wildcards)))
+    (mapc #'(lambda (buffer)
+	      (set-symbol-value-in-buffer 'buffer-read-only t buffer))
+	  (if (listp value) value (list value)))
+    value))
 
-(defun find-file-read-only-other-window (filename &optional codesys)
+(defun find-file-read-only-other-window (filename &optional codesys wildcards)
   "Edit file FILENAME in another window but don't allow changes.
 Like \\[find-file-other-window] but marks buffer as read-only.
 Use \\[toggle-read-only] to permit editing.
-Under XEmacs/Mule, optional second argument specifies the
-coding system to use when decoding the file.  Interactively,
-with a prefix argument, you will be prompted for the coding system."
-  (interactive "fFind file read-only other window: \nZCoding system: ")
-  (if codesys
-      (let ((coding-system-for-read
-	     (get-coding-system codesys)))
-	(find-file-other-window filename))
-    (find-file-other-window filename))
+Optional second argument specifies the coding system to use when decoding
+the file.  Interactively, with a prefix argument, you will be prompted for
+the coding system."
+  (interactive (list (read-file-name "Find file read-only other window: ")
+		     (and current-prefix-arg
+			  (read-coding-system "Coding system: "))
+		     t))
+  (find-file-other-window filename codesys wildcards)
   (setq buffer-read-only t)
   (current-buffer))
 
-(defun find-file-read-only-other-frame (filename &optional codesys)
+(defun find-file-read-only-other-frame (filename &optional codesys wildcards)
   "Edit file FILENAME in another frame but don't allow changes.
 Like \\[find-file-other-frame] but marks buffer as read-only.
 Use \\[toggle-read-only] to permit editing.
-Under XEmacs/Mule, optional second argument specifies the
-coding system to use when decoding the file.  Interactively,
-with a prefix argument, you will be prompted for the coding system."
-  (interactive "fFind file read-only other frame: \nZCoding system: ")
-  (if codesys
-      (let ((coding-system-for-read
-	     (get-coding-system codesys)))
-	(find-file-other-frame filename))
-    (find-file-other-frame filename))
+Optional second argument specifies the coding system to use when decoding
+the file.  Interactively, with a prefix argument, you will be prompted for
+the coding system."
+  (interactive (list (read-file-name "Find file read-only other frame: ")
+		     (and current-prefix-arg
+			  (read-coding-system "Coding system: "))
+		     t))
+  (find-file-other-frame filename codesys wildcards)
   (setq buffer-read-only t)
   (current-buffer))
+;;; End Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
 
 (defun find-alternate-file-other-window (filename &optional codesys)
   "Find file FILENAME as a replacement for the file in the next window.
@@ -932,10 +1079,31 @@ conversion, find-file-hooks, automatic uncompression, etc.
   "Find entry in `find-file-magic-files-alist' that matches FILENAME."
   (find filename find-file-magic-files-alist :key #'car
 	:test #'(lambda (fn predicate)
-                  (and (file-exists-p fn)
-                       (funcall predicate fn)))))
+		  (and (file-exists-p fn)
+		       (funcall predicate fn)))))
 
-(defun find-file-noselect (filename &optional nowarn rawfile)
+;;; Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+(defcustom find-file-wildcards t
+  "*Non-nil means file-visiting commands should handle wildcards.
+For example, if you specify `*.c', that would visit all the files
+whose names match the pattern."
+  :group 'files
+;  :version "20.4"
+  :type 'boolean)
+
+(defcustom find-file-suppress-same-file-warnings nil
+  "*Non-nil means suppress warning messages for symlinked files.
+When nil, Emacs prints a warning when visiting a file that is already
+visited, but with a different name.  Setting this option to t
+suppresses this warning."
+  :group 'files
+;  :version "21.1"
+  :type 'boolean)
+
+;;; FIXME: the #'loop here is generating one of those 'variable G26164
+;;; bound but not referenced' warnings you get from cl loops.  Might
+;;; be able to fix this by using #'mapfam instead. --SY.
+(defun find-file-noselect (filename &optional nowarn rawfile wildcards)
   "Read file FILENAME into a buffer and return the buffer.
 If a buffer exists visiting FILENAME, return that one, but
 verify that the file has not changed since visited or saved.
@@ -943,140 +1111,233 @@ The buffer is not selected, just returned to the caller.
 If NOWARN is non-nil, warning messages will be suppressed.
 If RAWFILE is non-nil, the file is read literally."
   (setq filename (abbreviate-file-name (expand-file-name filename)))
-  ;; Try magic files first
+  ;; SXEmacs addition:: Try magic files first
   (let ((mfa-item (find-file-find-magic filename)))
     (if mfa-item
 	(funcall (cdr mfa-item) filename)
-
-      (let* ((buf (get-file-buffer filename))
-	     (truename (abbreviate-file-name (file-truename filename)))
-	     (number (nthcdr 10 (file-attributes truename)))
+      ;; End SXEmacs magic
+      (if (file-directory-p filename)
+	  (or (and find-file-run-dired
+		   (loop for fn in find-directory-functions
+		     for x = (and (fboundp fn)
+				  (funcall fn
+					   (if find-file-use-truenames
+					       (abbreviate-file-name
+						(file-truename filename))
+					     filename)))
+		     if x
+		     return x))
+	      (error "%s is a directory" filename))
+	(if (and wildcards
+		 find-file-wildcards
+		 (not (string-match "\\`/:" filename))
+		 (string-match "[[*?]" filename))
+	    (let ((files (condition-case nil
+			     (file-expand-wildcards filename t)
+			   (error (list filename))))
+		  (find-file-wildcards nil))
+	      (if (null files)
+		  (find-file-noselect filename)
+		(mapcar #'find-file-noselect files)))
+	  (let* ((buf (get-file-buffer filename))
+		 (truename (abbreviate-file-name (file-truename filename)))
+		 (number (nthcdr 10 (file-attributes truename)))
 ;	   ;; Find any buffer for a file which has same truename.
 ;	   (other (and (not buf) (find-buffer-visiting filename)))
-	     (error nil))
+		 )
 
-;     ;; Let user know if there is a buffer with the same truename.
-;      (if (and (not buf) same-truename (not nowarn))
-;	  (message "%s and %s are the same file (%s)"
-;		   filename (buffer-file-name same-truename)
-;		   truename)
-;	(if (and (not buf) same-number (not nowarn))
-;	  (message "%s and %s are the same file"
-;		   filename (buffer-file-name same-number))))
-;      ;; Optionally also find that buffer.
-;      (if (or find-file-existing-other-name find-file-visit-truename)
-;	  (setq buf (or same-truename same-number)))
+;	;; Let user know if there is a buffer with the same truename.
+;	(if other
+;	    (progn
+;	      (or nowarn
+;		  find-file-suppress-same-file-warnings
+;		  (string-equal filename (buffer-file-name other))
+;		  (message "%s and %s are the same file"
+;			   filename (buffer-file-name other)))
+;	      ;; Optionally also find that buffer.
+;	      (if (or find-file-existing-other-name find-file-visit-truename)
+;		  (setq buf other))))
 
-	(when (and buf
-		   (or find-file-compare-truenames find-file-use-truenames)
-		   (not nowarn))
-	  (save-excursion
-	    (set-buffer buf)
-	    (if (not (string-equal buffer-file-name filename))
-		(message "%s and %s are the same file (%s)"
-			 filename buffer-file-name
-			 buffer-file-truename))))
+	    (when (and buf
+		       (or find-file-compare-truenames find-file-use-truenames)
+		       (not find-file-suppress-same-file-warnings)
+		       (not nowarn))
+	      (save-excursion
+		(set-buffer buf)
+		(if (not (string-equal buffer-file-name filename))
+		    (message "%s and %s are the same file (%s)"
+			     filename buffer-file-name
+			     buffer-file-truename))))
 
-	(if buf
-	    (or nowarn
-		(verify-visited-file-modtime buf)
-		(cond ((not (file-exists-p filename))
-		       (error "File %s no longer exists!" filename))
-		      ;; Certain files should be reverted automatically
-		      ;; if they have changed on disk and not in the buffer.
-		      ((and (not (buffer-modified-p buf))
-			    (dolist (rx revert-without-query nil)
-			      (when (string-match rx filename)
-				(return t))))
-		       (with-current-buffer buf
-			 (message "Reverting file %s..." filename)
-			 (revert-buffer t t)
-			 (message "Reverting file %s... done" filename)))
-		      ((yes-or-no-p
-			(if (string= (file-name-nondirectory filename)
-				     (buffer-name buf))
-			    (format
-			     (if (buffer-modified-p buf)
-				 (gettext "File %s changed on disk.  Discard your edits? ")
-			       (gettext "File %s changed on disk.  Reread from disk? "))
-			     (file-name-nondirectory filename))
-			  (format
-			   (if (buffer-modified-p buf)
-			       (gettext "File %s changed on disk.  Discard your edits in %s? ")
-			     (gettext "File %s changed on disk.  Reread from disk into %s? "))
-			   (file-name-nondirectory filename)
-			   (buffer-name buf))))
-		       (with-current-buffer buf
-			 (revert-buffer t t)))))
-	  ;; Else: we must create a new buffer for filename
-	  (save-excursion
-;;; The truename stuff makes this obsolete.
-;;;	  (let* ((link-name (car (file-attributes filename)))
-;;;		 (linked-buf (and (stringp link-name)
-;;;				  (get-file-buffer link-name))))
-;;;	    (if (bufferp linked-buf)
-;;;		(message "Symbolic link to file in buffer %s"
-;;;			 (buffer-name linked-buf))))
-	    (setq buf (create-file-buffer filename))
-	    ;; Catch various signals, such as QUIT, and kill the buffer
-	    ;; in that case.
-	    (condition-case data
+	    (if buf
 		(progn
-		  (set-buffer-major-mode buf)
-		  (set-buffer buf)
-		  (erase-buffer)
-		  (condition-case ()
-		      (if rawfile
-			  (insert-file-contents-literally filename t)
-			(insert-file-contents filename t))
-		    (file-error
-		     (when (and (file-exists-p filename)
-				(not (file-readable-p filename)))
-		       (signal 'file-error (list "File is not readable" filename)))
-		     (if rawfile
-			 ;; Unconditionally set error
-			 (setq error t)
-		       (or
-			;; Run find-file-not-found-hooks until one returns non-nil.
-			(run-hook-with-args-until-success 'find-file-not-found-hooks)
-			;; If they fail too, set error.
-			(setq error t)))))
-		  ;; Find the file's truename, and maybe use that as visited name.
-		  ;; automatically computed in XEmacs, unless jka-compr was used!
-		  (unless buffer-file-truename
-		    (setq buffer-file-truename truename))
-		  (setq buffer-file-number number)
-		  (and find-file-use-truenames
-		       ;; This should be in C.  Put pathname
-		       ;; abbreviations that have been explicitly
-		       ;; requested back into the pathname.  Most
-		       ;; importantly, strip out automounter /tmp_mnt
-		       ;; directories so that auto-save will work
-		       (setq buffer-file-name (abbreviate-file-name buffer-file-name)))
-		  ;; Set buffer's default directory to that of the file.
-		  (setq default-directory (file-name-directory buffer-file-name))
-		  ;; Turn off backup files for certain file names.  Since
-		  ;; this is a permanent local, the major mode won't eliminate it.
-		  (and (not (funcall backup-enable-predicate buffer-file-name))
-		       (progn
-			 (make-local-variable 'backup-inhibited)
-			 (setq backup-inhibited t)))
-		  (if rawfile
-		      ;; #### FSF 20.3 sets buffer-file-coding-system to
-		      ;; `no-conversion' here.  Should we copy?  It also
-		      ;; makes `find-file-literally' a local variable
-		      ;; and sets it to t.
-		      nil
-		    (after-find-file error (not nowarn))
-		    (setq buf (current-buffer))))
-	      (t
-	       (kill-buffer buf)
-	       (signal (car data) (cdr data))))
-	    ))
-	buf))))
-
-;; FSF has `insert-file-literally' and `find-file-literally' here.
+		  (or nowarn
+		      (verify-visited-file-modtime buf)
+		      (cond ((not (file-exists-p filename))
+			     (error "File %s no longer exists!" filename))
+			    ;; Certain files should be reverted automatically
+			    ;; if they have changed on disk and not in the buffer.
+			    ((and (not (buffer-modified-p buf))
+				  (dolist (rx revert-without-query nil)
+				    (when (string-match rx filename)
+				      (return t))))
+			     (with-current-buffer buf
+			       (message "Reverting file %s..." filename)
+			       (revert-buffer t t)
+			       (message "Reverting file %s... done" filename)))
+			    ((yes-or-no-p
+			      (if (string= (file-name-nondirectory filename)
+					   (buffer-name buf))
+				  (format
+				   (if (buffer-modified-p buf)
+				       (gettext "File %s changed on disk.  Discard your edits? ")
+				     (gettext "File %s changed on disk.  Reread from disk? "))
+				   (file-name-nondirectory filename))
+				(format
+				 (if (buffer-modified-p buf)
+				     (gettext "File %s changed on disk.  Discard your edits in %s? ")
+				   (gettext "File %s changed on disk.  Reread from disk into %s? "))
+				 (file-name-nondirectory filename)
+				 (buffer-name buf))))
+			     (with-current-buffer buf
+			       (revert-buffer t t)))))
+		  (when (not (eq rawfile (not (null find-file-literally))))
+		    (with-current-buffer buf
+		      (if (buffer-modified-p)
+			  (if (y-or-n-p (if rawfile
+					    "Save file and revisit literally? "
+					  "Save file and revisit non-literally? "))
+			      (progn
+				(save-buffer)
+				(find-file-noselect-1 buf filename nowarn
+						      rawfile truename number))
+			    (if (y-or-n-p (if rawfile
+					      "Discard your edits and revisit file literally? "
+					    "Discard your edits and revisit file non-literally? "))
+				(find-file-noselect-1 buf filename nowarn
+						      rawfile truename number)
+			      (error (if rawfile "File already visited non-literally"
+				       "File already visited literally"))))
+			(if (y-or-n-p (if rawfile
+					  "Revisit file literally? "
+					"Revisit file non-literally? "))
+			    (find-file-noselect-1 buf filename nowarn
+						  rawfile truename number)
+			  (error (if rawfile "File already visited non-literally"
+				   "File already visited literally"))))))
+		  ;; Return the buffer we are using.
+		  buf)
+	      ;; Create a new buffer.
+	      (setq buf (create-file-buffer filename))
+	      ;; Catch various signals, such as QUIT, and kill the buffer
+	      ;; in that case.
+	      (condition-case data
+		  (progn
+		    (set-buffer-major-mode buf)
+		    ;; find-file-noselect-1 may use a different buffer.
+		    (find-file-noselect-1 buf filename nowarn
+					  rawfile truename number))
+		(t
+		 (kill-buffer buf)
+		 (signal (car data) (cdr data)))))))))))
 
+(defun find-file-noselect-1 (buf filename nowarn rawfile truename number)
+  (let ((inhibit-read-only t)
+	error)
+    (with-current-buffer buf
+      (kill-local-variable 'find-file-literally)
+      ;; Needed in case we are re-visiting the file with a different
+      ;; text representation.
+      (kill-local-variable 'buffer-file-coding-system)
+      (erase-buffer)
+;       (and (default-value 'enable-multibyte-characters)
+;	   (not rawfile)
+;	   (set-buffer-multibyte t))
+      (condition-case ()
+	  (if rawfile
+	      (insert-file-contents-literally filename t)
+	    (insert-file-contents filename t))
+	(file-error
+	 (when (and (file-exists-p filename)
+		    (not (file-readable-p filename)))
+	   (signal 'file-error (list "File is not readable" filename)))
+	 (if rawfile
+	     ;; Unconditionally set error
+	     (setq error t)
+	   (or
+	    ;; Run find-file-not-found-hooks until one returns non-nil.
+	    (run-hook-with-args-until-success 'find-file-not-found-hooks)
+	    ;; If they fail too, set error.
+	    (setq error t)))))
+      ;; Find the file's truename, and maybe use that as visited name.
+      ;; automatically computed in XEmacs, unless jka-compr was used!
+      (unless buffer-file-truename
+	(setq buffer-file-truename truename))
+      (setq buffer-file-number number)
+      (and find-file-use-truenames
+	   ;; This should be in C.  Put pathname
+	   ;; abbreviations that have been explicitly
+	   ;; requested back into the pathname.  Most
+	   ;; importantly, strip out automounter /tmp_mnt
+	   ;; directories so that auto-save will work
+	   (setq buffer-file-name (abbreviate-file-name buffer-file-name)))
+  ;; Set buffer's default directory to that of the file.
+  (setq default-directory (file-name-directory buffer-file-name))
+  ;; Turn off backup files for certain file names.  Since
+  ;; this is a permanent local, the major mode won't eliminate it.
+  (and (not (funcall backup-enable-predicate buffer-file-name))
+       (progn
+	 (make-local-variable 'backup-inhibited)
+	 (setq backup-inhibited t)))
+  (if rawfile
+      (progn
+	(setq buffer-file-coding-system 'no-conversion)
+	(make-local-variable 'find-file-literally)
+	(setq find-file-literally t))
+    (after-find-file error (not nowarn))
+    (setq buf (current-buffer)))
+  (current-buffer))))
+
+(defun insert-file-literally (filename)
+  "Insert contents of file FILENAME into buffer after point with no conversion.
+
+This function is meant for the user to run interactively.
+Don't call it from programs!  Use `insert-file-contents-literally' instead.
+\(Its calling sequence is different; see its documentation)."
+  (interactive "*fInsert file literally: ")
+  (if (file-directory-p filename)
+      (signal 'file-error (list "Opening input file" "file is a directory"
+				filename)))
+  (let ((tem (insert-file-contents-literally filename)))
+    (push-mark (+ (point) (car (cdr tem))))))
+
+(defvar find-file-literally nil
+  "Non-nil if this buffer was made by `find-file-literally' or equivalent.
+This is a permanent local.")
+(put 'find-file-literally 'permanent-local t)
+
+(defun find-file-literally (filename)
+  "Visit file FILENAME with no conversion of any kind.
+Format conversion and character code conversion are both disabled,
+and multibyte characters are disabled in the resulting buffer.
+The major mode used is Fundamental mode regardless of the file name,
+and local variable specifications in the file are ignored.
+Automatic uncompression and adding a newline at the end of the
+file due to `require-final-newline' is also disabled.
+
+You cannot absolutely rely on this function to result in
+visiting the file literally.  If Emacs already has a buffer
+which is visiting the file, you get the existing buffer,
+regardless of whether it was created literally or not.
+
+In a Lisp program, if you want to be sure of accessing a file's
+contents literally, you should create a temporary buffer and then read
+the file contents into it using `insert-file-contents-literally'."
+  (interactive "FFind file literally: ")
+  (switch-to-buffer (find-file-noselect filename nil t)))
+;;; End Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+
+
 (defvar after-find-file-from-revert-buffer nil)
 
 (defun after-find-file (&optional error warn noauto
@@ -3082,6 +3343,47 @@ by `sh' are supported."
   :type 'string
   :group 'dired)
 
+;;; Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+(defun file-expand-wildcards (pattern &optional full)
+  "Expand wildcard pattern PATTERN.
+This returns a list of file names which match the pattern.
+
+If PATTERN is written as an absolute relative file name,
+the values are absolute also.
+
+If PATTERN is written as a relative file name, it is interpreted
+relative to the current default directory, `default-directory'.
+The file names returned are normally also relative to the current
+default directory.  However, if FULL is non-nil, they are absolute."
+  (let* ((nondir (file-name-nondirectory pattern))
+	 (dirpart (file-name-directory pattern))
+	 ;; A list of all dirs that DIRPART specifies.
+	 ;; This can be more than one dir
+	 ;; if DIRPART contains wildcards.
+	 (dirs (if (and dirpart (string-match "[[*?]" dirpart))
+		   (mapcar 'file-name-as-directory
+			   (file-expand-wildcards (directory-file-name dirpart)))
+		 (list dirpart)))
+	 contents)
+    (while dirs
+      (when (or (null (car dirs))	; Possible if DIRPART is not wild.
+		(file-directory-p (directory-file-name (car dirs))))
+	(let ((this-dir-contents
+	       ;; Filter out "." and ".."
+	       (nset-difference (directory-files (or (car dirs) ".") full
+						 (wildcard-to-regexp nondir))
+				'("." "..") :test #'equal)))
+	  (setq contents
+		(nconc
+		 (if (and (car dirs) (not full))
+		     (mapcar (function (lambda (name) (concat (car dirs) name)))
+			     this-dir-contents)
+		   this-dir-contents)
+		 contents))))
+      (setq dirs (cdr dirs)))
+    contents))
+;;; End Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+
 (defun list-directory (dirname &optional verbose)
   "Display a list of files in or matching DIRNAME, a la `ls'.
 DIRNAME is globbed by the shell if necessary.
@@ -3107,6 +3409,53 @@ and `list-directory-verbose-switches'."
 	(setq default-directory (file-name-directory dirname))
 	(let ((wildcard (not (file-directory-p dirname))))
 	  (insert-directory dirname switches wildcard (not wildcard)))))))
+
+;;; Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
+(defun shell-quote-wildcard-pattern (pattern)
+  "Quote characters special to the shell in PATTERN, leave wildcards alone.
+
+PATTERN is assumed to represent a file-name wildcard suitable for the
+underlying filesystem.  For Unix and GNU/Linux, the characters from the
+set [ \\t\\n;<>&|()#$] are quoted with a backslash; for DOS/Windows, all
+the parts of the pattern which don't include wildcard characters are
+quoted with double quotes.
+Existing quote characters in PATTERN are left alone, so you can pass
+PATTERN that already quotes some of the special characters."
+  (save-match-data
+    (cond
+     ((memq system-type '(ms-dos windows-nt))
+      ;; DOS/Windows don't allow `"' in file names.  So if the
+      ;; argument has quotes, we can safely assume it is already
+      ;; quoted by the caller.
+      (if (or (string-match "[\"]" pattern)
+	      ;; We quote [&()#$'] in case their shell is a port of a
+	      ;; Unixy shell.  We quote [,=+] because stock DOS and
+	      ;; Windows shells require that in some cases, such as
+	      ;; passing arguments to batch files that use positional
+	      ;; arguments like %1.
+	      (not (string-match "[ \t;&()#$',=+]" pattern)))
+	  pattern
+	(let ((result "\"")
+	      (beg 0)
+	      end)
+	  (while (string-match "[*?]+" pattern beg)
+	    (setq end (match-beginning 0)
+		  result (concat result (substring pattern beg end)
+				 "\""
+				 (substring pattern end (match-end 0))
+				 "\"")
+		  beg (match-end 0)))
+	  (concat result (substring pattern beg) "\""))))
+     (t
+      (let ((beg 0))
+	(while (string-match "[ \t\n;<>&|()#$]" pattern beg)
+	  (setq pattern
+		(concat (substring pattern 0 (match-beginning 0))
+			"\\"
+			(substring pattern (match-beginning 0)))
+		beg (1+ (match-end 0)))))
+      pattern))))
+;;; End Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
 
 (defvar insert-directory-program "ls"
   "Absolute or relative name of the `ls' program used by `insert-directory'.")
