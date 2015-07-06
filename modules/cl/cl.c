@@ -59,7 +59,11 @@ PROVIDE(cl);
 
 /* ###autoload */
 DEFUN("cl:pop", Fcl_pop, 1, UNEVALLED, 0, /*
-*/
+(pop PLACE): remove and return the head of the list stored in PLACE.
+Analogous to (prog1 (car PLACE) (setf PLACE (cdr PLACE))), though more
+careful about evaluating each argument only once and in the right order.
+PLACE may be a symbol, or any generalized variable allowed by `setf'.
+					  */
       (args))
 {
 	/* This function can GC */
@@ -84,7 +88,13 @@ DEFUN("cl:pop", Fcl_pop, 1, UNEVALLED, 0, /*
 
 /* ###autoload */
 DEFUN("cl:push", Fcl_push, 2, UNEVALLED, 0, /*
-*/
+(push X PLACE): insert X at the head of the list stored in PLACE.
+Analogous to (setf PLACE (cons X PLACE)), though more careful about
+evaluating each argument only once and in the right order.  PLACE may
+be a symbol, or any generalized variable allowed by `setf'; that is,
+it does not necessarily have to be a list, though `push' is most often
+used on lists.
+					    */
       (args))
 {
 	/* This function can GC */
@@ -108,7 +118,11 @@ DEFUN("cl:push", Fcl_push, 2, UNEVALLED, 0, /*
 
 /* ###autoload */
 DEFUN("cl:pushnew", Fcl_pushnew, 2, UNEVALLED, 0, /*
-*/
+(pushnew X PLACE): insert X at the head of the list stored in PLACE.
+Like (push X PLACE), except that the list is unmodified if X is `eql'
+to an element already on the list.
+Keywords supported: :test :test-not :key
+						  */
       (args))
 {
 	/* This function can GC */
@@ -142,7 +156,9 @@ int emodcl_eql(Lisp_Object a, Lisp_Object b)
 
 /* ###autoload */
 DEFUN("cl:eql", Fcl_eql, 2, 2, 0, /*
-*/
+Return t if the two args are the same Lisp object.
+Floating-point numbers of equal value are `eql', but they may not be `eq'.
+				  */
       (a, b))
 {
 	if (EMOD_CL_EQL(a, b))
@@ -153,7 +169,10 @@ DEFUN("cl:eql", Fcl_eql, 2, 2, 0, /*
 
 /* ###autoload */
 DEFUN("cl:list*", Fcl_list_, 1, MANY, 0, /*
-*/
+Return a new list with specified args as elements, cons'd to last arg.
+Thus, `(list* A B C D)' is equivalent to `(nconc (list A B C) D)', or to
+`(cons A (cons B (cons C D)))'.
+					 */
       (int nargs, Lisp_Object *args))
 {
 	if (nargs == 1)
@@ -169,7 +188,8 @@ DEFUN("cl:list*", Fcl_list_, 1, MANY, 0, /*
 
 /* ###autoload */
 DEFUN("cl:tailp", Fcl_tailp, 2, 2, 0, /*
-*/
+Return true if SUBLIST is a tail of LIST.
+				      */
       (list, object))
 {
 	Lisp_Object trav1 = Qnil, trav2 = Qnil;
@@ -209,7 +229,8 @@ DEFUN("cl:tailp", Fcl_tailp, 2, 2, 0, /*
 
 /* ###autoload */
 DEFUN("cl:ldiff", Fcl_ldiff, 2, 2, 0, /*
-*/
+Return a copy of LIST with the tail SUBLIST removed.
+				      */
       (list, object))
 {
 	Lisp_Object result = Qnil, tmp1 = Qnil, tmp2 = Qnil;
