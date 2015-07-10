@@ -1853,7 +1853,7 @@ void
 autodetect_real_coding_system(lstream_t stream, Lisp_Object * codesys_in_out,
 			     eol_type_t * eol_type_in_out)
 {
-	static const char mime_name_valid_chars[] = 
+	static const char mime_name_valid_chars[] =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789"
@@ -1932,7 +1932,7 @@ autodetect_real_coding_system(lstream_t stream, Lisp_Object * codesys_in_out,
 				while (*p == ' ' || *p == '\t') {
 					p++;
 				}
-					
+
 				/* Get coding system name */
 				save = *suffix;
 				*suffix = '\0';
@@ -1949,6 +1949,42 @@ autodetect_real_coding_system(lstream_t stream, Lisp_Object * codesys_in_out,
 					p[n] = save;
 				}
 				break;
+			}
+			/* Try " coding:" */
+			if (NILP(coding_system)) {
+				for (p = local_vars_beg, scan_end = suffix - LENGTH(" coding:?");
+				     p <= scan_end; p++) {
+					Extbyte save;
+					int n;
+
+					if (memcmp(" coding:", p, LENGTH(" coding:")) != 0) {
+						continue;
+					}
+					if (p != local_vars_beg && strchr(" \t;", *p) == NULL ) {
+						continue;
+					}
+					p += LENGTH(" coding:");
+					while (*p == ' ' || *p == '\t') {
+						p++;
+					}
+
+					/* Get coding system name */
+					save = *suffix;
+					*suffix = '\0';
+					/* Characters valid in a MIME charset
+					   name (rfc 1521), and in a Lisp
+					   symbol name. */
+					n = strspn((char *)p, mime_name_valid_chars);
+					*suffix = save;
+					if (n > 0) {
+						save = p[n];
+						p[n] = '\0';
+						coding_system = Ffind_coding_system(
+							intern((char *)p));
+						p[n] = save;
+					}
+					break;
+				}
 			}
 			break;
 		}
