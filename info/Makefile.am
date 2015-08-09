@@ -25,6 +25,11 @@
 LANG=C
 LC_ALL=C
 
+builddir = @builddir@
+srcdir = @srcdir@
+
+SUBDIRS=
+
 info_TEXINFOS =
 info_TEXINFOS += cl.texi
 info_TEXINFOS += custom.texi
