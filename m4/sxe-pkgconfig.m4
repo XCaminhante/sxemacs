@@ -59,6 +59,29 @@ AC_DEFUN([SXE_CHECK_PKGCONFIG], [dnl
 		])
 ])dnl SXE_CHECK_PKGCONFIG
 
+AC_DEFUN([SXE_PC_CHECK_EXISTS], [dnl
+	## arg1 is the module
+	## defines sxe_cv_pc_<$1>_exists
+	pushdef([mod], [$1])
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
+	pushdef([existsvar], [sxe_cv_pc_]shmod[_exists])
+
+	AC_REQUIRE([SXE_CHECK_PKGCONFIG])
+	SXE_MSG_CHECKING([whether pkg-config for ]mod[ exists ])
+	if $PKG_CONFIG --exists []mod[]; then
+		existsvar[]="yes"
+	else
+		existsvar[]="no"
+	fi
+	SXE_MSG_RESULT([$]existsvar[])
+
+	popdef([existsvar])
+	popdef([shmod])
+	popdef([MOD])
+	popdef([mod])
+])dnl SXE_PC_CHECK_EXISTS
+
 AC_DEFUN([SXE_PC_CHECK_VERSION_ATLEAST], [dnl
 	## arg1 is the module
 	## arg2 is the version we want to see
