@@ -3021,6 +3021,17 @@ fi
 ## Since almost any of the below tests uses pkgconfig we make a
 ## once-for-all-times check now
 SXE_SEARCH_CONFIG_PROG([pkg-config])
+if test "$have_pkg_config" = "yes" -a -n "$with_site_prefixes"; then
+	for dir in $with_site_prefixes; do
+		pkgcfg_dir="${dir}/lib/pkgconfig"
+		if test -n "$PKG_CONFIG_PATH"; then
+		   PKG_CONFIG_PATH="$PKG_CONFIG_PATH":"$pkgcfg_dir"
+		else
+		   PKG_CONFIG_PATH="$pkgcfg_dir"
+		fi
+	done
+	export PKG_CONFIG_PATH
+fi
 
 dnl libsndfile support
 if test "$with_media_sndfile" != "no"; then
