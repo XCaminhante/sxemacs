@@ -96,10 +96,32 @@ AC_DEFUN([SXE_CHECK_LZMA], [dnl
 
 	AC_CHECK_HEADERS([lzma.h])
 
-	SXE_PC_CHECK_VERSION_ATLEAST([lzma], [4.999])
-	SXE_PC_CHECK_CPPFLAGS([lzma])
-	SXE_PC_CHECK_LDFLAGS([lzma])
-	SXE_PC_CHECK_LIBS([lzma])
+	SXE_PC_CHECK_EXISTS([lzma])
+	if test "$sxe_cv_pc_lzma_exists" = "yes"; then
+	    SXE_PC_CHECK_VERSION_ATLEAST([lzma], [4.999])
+	    SXE_PC_CHECK_CPPFLAGS([lzma])
+	    SXE_PC_CHECK_LDFLAGS([lzma])
+	    SXE_PC_CHECK_LIBS([lzma])
+	else
+	    SXE_PC_CHECK_EXISTS([liblzma])
+	    sxe_cv_pc_lzma_exists="$sxe_cv_pc_liblzma_exists"
+
+	    if test "$sxe_cv_pc_liblzma_exists" = "yes"; then
+	        SXE_PC_CHECK_VERSION_ATLEAST([liblzma], [4.999])
+	        sxe_cv_pc_lzma_recent_enough_p="$sxe_cv_pc_liblzma_recent_enough_p"
+	        SXE_PC_CHECK_CPPFLAGS([liblzma])
+	        SXE_PC_CHECK_LDFLAGS([liblzma])
+	        SXE_PC_CHECK_LIBS([liblzma])
+
+	        LZMA_CPPFLAGS=$LIBLZMA_CPPFLAGS
+	        LZMA_LDFLAGS=$LIBLZMA_LDFLAGS
+	        LZMA_LIBS=$LIBLZMA_LIBS
+
+	        AC_SUBST([LZMA_CPPFLAGS])
+	        AC_SUBST([LZMA_LDFLAGS])
+	        AC_SUBST([LZMA_LIBS])
+            fi
+        fi
 
 	SXE_MSG_CHECKING([for lzma support])
 	if test "$ac_cv_header_lzma_h" = "yes" -a \
@@ -110,11 +132,8 @@ AC_DEFUN([SXE_CHECK_LZMA], [dnl
 	else
 		sxe_cv_feat_lzma="no"
 	fi
-	SXE_MSG_RESULT([$sxe_cv_feat_lzma])
 
-	AC_SUBST([LZMA_CPPFLAGS])
-	AC_SUBST([LZMA_LDFLAGS])
-	AC_SUBST([LZMA_LIBS])
+	SXE_MSG_RESULT([$sxe_cv_feat_lzma])
 
 	AM_CONDITIONAL([HAVE_LZMA], [test "$sxe_cv_feat_lzma" = "yes"])
 
