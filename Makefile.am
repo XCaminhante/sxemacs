@@ -55,6 +55,8 @@ sxe_subdirs += lib-src
 if DESCEND_MODULES
 sxe_subdirs += modules
 endif
+## Note that src and lisp are traversed twice on purpose
+## for use of the proper dumped emacs for the autoloads and tests
 sxe_subdirs += src lisp src lisp info etc tests
 
 SUBDIRS =
