@@ -55,7 +55,7 @@ sxe_subdirs += lib-src
 if DESCEND_MODULES
 sxe_subdirs += modules
 endif
-sxe_subdirs += src lisp info etc tests
+sxe_subdirs += src lisp src lisp info etc tests
 
 SUBDIRS =
 SUBDIRS += $(sxe_subdirs)
