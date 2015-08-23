@@ -59,6 +59,29 @@ AC_DEFUN([SXE_CHECK_PKGCONFIG], [dnl
 		])
 ])dnl SXE_CHECK_PKGCONFIG
 
+AC_DEFUN([SXE_PC_CHECK_EXISTS], [dnl
+	## arg1 is the module
+	## defines sxe_cv_pc_<$1>_exists
+	pushdef([mod], [$1])
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
+	pushdef([existsvar], [sxe_cv_pc_]shmod[_exists])
+
+	AC_REQUIRE([SXE_CHECK_PKGCONFIG])
+	SXE_MSG_CHECKING([whether pkg-config for ]mod[ exists ])
+	if $PKG_CONFIG --exists []mod[]; then
+		existsvar[]="yes"
+	else
+		existsvar[]="no"
+	fi
+	SXE_MSG_RESULT([$]existsvar[])
+
+	popdef([existsvar])
+	popdef([shmod])
+	popdef([MOD])
+	popdef([mod])
+])dnl SXE_PC_CHECK_EXISTS
+
 AC_DEFUN([SXE_PC_CHECK_VERSION_ATLEAST], [dnl
 	## arg1 is the module
 	## arg2 is the version we want to see
@@ -66,8 +89,8 @@ AC_DEFUN([SXE_PC_CHECK_VERSION_ATLEAST], [dnl
 	## sxe_cv_pc_<$1>_recent_enough_p
 	pushdef([mod], [$1])
 	pushdef([ver], [$2])
-	pushdef([shmod], translit([mod], [+-.], [___]))
-	pushdef([MOD], translit([shmod], [a-z], [A-Z]))
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
 	pushdef([vervar], [sxe_cv_pc_]shmod[_version])
 	pushdef([verrecp], [sxe_cv_pc_]shmod[_recent_enough_p])
 
@@ -82,10 +105,10 @@ AC_DEFUN([SXE_PC_CHECK_VERSION_ATLEAST], [dnl
 
 	SXE_MSG_CHECKING([for ]mod['s actual version])
 	vervar[]=$($PKG_CONFIG --modversion []mod[])
-	MOD[_VERSION]=[$]vervar[]
+	[]MOD[]_VERSION=[$]vervar[]
 	SXE_MSG_RESULT([$]vervar[])
 
-	AC_SUBST(MOD[_VERSION])
+	AC_SUBST([]MOD[]_VERSION)
 
 	popdef([verrecp])
 	popdef([vervar])
@@ -102,8 +125,8 @@ AC_DEFUN([SXE_PC_CHECK_VERSION_ATMOST], [dnl
 	## sxe_cv_pc_<$1>_recent_enough_p
 	pushdef([mod], [$1])
 	pushdef([ver], [$2])
-	pushdef([shmod], translit([mod], [+-.], [___]))
-	pushdef([MOD], translit([shmod], [a-z], [A-Z]))
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
 	pushdef([vervar], [sxe_cv_pc_]shmod[_version])
 	pushdef([veroldp], [sxe_cv_pc_]shmod[_old_enough_p])
 
@@ -118,10 +141,10 @@ AC_DEFUN([SXE_PC_CHECK_VERSION_ATMOST], [dnl
 
 	SXE_MSG_CHECKING([for ]mod['s actual version])
 	vervar[]=$($PKG_CONFIG --modversion []mod[])
-	MOD[_VERSION]=[$]vervar[]
+	[]MOD[]_VERSION=[$]vervar[]
 	SXE_MSG_RESULT([$]vervar[])
 
-	AC_SUBST(MOD[_VERSION])
+	AC_SUBST([]MOD[]_VERSION)
 
 	popdef([verrecp])
 	popdef([vervar])
@@ -135,17 +158,17 @@ AC_DEFUN([SXE_PC_CHECK_VERSION], [dnl
 	## arg1 is the module
 	## defines sxe_cv_pc_<$1>_version
 	pushdef([mod], [$1])
-	pushdef([shmod], translit([mod], [+-.], [___]))
-	pushdef([MOD], translit([shmod], [a-z], [A-Z]))
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
 	pushdef([vervar], [sxe_cv_pc_]shmod[_version])
 
 	AC_REQUIRE([SXE_CHECK_PKGCONFIG])
 	SXE_MSG_CHECKING([for ]mod[ version])
 	vervar[]=$($PKG_CONFIG --modversion []mod[])
-	MOD[_VERSION]=[$]vervar[]
+	[]MOD[]_VERSION=[$]vervar[]
 	SXE_MSG_RESULT([$]vervar[])
 
-	AC_SUBST(MOD[_VERSION])
+	AC_SUBST([]MOD[]_VERSION)
 
 	popdef([vervar])
 	popdef([shmod])
@@ -157,17 +180,17 @@ AC_DEFUN([SXE_PC_CHECK_LIBS], [dnl
 	## arg1 is the module
 	## defines sxe_cv_pc_<$1>_libs
 	pushdef([mod], [$1])
-	pushdef([shmod], translit([mod], [+-.], [___]))
-	pushdef([MOD], translit([shmod], [a-z], [A-Z]))
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
 	pushdef([libvar], [sxe_cv_pc_]shmod[_libs])
 
 	AC_REQUIRE([SXE_CHECK_PKGCONFIG])
 	SXE_MSG_CHECKING([for ]mod[ libraries])
 	libvar[]=$($PKG_CONFIG --libs-only-l []mod[])
-	MOD[_LIBS]=[$]libvar[]
+	[]MOD[]_LIBS=[$]libvar[]
 	SXE_MSG_RESULT([$]libvar[])
 
-	AC_SUBST(MOD[_LIBS])
+	AC_SUBST([]MOD[]_LIBS)
 
 	popdef([libvar])
 	popdef([shmod])
@@ -179,17 +202,17 @@ AC_DEFUN([SXE_PC_CHECK_LDFLAGS], [dnl
 	## arg1 is the module
 	## defines sxe_cv_pc_<$1>_ldflags
 	pushdef([mod], [$1])
-	pushdef([shmod], translit([mod], [+-.], [___]))
-	pushdef([MOD], translit([shmod], [a-z], [A-Z]))
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
 	pushdef([ldfvar], [sxe_cv_pc_]shmod[_ldflags])
 
 	AC_REQUIRE([SXE_CHECK_PKGCONFIG])
 	SXE_MSG_CHECKING([for ]mod[ ldflags])
 	ldfvar[]=$($PKG_CONFIG --libs-only-L []mod[])
-	MOD[_LDFLAGS]=[$]ldfvar[]
+	[]MOD[]_LDFLAGS=[$]ldfvar[]
 	SXE_MSG_RESULT([$]ldfvar[])
 
-	AC_SUBST(MOD[_LDFLAGS])
+	AC_SUBST([]MOD[]_LDFLAGS)
 
 	popdef([ldfvar])
 	popdef([shmod])
@@ -201,17 +224,17 @@ AC_DEFUN([SXE_PC_CHECK_CPPFLAGS], [dnl
 	## arg1 is the module
 	## defines sxe_cv_pc_<$1>_cppflags
 	pushdef([mod], [$1])
-	pushdef([shmod], translit([mod], [+-.], [___]))
-	pushdef([MOD], translit([shmod], [a-z], [A-Z]))
+	pushdef([shmod], translit([]mod[], [+-.], [___]))
+	pushdef([MOD], translit([]shmod[], [a-z], [A-Z]))
 	pushdef([cfvar], [sxe_cv_pc_]shmod[_cppflags])
 
 	AC_REQUIRE([SXE_CHECK_PKGCONFIG])
 	SXE_MSG_CHECKING([for ]mod[ cppflags])
 	cfvar[]=$($PKG_CONFIG --cflags []mod[])
-	MOD[_CPPFLAGS]=[$]cfvar[]
+	[]MOD[]_CPPFLAGS=[$]cfvar[]
 	SXE_MSG_RESULT([$]cfvar[])
 
-	AC_SUBST(MOD[_CPPFLAGS])
+	AC_SUBST([]MOD[]_CPPFLAGS)
 
 	popdef([cfvar])
 	popdef([shmod])
