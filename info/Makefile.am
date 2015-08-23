@@ -30,6 +30,20 @@ srcdir = @srcdir@
 
 SUBDIRS=
 
+CLEANFILES =
+CLEANFILES += cl.info
+CLEANFILES += custom.info
+CLEANFILES += emodules.info
+CLEANFILES += external-widget.info
+CLEANFILES += internals/internals.info
+CLEANFILES += lispref/lispref.info
+CLEANFILES += new-users-guide/new-users-guide.info
+CLEANFILES += sppm.info
+CLEANFILES += sxemacs-faq.info
+CLEANFILES += sxemacs/sxemacs.info
+CLEANFILES += term.info
+CLEANFILES += widget.info
+
 info_TEXINFOS =
 info_TEXINFOS += cl.texi
 info_TEXINFOS += custom.texi
