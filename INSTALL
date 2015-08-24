@@ -1,5 +1,17 @@
 SXEmacs Installation Guide
-Copyright (C) 2005 - 2012 Steve Youngs
+Copyright (C) 2005 - 2015 Steve Youngs
+
+
+,----[ In-Tree Builds Lead To Madness ]
+| Please note that because of the complexity of SXEmacs and its build
+| chain, we do not support building from within the source tree itself.
+|
+| So please, ALWAYS run `configure' and `make' from a separate directory,
+| completely outside of the source tree.
+|
+| In the code examples below, "${SRCTREE}" refers to the path where
+| you wish to build SXEmacs.
+`----
 
 
 Building from tarball release: 
@@ -11,7 +23,7 @@ In a nutshell:
 See ./configure --help for a description of all possible options,
 then
 
-  $ ./configure [options]
+  $ ${SRCTREE}/configure [options]
   $ make
   $ make check
   $ make install
@@ -37,7 +49,7 @@ Please note that SXEmacs _CANNOT_ be built with a C++ compiler.
 
 Also, some configuration options may need external libraries that are
 not shipped with SXEmacs.  SXEmacs will determine which libraries it
-needs at configuration time (when you run `./configure').
+needs at configuration time (when you run `${SRCTREE}/configure').
 
 If configure can't find a particular library and you _do_ have it
 installed, you can usually get configure to find it by adding to the
@@ -132,17 +144,17 @@ install them and incorporate them into SXEmacs.
   If the optional libraries are in a non-standard location, use
   --with-site-prefixes option of configure. Ex:
 
-	./configure --with-site-prefixes=/opt/local
+	${SRCTREE}/configure --with-site-prefixes=/opt/local
 
   You can specify a list of paths with --with-site-prefixes:
 
-  	./configure --with-site-prefixes=/opt/local:/sw
+  	${SRCTREE}/configure --with-site-prefixes=/opt/local:/sw
 
   NOTE: Usage of --prefix does NOT imply that it is added to
   site prefixes, so if you may need to add --with-site-prefixes
   even with --prefix:
 	
-	./configure --prefix=/opt/local --with-site-prefixes=/opt/local
+	${SRCTREE}/configure --prefix=/opt/local --with-site-prefixes=/opt/local
 
 
 
@@ -359,14 +371,16 @@ tell you in much greater detail what they need and how you can get the
 files and information you need.
 
 
-Building from git source:
-------------------------
+Building from git source: 
+------------------------ 
 This is identical to building from the tarball sources, with the
 addition of an extra step, and some extra requirements (that are most
-likely already on your system).
+likely already on your system).  Remember that "in-tree" builds are
+not supported, so configure and make from a directory outside the
+tree.
 
   $ ./autogen.sh
-  $ ./configure [options]
+  $ ${SRCTREE}/configure [options]
   $ make
   $ make check
   $ make install
@@ -381,7 +395,7 @@ You need at least...
 
   automake 1.9.4
   autoconf 2.60
-  texinfo 4.8
+  texinfo 5.2 (preferably 6.0)
 
 Warnings from autogen.sh:
 ------------------------

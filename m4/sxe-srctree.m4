@@ -51,6 +51,9 @@ AC_DEFUN([SXE_CHECK_SRCDIR_HEALTH], [dnl
 		-f "$sxe_blddir/sxemacs_version.m4"; then
 		AC_MSG_RESULT([yes])
 		srcdir_equals_blddir_p=yes
+		AC_MSG_ERROR([Building "in-tree" is not supported]
+		    [Please create a new directory completely outside of the]
+		    [source tree, and run $progbasename from there.])
 	else
 		AC_MSG_RESULT([no. Good Boy!])
 		srcdir_equals_blddir_p=no
