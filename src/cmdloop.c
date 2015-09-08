@@ -276,7 +276,10 @@ DOESNT_RETURN initial_command_loop(Lisp_Object load_me)
 	if (!noninteractive &&
 	    (!CONSOLEP(Vselected_console) ||
 	     CONSOLE_STREAM_P(XCONSOLE(Vselected_console)))) {
-		fprintf(stderr, "ni:%d CONSP(Vsel):%d  CONSSTRP(XCONS(...)):%d\n",
+		fprintf(stderr,
+                        "\nFATAL error starting up initial console\n  "
+                        "noninteractive:%d CONSP(Vselected_console):%d "
+                        "CONSOLE_STREAM_P(XCONSOLE(...)):%d",
 			noninteractive,
 			CONSOLEP(Vselected_console),
 			CONSOLE_STREAM_P(XCONSOLE(Vselected_console)));
