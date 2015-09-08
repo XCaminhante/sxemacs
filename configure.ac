@@ -560,6 +560,11 @@ OG_ARG_WITH([terminfo],
 		[Use the terminfo library for tty support.]),
 	[auto], [Autodetect])
 
+OG_ARG_WITH([tinfo],
+	AS_HELP_STRING([--with-tinfo],
+		[Use the ncurses tinfo library for tty support.]),
+	[auto], [Autodetect])
+
 OG_ARG_WITH([termlib],
 	AS_HELP_STRING([--with-termlib],
 		[Use the termlib library for tty support.]),
