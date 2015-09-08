@@ -25,6 +25,7 @@
 LANG=C
 LC_ALL=C
 
+AUTOMAKE_OPTIONS = info-in-builddir
 builddir = @builddir@
 srcdir = @srcdir@
 
