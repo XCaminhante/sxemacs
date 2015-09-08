@@ -770,6 +770,10 @@ ulimit -c 0
 ## initialise our nestable msg funs
 SXE_INIT_MSG_LEVEL
 
+AC_PROG_SED
+
+ECHO=echo
+
 dnl Small snippet to make echo -n work on solaris
 ECHO_N= ECHO_C=
 case `echo -n x` in
