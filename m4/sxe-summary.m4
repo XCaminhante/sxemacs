@@ -206,11 +206,18 @@ esac
 
 echo "
 TTY:"
-test "$with_ncurses" = yes && echo "  Compiling in support for ncurses."
-test "$with_curses" = yes && echo "  Compiling in support for curses."
-test "$with_terminfo" = yes && echo "  Compiling in support for terminfo ."
-test "$with_termlib" = yes && echo "  Compiling in support for termlib."
-test "$with_termcap" = yes && echo "  Compiling in support for termcap."
+test "$with_ncurses" = yes     && echo "  Compiling in support for ncurses."
+test "$with_curses" = yes      && echo "  Compiling in support for curses."
+test "$with_tinfo" = yes       && echo "  Compiling in support for tinfo."
+test "$with_terminfo" = yes    && echo "  Compiling in support for terminfo."
+test "$with_termlib" = yes     && echo "  WARNING! Compiling in support for termlib."  \
+                               && echo "  Consider installing ncurses."
+test "$with_termcap" = yes     && echo "  WARNING! Compiling in support for termcap."  \
+                               && echo "  Consider installing ncurses."                \
+                               && echo "  You may need to set TERMCAP or have the file /etc/termcap."
+test "$with_builtin_tty" = yes && echo "  WARNING! Using (brittle) builtin TTY." \
+                               && echo "  Consider installing ncurses."          \
+                               && echo "  You WILL need to set TERMCAP or have the file /etc/termcap."
 test "$with_gpm" = yes && echo "  Compiling in support for GPM (General Purpose Mouse)."
 
 echo "
