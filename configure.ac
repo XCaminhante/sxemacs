@@ -575,6 +575,13 @@ OG_ARG_WITH([termcap],
 		[Use the termcap library for tty support.]),
 	[auto], [Autodetect])
 
+OG_ARG_WITH([builtin-tty],
+	AS_HELP_STRING([--with-builtin-tty],
+		[Use builtin termcap like code. LEGACY CODE. Please consider
+		installing ncurses. Requires /etc/termcap or TERMCAP
+	        environment variable to work.]),
+	[no], [No])
+
 
 OG_ARG_WITH([gpm],
 	AS_HELP_STRING([--with-gpm],
