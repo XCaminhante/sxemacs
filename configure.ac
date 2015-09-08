@@ -2733,144 +2733,227 @@ AC_CHECK_HEADERS([libintl.h nlist.h sgtty.h termio.h termios.h])
 AS_IF([test "$with_tty" != "no"],[
    AS_MESSAGE(checking for TTY-related features)
    dnl Check if needed calls are available at all...
-   tty_libs="ncurses curses terminfo termlib termcap"
-   tty_funcs="tgetent tgetstr tgetflag tparm tgoto tputs"
-   for func in $tty_funcs; do
-       AC_SEARCH_LIBS($func,$tty_libs)
+   
+   with_tty_libs=""
+   detect_tty_libs=""
+   for lib in ncurses curses tinfo terminfo termlib termcap
+   do
+       eval "with=\$with_${lib}"
+       if test "$with" = no
+       then
+          AC_MSG_WARN(["Ignoring available ${lib} due to --with-${lib}=no"])
+       elif test "$with" = "yes"
+       then
+          with_tty_libs="$with_tty_libs $lib"
+       else
+          detect_tty_libs="$detect_tty_libs $lib"
+       fi
    done
-   AS_IF([test "$ac_cv_search_tgetent"  = "no" -a \
-   	       "$ac_cv_search_tgetflag" = "no" -a \
-	       "$ac_cv_search_tgetstr"  = "no" -a \
-	       "$ac_cv_search_tgoto"    = "no" -a \
-	       "$ac_cv_search_tparm"    = "no" -a \
-	       "$ac_cv_search_tputs"    = "no" ], 
-	       	   have_tty=no)
-   AS_IF([test "$with_tty" = "yes" -a "$have_tty" = "no" ],[
-      AC_MSG_ERROR([Your system lacks necessary functions for requested TTY support])])
-],[
-  for feature in ncurses curses termcap terminfo termlib gpm; do
-    if eval "test -n \"\$with_${feature}\" -a \"\$with_${feature}\" != no" ; then
-      AC_MSG_WARN([--with-${feature} ignored:  Not valid without TTY support])
-    fi
-    eval "with_${feature}=no"
-  done
-])
 
-AS_IF([test "$with_tty" != "no" -a "$have_tty" != "no" ],[
-   for lib in $tty_libs; do 
-      SXE_CHECK_LINK_LIB($lib, , eval have_${lib}=no)
-      with_lib_eval=`eval echo \\$with_$lib`
-      have_lib_eval=`eval echo \\$have_$lib`
-      AS_IF([test "$have_lib_eval" = "yes" ], [
-      	 for func in $tty_funcs; do
-      	     AC_CHECK_LIB($lib, tgetent)
-	     AC_CHECK_LIB($lib, tgetstr)
-	     AC_CHECK_LIB($lib, tgetflags)
-	     AC_CHECK_LIB($lib, tparm)
-	     AC_CHECK_LIB($lib, tgoto)
-	     AC_CHECK_LIB($lib, tputs)
-	 done
-      ])
-      have_lib_eval=`eval echo \\$have_$lib`
-      AS_IF([test "$with_lib_eval" = "yes" -a \
-      		  "$have_lib_eval" = "no" ],
-	AC_MSG_WARN([Errors detected trying to use requested $lib. Continuing with autodetection.]))
+   # All terminal info functions needed
+   tty_funcs="tgetent tgetstr tgetflag tgetnum tparm tgoto tputs"
+   tty_libs=""
+   # Filter by existing libs, printf is sure to be available with libc, so failure
+   # would come from lib not find
+   for lib in $with_tty_libs $detect_tty_libs
+   do
+       SXE_CHECK_LINK_LIB($lib)
+       if eval "test \"\$sxe_cv_c_lib_${lib}\" != yes"
+       then
+	  if eval "test \"\$with_${lib}\" = yes"
+	  then
+	     AC_MSG_WARN(["Ignoring --with-${lib}=yes due to library not linkable"])
+	     eval "with_${lib}=no"
+	  fi
+          continue
+       fi
+
+       AC_CHECK_LIB([$lib], [$tty_funcs])
+
+       # Lets verify we have all functions
+       for func in $tty_func
+       do
+           if eval "test \"\$ac_cv_lib_${lib}_${func}\" = no"
+	   then
+              AS_MESSAGE(["Skipping ${lib}, does not support to all TTY functions"])
+              lib=""
+	      break
+	   fi
+       done
+
+       tty_libs="$tty_libs $lib"
    done
-   AS_IF([test "$sxe_cv_c_lib_ncurses"  = "no" -a \
-               "$sxe_cv_c_lib_curses"   = "no" -a \
-	       "$sxe_cv_c_lib_termcap"  = "no" -a \
-	       "$sxe_cv_c_lib_terminfo" = "no" -a \
-	       "$sxe_cv_c_lib_termlib"  = "no"], 
-	       	   have_tty=no)
-   AS_IF([test "$with_tty" = "yes" -a "$have_tty" = "no"],
-      AC_MSG_ERROR([Your system lacks necessary libraries for requested TTY support.]))
-])
 
+   if test -n "$tty_libs"
+   then
+      AS_MESSAGE(["Considering libraries: $tty_libs"])
+   
+      # Check which preferred lib can be used
+      for func in $tty_funcs
+      do
+         # Make sure no flags are harmed during the search
+         sxe_save_LIBS=$LIBS
+         AC_SEARCH_LIBS($func, $tty_libs)
+         LIBS=$sxe_save_LIBS
+      done
 
-AS_IF([test "$with_tty" != "no" -a "$have_tty" != "no" ],[
-    AC_DEFINE([HAVE_NCURSES], [1], [Description here!])
-    with_ncurses=yes
-    AC_CHECK_HEADER(ncurses/ncurses.h, curses_h_file=ncurses/ncurses.h)
-    if test -z "$curses_h_file"; then
-	    AC_CHECK_HEADER(ncurses/curses.h,  curses_h_file=ncurses/curses.h)
-    fi
-    if test -n "$curses_h_file"; then
-	    AC_CHECK_HEADER(ncurses/termcap.h, termcap_h_file=ncurses/termcap.h)
-	    AC_CHECK_HEADER(ncurses/term.h, term_h_file=ncurses/term.h)
-    else
-	    AC_CHECK_HEADER(ncurses.h, curses_h_file=ncurses.h)
-	    AC_CHECK_HEADER(termcap.h, termcap_h_file=termcap.h)
-	    AC_CHECK_HEADER(term.h,    term_h_file=term.h)
-    fi
-    SXE_ADD_SXEUITTY_OBJS(terminfo.o)
-    SXE_PREPEND(-lncurses, LIBS)
+      # Minimize the set of libraries
+      tty_feature=""
+      tty_fun=""
+      for func in $tty_funcs
+      do
+          eval lib=\$ac_cv_search_${func}
+          if test "$lib" != no -a "$lib" != "none required"
+          then
+              for feature in $tty_feature
+              do
+       	          if test "$feature" = "$lib"
+	          then
+	             lib=""
+		     func=""
+	             break;
+                  fi
+              done
+	      tty_feature="$tty_feature $lib"
+	      tty_fun="$tty_fun $func"
+          fi
+       done
+   fi
 
-    if test -z "$curses_h_file" ; then
-      dnl Try again, and check for the bogus ncurses/ include bug.
-      dnl (i.e. ncurses/curses.h bogusly includes <unctrl.h> instead of
-      dnl <ncurses/unctrl.h>)
-      save_c_switch_site="$c_switch_site"
-      c_switch_site="$c_switch_site -I/usr/include/ncurses"
+   if test -n "$tty_feature"
+   then
+      # Check all the expected functions still compile with all the added
+      # libraries
+      sxe_save_LIBS=$LIBS
+      LIBS="$LIBS $tty_feature"
+      AC_CHECK_FUNCS($tty_funcs)
+      for func in $tty_fun
+      do
+	if eval "test \"\$ac_cv_func_${func}\" = no"
+	then
+	    tty_feature=""
+	    break
+	fi
+      done
+      LIBS=$sxe_save_LIBS
+   fi
+
+   if test -n "$tty_feature"
+   then
+      SXE_PREPEND($tty_feature, LIBS)
+      for lib in $tty_feature
+      do
+         l=`echo $lib | sed -e 's/^-l//g'`
+         eval "with_${l}=yes"
+      done
+      with_builtin_tty=no
+      have_tty=yes
+   else
+      AC_MSG_WARN([Could not link all needed tty functions.]
+                  [Please consider installing ncurses.])
+      if test "$with_builtin_tty" = yes
+      then
+          AC_MSG_WARN([Using builtin tty support.])
+	  have_tty=yes
+      else
+          AC_MSG_WARN([Use --with-builtin-tty=yes if you cannot use ncurses.])
+	  have_tty=no
+      fi
+   fi
+
+   if test "$with_builtin_tty" = yes
+   then
+      # Add our own wrappers using termcap
+      SXE_ADD_SXEUITTY_OBJS(termcap.o)
+      SXE_ADD_SXEUITTY_OBJS(tparam.o)
+      have_tty=yes
+   elif test "$have_tty" = yes
+   then
+      # Terminfo interface, since tgetent etc are available
+      SXE_ADD_SXEUITTY_OBJS(terminfo.o)
+   fi
+
+   # Check headers, first generally
+   AC_CHECK_HEADER(termcap.h, termcap_h_file=termcap.h)
+   AC_CHECK_HEADER(term.h,    term_h_file=term.h)
+   
+   if test "$have_ncurses" = yes; then
+      # Verify how ncurses overrides them
       AC_CHECK_HEADER(ncurses/ncurses.h, curses_h_file=ncurses/ncurses.h)
       if test -z "$curses_h_file"; then
 	    AC_CHECK_HEADER(ncurses/curses.h,  curses_h_file=ncurses/curses.h)
       fi
       if test -n "$curses_h_file"; then
 	    AC_CHECK_HEADER(ncurses/termcap.h, termcap_h_file=ncurses/termcap.h)
-	    AC_CHECK_HEADER(ncurses/term.h, term_h_file=ncurses/term.h)
+	    AC_CHECK_HEADER(ncurses/term.h,    term_h_file=ncurses/term.h)
       else
-	    AC_CHECK_HEADER(ncurses.h, curses_h_file=ncurses.h)
-	    AC_CHECK_HEADER(termcap.h, curses_h_file=termcap.h)
-	    AC_CHECK_HEADER(term.h,    curses_h_file=term.h)
+	    AC_CHECK_HEADER(ncurses.h,         curses_h_file=ncurses.h)
       fi
-      if test -n "$curses_h_file"
-	then AC_MSG_WARN([Your system has the bogus ncurses include bug.])
-	else c_switch_site="$save_c_switch_site"
+      
+      if test -z "$curses_h_file" ; then
+          dnl Try again, and check for the bogus ncurses/ include bug.
+          dnl (i.e. ncurses/curses.h bogusly includes <unctrl.h> instead of
+          dnl <ncurses/unctrl.h>)
+          save_c_switch_site="$c_switch_site"
+          c_switch_site="$c_switch_site -I/usr/include/ncurses"
+          AC_CHECK_HEADER(ncurses/ncurses.h,   curses_h_file=ncurses/ncurses.h)
+          if test -z "$curses_h_file"; then
+	    AC_CHECK_HEADER(ncurses/curses.h,  curses_h_file=ncurses/curses.h)
+          fi
+          if test -n "$curses_h_file"; then
+	    AC_CHECK_HEADER(ncurses/termcap.h, termcap_h_file=ncurses/termcap.h)
+	    AC_CHECK_HEADER(ncurses/term.h,    term_h_file=ncurses/term.h)
+          else
+	    AC_CHECK_HEADER(ncurses.h,         curses_h_file=ncurses.h)
+          fi
+          if test -n "$curses_h_file"
+	  then
+		AC_MSG_WARN([Your system has the bogus ncurses include bug.])
+		AC_CHECK_HEADER(termcap.h,         curses_h_file=termcap.h)
+	        AC_CHECK_HEADER(term.h,            curses_h_file=term.h)
+	  else c_switch_site="$save_c_switch_site"
+          fi
       fi
+   fi
+   
+   if test -n "$curses_h_file"; then
+	AC_DEFINE_UNQUOTED([HAVE_CURSES_H], [1],
+			   [There is a curses.h header file available])
+   fi
+
+   if test -n "$termcap_h_file"; then
+	AC_DEFINE_UNQUOTED([HAVE_TERMCAP_H], [1],
+	                   [There is a termcap.h header available])
+   fi
+
+   if test -n "$term_h_file"; then
+	AC_DEFINE_UNQUOTED([HAVE_TERM_H], [1],
+	                   [There is a term.h header available])
+   fi
+
+   AC_DEFINE_UNQUOTED([CURSES_H_FILE], ["${curses_h_file-curses.h}"],
+                      [The curses.h header file])
+   AC_DEFINE_UNQUOTED([TERMCAP_H_FILE], ["${termcap_h_file-termcap.h}"],
+                      [The termcap.h header file])
+   AC_DEFINE_UNQUOTED([TERM_H_FILE], ["${term_h_file-term.h}"],
+                      [The term.h header file])
+],[
+  for feature in ncurses curses termcap terminfo termlib gpm; do
+    if eval "test -n \"\$with_${feature}\" -a \"\$with_${feature}\" != no" ; then
+      AC_MSG_WARN([--with-${feature} ignored:  Not valid without TTY support])
     fi
-])
-
-AS_IF([test "$with_tty" != "no" -a "$have_ncurses" != "no" ],[
-  if test "$with_ncurses" = "no" -o -z "$curses_h_file" ; then
-
-    # Check alternate library includes
-    for lib in curses term terminfo termcap; do
-	AC_CHECK_HEADER(${lib}.h, [
-		eval ${lib}_h_file=${lib}.h
-		AC_CHECK_LIB($lib, tgetent, eval have_${lib}=yes, eval have_${lib}=no)
-		AC_CHECK_LIB($lib, tgetstr, , eval have_${lib}=no)])
-    done
-
-    for lib in curses terminfo termlib termcap; do
-	  have_lib_eval=`eval echo \\$have_$lib`
-	  if test "$have_lib_eval" = "yes"; then
-		AC_CHECK_LIB($lib, tparm,
-			  SXE_ADD_SXEUITTY_OBJS(terminfo.o),
-			  SXE_ADD_SXEUITTY_OBJS(tparam.o))
-		SXE_PREPEND(-l${lib}, LIBS)
-		break
-	  fi
-    done
-  fi
-  if test -n "$curses_h_file"; then
-	AC_DEFINE_UNQUOTED([HAVE_CURSES_H], [1], [There is a curses.h header file available])
-  fi
-  if test -n "$termcap_h_file"; then
-	AC_DEFINE_UNQUOTED([HAVE_TERMCAP_H], [1], [There is a termcap.h header available])
-  fi
-  if test -n "$term_h_file"; then
-	AC_DEFINE_UNQUOTED([HAVE_TERM_H], [1], [There is a term.h header available])
-  fi
-  AC_DEFINE_UNQUOTED([CURSES_H_FILE], ["${curses_h_file-curses.h}"], [The curses.h header file])
-  AC_DEFINE_UNQUOTED([TERMCAP_H_FILE], ["${termcap_h_file-termcap.h}"], [The termcap.h header file])
-  AC_DEFINE_UNQUOTED([TERM_H_FILE], ["${term_h_file-term.h}"], [The term.h header file])
+    eval "with_${feature}=\"\""
+  done
 ])
 
 AS_IF([test "$with_tty" != "no" -a "$have_tty" != no], [
-	AC_DEFINE([HAVE_TTY], [1], [Include TTY support for SXEmacs])
-	AC_DEFINE([HAVE_UNIXOID_EVENT_LOOP], [1], [Include Unixoid event loop - TTY provided])
+	AC_DEFINE([HAVE_TTY], [1],
+	          [Include TTY support for SXEmacs])
+	AC_DEFINE([HAVE_UNIXOID_EVENT_LOOP], [1],
+	          [Include Unixoid event loop - TTY provided])
 	SXE_ADD_SXEUITTY_OBJS([console-tty.o device-tty.o event-tty.o frame-tty.o objects-tty.o redisplay-tty.o cm.o])
 ])
+
 AS_IF([test "$with_tty" != "no" -a "$have_tty" != no], [
   dnl General Purpose Mouse (libgpm) support
   AS_IF([test "$with_gpm" != "no"], [
