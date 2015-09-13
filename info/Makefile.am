@@ -25,7 +25,12 @@
 LANG=C
 LC_ALL=C
 
-AUTOMAKE_OPTIONS = info-in-builddir
+# Since automake does not ignore unknown options, this has to be set in
+# a horrible hack in configure.ac until we choose to mandate automake 1.14
+# Since many distros still carry automake 1.13, this is up for debate...
+#
+# AUTOMAKE_OPTIONS = info-in-builddir
+
 builddir = @builddir@
 srcdir = @srcdir@
 
