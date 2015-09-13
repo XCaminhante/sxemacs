@@ -815,7 +815,19 @@ dnl Check for bogus options
 dnl -------------------------------------------------------------------------
 SXE_CHECK_COMMAND_LINE
 
-AM_INIT_AUTOMAKE([foreign -Wall])
+test -z "$AUTOMAKE" || AUTOMAKE=automake
+
+AM_INIT_AUTOMAKE(m4_esyscmd([
+   automake_ver=`$AUTOMAKE --version 2>/dev/null | head -n1`
+   automake_major=`echo "$automake_ver" | sed -e 's/^.* \([0-9]*\).*/\1/'`
+   automake_minor=`echo "$automake_ver" | sed -e 's/^.* [0-9]*\.\([0-9]*\).*/\1/'`
+   if test "$automake_major" = "1" -a "$automake_minor" -lt "14"
+   then
+      echo "foreign -Wall"
+   else
+      echo "info-in-builddir foreign -Wall"
+   fi]))
+
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 SXE_CHECK_BUILDCHAIN
 AC_SUBST(EGREP)
