@@ -17,7 +17,20 @@ For more details see the INSTALL and PROBLEMS files.
 SXEmacs generates the documentation during the build process.])
 		exit 1
 	fi
+	SXE_MSG_CHECKING([makeinfo version])
+        makeinfo_ver=`eval "$MAKEINFO" --version 2> /dev/null | head -n 1`
+	SXE_MSG_RESULT([${makeinfo_ver}])
+	AC_DEFINE_UNQUOTED(MAKEINFO_VERSION, "${makeinfo_ver}",
+		          [the makeinfo command version])
+        case `echo "$makeinfo_ver" | $SED -e 's/^.* \([[0-9.]]*\).*/\1/'`  in
+	    [[1234]].*)
+		AC_MSG_ERROR([
+Your makeinfo program is too old. Please install 5.x or later.])
+		exit 1
+	    ;;
+        esac
 	AC_SUBST(MAKEINFO)
+	AC_SUBST(MAKEINFO_VERSION)
 ])dnl SXE_PROG_MAKEINFO
 
 
