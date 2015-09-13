@@ -771,13 +771,14 @@ AS_IF([test -f "$0.ac" -a "$0.ac" -nt "$0"],
 #
 # Turn off core generation. We are already verifying the program fails, no need
 # poluting the workspace. Of course if you are a SXEmacs developer you may want
-# to comemnt this on occasion :-)
+# to comment this on occasion :-)
 ulimit -c 0
 
 ## initialise our nestable msg funs
 SXE_INIT_MSG_LEVEL
 
 AC_PROG_SED
+AC_PROG_AWK
 
 ECHO=echo
 
