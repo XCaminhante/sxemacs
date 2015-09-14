@@ -38,6 +38,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 #endif				/* not emacs */
 
+#ifdef HAVE_TERMIO_H
+#include <termio.h>
+#endif
+
+#ifdef HAVE_TERMIOS_H
+#include <termios.h>
+#endif
+
 /* BUFSIZE is the initial size allocated for the buffer
    for reading the termcap file.
    It is not a limit.

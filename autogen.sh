@@ -24,7 +24,10 @@
 # Check file headers for more information.
 
 # BSD's m4 probably isn't gonna cut it, use gm4 if it is available
-type gm4 >/dev/null 2>&1 && M4=gm4 || M4=m4
+if test -z "$M4"
+then
+   type gm4 >/dev/null 2>&1 && M4=gm4 || M4=m4
+fi
 
 M4_VERSION=$($M4 --version | head -n1 | sed -e 's/^\(m4 \)\?(\?GNU M4)\? *//g' )
 GOOD_M4=$( echo $M4_VERSION | awk -F. '{if( ($1>1) || ( ($1==1) && ($2>4) ) || ( ($1==1) && ($2==4) && ($3>=6) )) print 1 }')
@@ -41,7 +44,11 @@ if test -d "/usr/xpg4/bin"; then
     export PATH
 fi
 
-type git >/dev/null 2>&1 && GIT=git
+if test -z "$GIT"
+then
+    type git >/dev/null 2>&1 && GIT=git
+fi
+
 olddir=$(pwd)
 srcdir=$(dirname $0)
 cd "$srcdir"
@@ -97,12 +104,49 @@ if test "$emacs_full_version" != "$EXPECTED_TREE_VERSION"; then
     echo "*******************************************"
 fi
 
-autoconf_ver=$(autoconf --version 2>/dev/null | head -n1)
-autoheader_ver=$(autoheader --version 2>/dev/null | head -n1)
-automake_ver=$(automake --version 2>/dev/null | head -n1)
-aclocal_ver=$(aclocal --version 2>/dev/null | head -n1)
-libtool_ver=$(libtool --version 2>/dev/null | head -n1)
+test -z "$AUTOCONF"   && type autoconf   >/dev/null 2>&1 && AUTOCONF=autoconf
+export AUTOCONF
+test -z "$AUTORECONF" && type autoreconf >/dev/null 2>&1 && AUTORECONF=autoreconf
+export AUTORECONF
+test -z "$AUTOHEADER" && type autoheader >/dev/null 2>&1 && AUTOHEADER=autoheader
+export AUTOHEADER
+test -z "$AUTOMAKE"   && type automake   >/dev/null 2>&1 && AUTOMAKE=automake
+export AUTOMAKE
+test -z "$ACLOCAL"    && type aclocal    >/dev/null 2>&1 && ACLOCAL=aclocal
+export ACLOCAL
+test -z "$LIBTOOL"    && type libtool    >/dev/null 2>&1 && LIBTOOL=libtool
+export LIBTOOL
 
+autoconf_ver=$($AUTOCONF --version 2>/dev/null | head -n1)
+if test -z "$autoconf_ver"; then
+    echo Could not determine autoconf
+    exit 1
+fi
+autoreconf_ver=$($AUTORECONF --version 2>/dev/null | head -n1)
+if test -z "$autoreconf_ver"; then
+    echo Could not determine autoreconf
+    exit 1
+fi
+autoheader_ver=$($AUTOHEADER --version 2>/dev/null | head -n1)
+if test -z "$autoheader_ver"; then
+    echo Could not determine autoheader
+    exit 1
+fi
+automake_ver=$($AUTOMAKE --version 2>/dev/null | head -n1)
+if test -z "$automake_ver"; then
+    echo Could not determine automake
+    exit 1
+fi
+aclocal_ver=$($ACLOCAL --version 2>/dev/null | head -n1)
+if test -z "$aclocal_ver"; then
+    echo Could not determine aclocal
+    exit 1
+fi
+libtool_ver=$($LIBTOOL --version 2>/dev/null | head -n1)
+if test -z "$libtool_ver"; then
+    echo Could not determine libtool
+    exit 1
+fi
 
 # When things go wrong... get a bigger hammer!
 if test -n "$PHAMMER"; then
@@ -143,8 +187,8 @@ else
 fi
 
 # using libtoolize as we did before doesn't work anymore, so just mkdir --Horst
-mkdir -p libltdl/m4
-autoreconf --force --verbose --install -Wall
+test -d libtld/m4 || mkdir -p libltdl/m4 
+$AUTORECONF --force --verbose --install -Wall
 
 # hack-o-matic.  Using gmp's config.{guess,sub} lets us have properer
 # detected machine configurations --SY.
