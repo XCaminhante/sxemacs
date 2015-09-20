@@ -205,27 +205,9 @@ directory."
     ("US (Main XEmacs Site)"
      "ftp.xemacs.org" "pub/xemacs/packages")
     ;; In alphabetical order of Country, our mirrors...
-    ;; xemacs.xmundo.net no longer resolves.
-    ;; ("Argentina (xmundo.net)" "xemacs.xmundo.net" "pub/mirrors/xemacs/packages")
-    ;; aarnet http only and no longer carrying xemacs
-    ;; ("Australia (aarnet.edu.au)" "mirror.aarnet.edu.au" "pub/xemacs/packages")
-    ;; ftp.au.xemacs.org no longer resolves
-    ;; ("Australia (au.xemacs.org)" "ftp.au.xemacs.org" "pub/xemacs/packages")
-    ;; No longer carries xemacs
-    ;; ("Austria (at.xemacs.org)" "ftp.at.xemacs.org" "editors/xemacs/packages")
     ;; Timing out
     ("Belgium (be.xemacs.org)" "ftp.be.xemacs.org" "xemacs/packages")
-    ;; No longer carries xemacs
-    ;; ("Brazil (br.xemacs.org)" "ftp.br.xemacs.org" "pub/xemacs/packages")
     ("Canada (ca.xemacs.org)" "ftp.ca.xemacs.org" "pub/Mirror/xemacs/packages")
-    ;; Path invalid, navigation impossible
-    ;; ("Canada (nrc.ca)" "ftp.nrc.ca" "pub/packages/editors/xemacs/packages")
-    ;; ftp.cl.xemacs.org does not resolve
-    ;; ("Chile (cl.xemacs.org)" "ftp.cl.xemacs.org" "packages")
-    ;; ftp.cn.xemacs.org does not resolve
-    ;; ("China (ftp.cn.xemacs.org)" "ftp.cn.xemacs.org" "pub/xemacs/packages")
-    ;; ftp.cz.xemacs.org does not resolve
-    ;; ("Czech Republic (cz.xemacs.org)" "ftp.cz.xemacs.org" "MIRRORS/ftp.xemacs.org/pub/xemacs/packages")
     ("Denmark (dk.xemacs.org)" "ftp.dk.xemacs.org" "xemacs/packages")
     ;; Very outdated, last sumo updated Feb 2009, 
     ("Finland (fi.xemacs.org)" "ftp.fi.xemacs.org" "pub/mirrors/ftp.xemacs.org/pub/tux/xemacs/packages")
@@ -237,8 +219,6 @@ directory."
     ("Germany (de.xemacs.org)" "ftp.de.xemacs.org" "pub/ftp.xemacs.org/tux/xemacs/packages")
     ;; Timing out
     ("Greece (gr.xemacs.org)" "ftp.gr.xemacs.org" "mirrors/XEmacs/ftp/packages")
-    ;; ftp.hk.xemacs.org does not resolve
-    ("Hong Kong (hk.xemacs.org)" "ftp.hk.xemacs.org" "pub/xemacsftp/packages")
     ;; Timing out
     ("Ireland (ie.xemacs.org)" "ftp.ie.xemacs.org" "mirrors/ftp.xemacs.org/pub/xemacs/packages")
     ("Ireland (heanet.ie)" "ftp.heanet.ie" "mirrors/ftp.xemacs.org/packages")
@@ -246,12 +226,6 @@ directory."
     ("Italy (it.xemacs.org)" "ftp.it.xemacs.org" "unix/packages/XEMACS/packages")
     ;; Timing out
     ("Japan (dti.ad.jp)" "ftp.dti.ad.jp" "pub/unix/editor/xemacs/packages")
-    ;; Does not carry xemacs
-    ;; ("Japan (jaist.ac.jp)" "ftp.jaist.ac.jp" "pub/GNU/xemacs/packages")
-    ;; ftp.jp.xemacs.org does not resolve
-    ;; ("Japan (jp.xemacs.org)" "ftp.jp.xemacs.org" "pub/text/xemacs/packages")
-    ;; mirror.nucba.ac.jp does not resolve
-    ;; ("Japan (nucba.ac.jp)" "mirror.nucba.ac.jp" "mirror/xemacs/packages")
     ;; Timing out
     ("Korea (kr.xemacs.org)" "ftp.kr.xemacs.org" "pub/tools/emacs/xemacs/packages")
     ;; Timing out
@@ -264,16 +238,10 @@ directory."
     ("Portugal (pt.xemacs.org)" "ftp.pt.xemacs.org" "pub/MIRRORS/ftp.xemacs.org/packages")
     ;; Timing out
     ("Russia (ru.xemacs.org)" "ftp.ru.xemacs.org" "pub/emacs/xemacs/packages")
-    ;; Does not carry xemacs
-    ;; ("Saudi Arabia (sa.xemacs.org)" "ftp.sa.xemacs.org" "pub/xemacs.org/packages")
     ("Sweden (se.xemacs.org)" "ftp.se.xemacs.org" "pub/gnu/xemacs/packages")
-    ;; ftp.ch.xemacs.org does not resolve
-    ;; ("Switzerland (ch.xemacs.org)" "ftp.ch.xemacs.org" "mirror/xemacs/packages")
     ("Taiwan (ftp.tw.xemacs.org)" "ftp.tw.xemacs.org" "Unix/Editors/XEmacs/packages")
     ("UK (uk.xemacs.org)" "ftp.uk.xemacs.org" "sites/ftp.xemacs.org/pub/xemacs/packages")
     ("US (ibiblio.org)" "mirrors.ibiblio.org" "pub/mirrors/xemacs/packages")
-    ;; ftp.us.xemacs.org does not resolve
-    ;; ("US (us.xemacs.org)" "ftp.us.xemacs.org" "pub/mirrors/xemacs/packages")
     )
   "*List of remote sites available for downloading packages.
 List format is '(site-description site-name directory-on-site).
@@ -293,38 +261,11 @@ variable actually used to specify package download sites."
     ("US Pre-Releases (Main XEmacs Site)" "ftp.xemacs.org"
      "pub/xemacs/beta/experimental/packages")
     ;; In alphabetical order of Country, our mirrors...
-    ;; xemacs.xmundo.net no longer resolves.
-    ;; ("Argentina Pre-Releases (xmundo.net)" "xemacs.xmundo.net"
-    ;; "pub/mirrors/xemacs/beta/experimental/packages")
-    ;; aarnet http only and no longer carrying xemacs
-    ;; ("Australia Pre-Releases (aarnet.edu.au)" "mirror.aarnet.edu.au"
-    ;; "pub/xemacs/beta/experimental/packages")
-    ;; ftp.au.xemacs.org no longer resolves
-    ;; ("Australia Pre-Releases (au.xemacs.org)" "ftp.au.xemacs.org"
-    ;;  "pub/xemacs/beta/experimental/packages")
-    ;; No longer carries xemacs
-    ;; ("Austria Pre-Releases (at.xemacs.org)" "ftp.at.xemacs.org"
-    ;;  "editors/xemacs/beta/experimental/packages")
     ;; Timing out
     ("Belgium Pre-Releases (be.xemacs.org)" "ftp.be.xemacs.org"
      "xemacs/beta/experimental/packages")
-    ;; No longer carries xemacs
-    ;; ("Brazil Pre-Releases (br.xemacs.org)" "ftp.br.xemacs.org"
-    ;; "pub/xemacs/xemacs-21.5/experimental/packages")
     ("Canada Pre-Releases (ca.xemacs.org)" "ftp.ca.xemacs.org"
      "pub/Mirror/xemacs/beta/experimental/packages")
-    ;; Path invalid, navigation impossible
-    ;; ("Canada Pre-Releases (nrc.ca)" "ftp.nrc.ca"
-    ;; "pub/packages/editors/xemacs/beta/experimental/packages")
-    ;; ftp.cl.xemacs.org does not resolve
-    ;; ("Chile Pre-Releases (cl.xemacs.org)" "ftp.cl.xemacs.org"
-    ;; "beta/experimental/packages")
-    ;; ftp.cn.xemacs.org does not resolve
-    ;; ("China Pre-Releases (ftp.cn.xemacs.org)" "ftp.cn.xemacs.org"
-    ;; "pub/xemacs/beta/experimental/packages")
-    ;; ftp.cz.xemacs.org does not resolve
-    ;; ("Czech Republic Pre-Releases (cz.xemacs.org)" "ftp.cz.xemacs.org"
-    ;; "MIRRORS/ftp.xemacs.org/pub/xemacs/xemacs-21.5/experimental/packages")
     ("Denmark Pre-Releases (dk.xemacs.org)" "ftp.dk.xemacs.org"
      "xemacs/beta/experimental/packages")
     ;; Very outdated, last sumo updated Feb 2009, 
@@ -343,9 +284,6 @@ variable actually used to specify package download sites."
     ;; Timing out
     ("Greece Pre-Releases (gr.xemacs.org)" "ftp.gr.xemacs.org"
      "mirrors/XEmacs/ftp/beta/experimental/packages")
-    ;; ftp.hk.xemacs.org does not resolve
-    ("Hong Kong Pre-Releases (hk.xemacs.org)" "ftp.hk.xemacs.org"
-     "pub/xemacsftp/beta/experimental/packages")
     ;; Timing out
     ("Ireland Pre-Releases (ie.xemacs.org)" "ftp.ie.xemacs.org"
      "mirrors/ftp.xemacs.org/pub/xemacs/beta/experimental/packages")
@@ -357,12 +295,6 @@ variable actually used to specify package download sites."
     ;; Timing out
     ("Japan Pre-Releases (dti.ad.jp)" "ftp.dti.ad.jp"
      "pub/unix/editor/xemacs/beta/experimental/packages")
-    ;; Does not carry xemacs
-    ;; ("Japan Pre-Releases (jaist.ac.jp)" "ftp.jaist.ac.jp"
-    ;;  "pub/GNU/xemacs/beta/experimental/packages")
-    ;; ftp.jp.xemacs.org does not resolve
-    ;; ("Japan Pre-Releases (jp.xemacs.org)" "ftp.jp.xemacs.org"
-    ;;  "pub/text/xemacs/beta/experimental/packages")
     ;; Timing out
     ("Korea Pre-Releases (kr.xemacs.org)" "ftp.kr.xemacs.org"
      "pub/tools/emacs/xemacs/beta/experimental/packages")
@@ -381,23 +313,14 @@ variable actually used to specify package download sites."
     ;; Timing out
     ("Russia Pre-Releases (ru.xemacs.org)" "ftp.ru.xemacs.org"
      "pub/emacs/xemacs/beta/experimental/packages")
-    ;; Does not carry xemacs
-    ;; ("Saudi Arabia Pre-Releases (sa.xemacs.org)" "ftp.sa.xemacs.org"
-    ;;  "pub/xemacs.org/beta/experimental/packages")
     ("Sweden Pre-Releases (se.xemacs.org)" "ftp.se.xemacs.org"
      "pub/gnu/xemacs/beta/experimental/packages")
-    ;; ftp.ch.xemacs.org does not resolve
-    ;; ("Switzerland Pre-Releases (ch.xemacs.org)" "ftp.ch.xemacs.org"
-    ;;  "mirror/xemacs/beta/experimental/packages")
     ("Taiwan Pre-Releases (ftp.tw.xemacs.org)" "ftp.tw.xemacs.org"
      "Unix/Editors/XEmacs/beta/experimental/packages")
     ("UK Pre-Releases (uk.xemacs.org)" "ftp.uk.xemacs.org"
      "sites/ftp.xemacs.org/pub/xemacs/beta/experimental/packages")
     ("US Pre-Releases (ibiblio.org)" "mirrors.ibiblio.org"
      "pub/mirrors/xemacs/beta/experimental/packages")
-    ;; ftp.us.xemacs.org does not resolve
-    ;; ("US Pre-Releases (us.xemacs.org)" "ftp.us.xemacs.org"
-    ;;  "pub/mirrors/xemacs/beta/experimental/packages")
     )
   "*List of remote sites available for downloading \"Pre-Release\" packages.
 List format is '(site-description site-name directory-on-site).
