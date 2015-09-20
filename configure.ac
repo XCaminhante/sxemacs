@@ -2504,7 +2504,7 @@ dnl   fi
 
 	dnl make sure we can find Intrinsic.h
 	AC_CHECK_HEADER([X11/Intrinsic.h], [],
-		[AC_MSG_ERROR([Unable to find X11 header files. Try using --x-includes=<path> if you know the path, or --with-x=no to disable X11 support.])])
+		[AC_MSG_ERROR([Unable to find X11 and/or Xt header files. Try using --x-includes=<path> if you know the path, or --with-x=no to disable X11 support.])])
 
 	dnl Check some more headers
 	AC_CHECK_HEADERS([X11/Intrinsic.h X11/StringDefs.h X11/Shell.h X11/ShellP.h],
