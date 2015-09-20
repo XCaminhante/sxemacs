@@ -116,6 +116,14 @@ test -z "$ACLOCAL"    && type aclocal    >/dev/null 2>&1 && ACLOCAL=aclocal
 export ACLOCAL
 test -z "$LIBTOOL"    && type libtool    >/dev/null 2>&1 && LIBTOOL=libtool
 export LIBTOOL
+if test -z "$LIBTOOLIZE"; then
+  if type glibtoolize >/dev/null 2>&1; then
+    LIBTOOLIZE=glibtoolize
+  elif type libtoolize >/dev/null 2>&1; then
+    LIBTOOLIZE=libtoolize
+  fi
+fi
+export LIBTOOLIZE
 
 autoconf_ver=$($AUTOCONF --version 2>/dev/null | head -n1)
 if test -z "$autoconf_ver"; then
@@ -143,9 +151,11 @@ if test -z "$aclocal_ver"; then
     exit 1
 fi
 libtool_ver=$($LIBTOOL --version 2>/dev/null | head -n1)
+if test -z "$libtool_ver" -a -n "$LIBTOOLIZE"; then
+    libtool_ver=$($LIBTOOLIZE --version 2>/dev/null | head -n1)
+fi
 if test -z "$libtool_ver"; then
-    echo Could not determine libtool
-    exit 1
+    echo WARNING: Could not determine libtool
 fi
 
 # When things go wrong... get a bigger hammer!
@@ -180,11 +190,6 @@ m4_define([4UTOMAKE_VERSION], [$automake_ver])
 m4_define([4IBTOOL_VERSION], [$libtool_ver])
 EOF
 
-if type glibtoolize 2>/dev/null; then
-    LIBTOOLIZE=glibtoolize
-else
-    LIBTOOLIZE=libtoolize
-fi
 
 # using libtoolize as we did before doesn't work anymore, so just mkdir --Horst
 test -d libtld/m4 || mkdir -p libltdl/m4 
