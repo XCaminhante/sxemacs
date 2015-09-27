@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 /* the old SXEmacs general includes and utility macros moved here: */
 #include "sxe-utils.h"
+#include "sxe-memory.h"
 
 /* ------------------------ dynamic arrays ------------------- */
 
