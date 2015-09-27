@@ -804,6 +804,8 @@ static Lisp_Object x_font_instance_properties(Lisp_Font_Instance * f)
 					   ALLOCA, (name_str, name_len),
 					   Qx_atom_name_encoding);
 
+		SXE_SET_UNUSED(name_len);
+
 		name = (name_str ? intern((char *)name_str) : Qnil);
 		if (name_str &&
 		    (atom == XA_FONT ||

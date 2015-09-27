@@ -499,12 +499,16 @@ button_item_to_widget_value(Lisp_Object gui_object_instance,
 	if (NILP(pgui->style)) {
 		Bufbyte *intname = NULL;
 		Bytecount intlen;
+
 		/* If the callback is nil, treat this item like unselectable text.
 		   This way, dashes will show up as a separator. */
 		if (!wv->enabled)
 			wv->type = BUTTON_TYPE;
 		TO_INTERNAL_FORMAT(C_STRING, wv->name,
 				   ALLOCA, (intname, intlen), Qlwlib_encoding);
+
+		SXE_SET_UNUSED(intlen);
+
 		if (intname != NULL && separator_string_p(intname)) {
 			wv->type = SEPARATOR_TYPE;
 			wv->value =

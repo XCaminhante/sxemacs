@@ -568,6 +568,9 @@ xlw_update_one_widget(widget_instance * instance, Widget widget,
 			    composite.children[0];
 		else
 			mw = (XlwMenuWidget) widget;
+
+		SXE_SET_UNUSED(mw);
+
 		XtSetArg(al[0], XtNmenu, val);
 		XtSetValues(widget, al, 1);	/* #### mw unused! */
 	}

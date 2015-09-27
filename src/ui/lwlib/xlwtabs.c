@@ -572,6 +572,7 @@ static void TabsResize(Widget w)
 				tab =
 				    (TabsConstraints) (*childP)->core.
 				    constraints;
+				SXE_SET_UNUSED(tab);
 				bw = (*childP)->core.border_width;
 				/* Don't do anything if we can't see any of the child. */
 				if (ch >= bw * 2 && ch > 0 && cw >= bw * 2
