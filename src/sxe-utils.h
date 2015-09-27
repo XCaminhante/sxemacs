@@ -54,9 +54,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #else
 # define SXE_UNUSED(x) x
 #endif
+
 #ifdef UNUSED
 #undef UNUSED
 #define UNUSED(x) SXE_UNUSED(x)
+#endif
+
+#ifdef SXE_SET_UNUSED
+#else
+#  define SXE_SET_UNUSED(x) ((void)(x))
 #endif
 
 #ifdef WEAK_EXTERN
@@ -78,6 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #else
 #define LIKELY(_x)	__builtin_expect(!!(_x), 1)
 #endif
+
 #ifdef UNLIKELY
 #else
 #define UNLIKELY(_x)	__builtin_expect(!!(_x), 0)
