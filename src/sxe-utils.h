@@ -108,13 +108,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #define SXE_CRITICAL(args...)		__SXE_DEBUG__("CRITICAL: " args)
 
 
-
 /* We define assert iff USE_ASSERTIONS or DEBUG_SXEMACS is defined.
    Otherwise we define it to be empty.  Quantify has shown that the
    time the assert checks take is measurable so let's not include them
    in production binaries. */
 
-#ifdef USE_ASSERTIONS
+#if defined(USE_ASSERTIONS) && defined(emacs)
 /* Highly dubious kludge */
 /*   (thanks, Jamie, I feel better now -- ben) */
 void assert_failed(const char *, int, const char *);
@@ -124,7 +123,7 @@ void assert_failed(const char *, int, const char *);
 # ifdef DEBUG_SXEMACS
 #  define assert(x) ((x) ? (void) 0 : (void) abort ())
 # else
-#  define assert(x)
+#  define assert(x) ((void)0)
 # endif
 #endif
 
