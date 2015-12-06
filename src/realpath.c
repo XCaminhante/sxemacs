@@ -80,10 +80,14 @@ char *xrealpath(const char *path, char *restrict resolved_path)
 
 	/* If it's a relative pathname use getcwd for starters. */
 	if (abslen == 0) {
-		getcwd(new_path, PATH_MAX - 1);
-		new_path += strlen(new_path);
-		if (!IS_DIRECTORY_SEP(new_path[-1]))
-			*new_path++ = DIRECTORY_SEP;
+	        void *ok = getcwd(new_path, PATH_MAX - 1);
+		if (ok) {
+		        new_path += strlen(new_path);
+		        if (!IS_DIRECTORY_SEP(new_path[-1]))
+		                *new_path++ = DIRECTORY_SEP;
+		} else {
+		        return NULL;
+		}
 	} else {
 		/* Copy first directory sep. */
 		strncpy(new_path, path, abslen);
