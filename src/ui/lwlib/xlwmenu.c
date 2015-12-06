@@ -47,15 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include "lwlib-internal.h"
 
 #include <sxe-utils.h>
+#include <sxe-memory.h>
 
 #ifdef USE_DEBUG_MALLOC
 #include <dmalloc.h>
-#endif
-
-
-/* simple, naive integer maximum */
-#ifndef max
-#define max(a,b) ((a)>(b)?(a):(b))
 #endif
 
 static char
