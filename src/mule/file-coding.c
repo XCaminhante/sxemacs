@@ -1228,6 +1228,7 @@ and `coding-system-canonical-name-p'.
 
 	/* Checks that aliasee names a coding-system */
 	real_coding_system = Fget_coding_system(aliasee);
+	SXE_SET_UNUSED(real_coding_system);
 
 	/* Check for coding system alias loops */
 	if (EQ(alias, aliasee))

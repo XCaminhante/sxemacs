@@ -3064,6 +3064,7 @@ and announce itself normally when it is run.
 		garbage_collect_1();
 
 #ifdef PDUMP
+		SXE_SET_UNUSED(symfile_ext);
 		pdump(filename_ext);
 #else
 

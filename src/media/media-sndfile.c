@@ -105,6 +105,8 @@ media_sndfile_open(Lisp_Media_Stream *ms)
 		mkfp = media_stream_kind_properties(ms).fprops;
 		TO_EXTERNAL_FORMAT(LISP_STRING, mkfp->filename,
 				   ALLOCA, (file, file_len), Qnil);
+		SXE_SET_UNUSED(file_len);
+
 		if ( file != NULL ) {
 			sf = sf_open(file, SFM_READ, sfinfo);
 		}

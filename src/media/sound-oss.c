@@ -363,6 +363,8 @@ sound_oss_handle_aj_events(audio_job_t aj)
 
 	SXE_MUTEX_LOCK(&aj->mtx);
 	sasd = audio_job_device_data(aj);
+	SXE_SET_UNUSED(sasd);
+
 	if ((ev = eq_noseeum_dequeue(audio_job_queue(aj))) == NULL) {
 		SXE_MUTEX_UNLOCK(&aj->mtx);
 		return;

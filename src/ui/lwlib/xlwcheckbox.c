@@ -39,6 +39,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include "ui/X11/xmu.h"
 #include "xlwcheckboxP.h"
 
+#include "sxe-utils.h"
+
 /* by using the same size for the checkbox as for the diamond box,
  * we can let the Radio widget do the vast majority of the work.
  */
@@ -392,6 +394,7 @@ static void DrawCheck(Widget w)
 	pts[5].y = -s;
 	XFillPolygon(dpy, win, bot, pts, 6, Nonconvex, CoordModePrevious);
 #else
+	SXE_SET_UNUSED(bw);
 	XDrawRectangle(dpy, win, gc, bx + s, by + s, bsz, bsz);
 #endif
 

@@ -1049,6 +1049,8 @@ execute_optimized_program(const Opbyte *program,
 			Lisp_Object args;
 
 			orig_fun = fun = XCAR(op);
+			SXE_SET_UNUSED(orig_fun);
+
 			args = XCDR(op);
 			if (SYMBOLP (fun) && !EQ(fun, Qunbound) &&
 			    (fun = XSYMBOL(fun)->function, SYMBOLP(fun)))

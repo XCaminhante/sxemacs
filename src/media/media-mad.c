@@ -299,6 +299,7 @@ media_mad_read(media_substream *mss, void *outbuf, size_t length)
 
 	/* fetch framesize */
 	framesize = mtap->framesize;
+	SXE_SET_UNUSED(framesize);
 
 	/* prepare mad */
 	mads = madd->stream;
