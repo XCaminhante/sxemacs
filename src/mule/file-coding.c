@@ -1852,7 +1852,11 @@ static Lisp_Object coding_system_from_mask(int mask)
 
 void
 autodetect_real_coding_system(lstream_t stream, Lisp_Object * codesys_in_out,
-			     eol_type_t * eol_type_in_out)
+			      eol_type_t * eol_type_in_out);
+
+void
+autodetect_real_coding_system(lstream_t stream, Lisp_Object * codesys_in_out,
+			      eol_type_t * eol_type_in_out)
 {
 	static const char mime_name_valid_chars[] =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"

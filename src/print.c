@@ -912,6 +912,8 @@ Display ERROR-OBJECT on STREAM in a user-friendly way.
 
 Lisp_Object Vfloat_output_format;
 
+void float_to_string(char *buf, fpfloat data, int maxlen);
+
 /*
  * This buffer should be at least as large as the max string size of the
  * largest float, printed in the biggest notation.  This is undoubtedly

@@ -336,6 +336,9 @@ finish:
 /* pull one channel out of a multi-channel stream */
 static size_t
 demux_internal(float *dst, char *src,
+	       size_t n, int chan, sound_jack_aj_data_t *f);
+static size_t
+demux_internal(float *dst, char *src,
 	       size_t n, int chan, sound_jack_aj_data_t *f)
 {
 	/* dst: destination buffer */

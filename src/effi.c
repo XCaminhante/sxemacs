@@ -1666,6 +1666,8 @@ Return DEVICE display as FFI object.
 /* Callbacks */
 #define FFI_CC_CDECL 0
 
+void* ffi_make_callback_x86(Lisp_Object data, int cc_type);
+
 #if defined __i386__
 static void
 ffi_callback_call_x86(Lisp_Object cbk_info, char *arg_buffer)
