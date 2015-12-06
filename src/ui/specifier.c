@@ -336,7 +336,7 @@ inline static size_t
 aligned_sizeof_specifier(size_t specifier_type_specific_size)
 {
 	return ALIGN_SIZE(offsetof(Lisp_Specifier, data)
-			  + specifier_type_specific_size, ALIGNOF(max_align_t));
+			  + specifier_type_specific_size, ALIGNOF(sxe_max_align_t));
 }
 
 static size_t sizeof_specifier(const void *header)
