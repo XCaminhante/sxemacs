@@ -336,7 +336,7 @@ pdump_get_entry_list(const struct struct_description *sdesc)
 	}
 	pdump_struct_table.list[pdump_struct_table.count].list.first = 0;
 	pdump_struct_table.list[pdump_struct_table.count].list.align =
-	    ALIGNOF(max_align_t);
+	    ALIGNOF(sxe_max_align_t);
 	pdump_struct_table.list[pdump_struct_table.count].list.count = 0;
 	pdump_struct_table.list[pdump_struct_table.count].sdesc = sdesc;
 
@@ -831,7 +831,7 @@ pdump_scan_by_alignment(void (*f) (pdump_entry_list_elt *,
 {
 	int align;
 
-	for (align = ALIGNOF(max_align_t); align; align >>= 1) {
+	for (align = ALIGNOF(sxe_max_align_t); align; align >>= 1) {
 		size_t i;
 		pdump_entry_list_elt *elt;
 
@@ -994,11 +994,11 @@ pdump(const char *dumpfile)
 	pdump_object_table = xnew_array(pdump_entry_list, lrecord_type_count);
 	pdump_alert_undump_object = xnew_array(int, lrecord_type_count);
 
-	assert(ALIGNOF(max_align_t) <= pdump_align_table[0]);
+	assert(ALIGNOF(sxe_max_align_t) <= pdump_align_table[0]);
 
 	for (i = 0; i < countof(pdump_align_table); i++)
-		if (pdump_align_table[i] > ALIGNOF(max_align_t))
-			pdump_align_table[i] = ALIGNOF(max_align_t);
+		if (pdump_align_table[i] > ALIGNOF(sxe_max_align_t))
+			pdump_align_table[i] = ALIGNOF(sxe_max_align_t);
 
 	flush_all_buffer_local_cache();
 
@@ -1020,7 +1020,7 @@ pdump(const char *dumpfile)
 
 	for (i = 0; i < lrecord_type_count; i++) {
 		pdump_object_table[i].first = 0;
-		pdump_object_table[i].align = ALIGNOF(max_align_t);
+		pdump_object_table[i].align = ALIGNOF(sxe_max_align_t);
 		pdump_object_table[i].count = 0;
 		pdump_alert_undump_object[i] = 0;
 	}
@@ -1028,7 +1028,7 @@ pdump(const char *dumpfile)
 	pdump_struct_table.size = -1;
 
 	pdump_opaque_data_list.first = 0;
-	pdump_opaque_data_list.align = ALIGNOF(max_align_t);
+	pdump_opaque_data_list.align = ALIGNOF(sxe_max_align_t);
 	pdump_opaque_data_list.count = 0;
 	depth = 0;
 
@@ -1062,11 +1062,11 @@ pdump(const char *dumpfile)
 	header.nb_root_struct_ptrs = Dynarr_length(pdump_root_struct_ptrs);
 	header.nb_opaques = Dynarr_length(pdump_opaques);
 
-	cur_offset = ALIGN_SIZE(sizeof(header), ALIGNOF(max_align_t));
+	cur_offset = ALIGN_SIZE(sizeof(header), ALIGNOF(sxe_max_align_t));
 	max_size = 0;
 
 	pdump_scan_by_alignment(pdump_allocate_offset);
-	cur_offset = ALIGN_SIZE(cur_offset, ALIGNOF(max_align_t));
+	cur_offset = ALIGN_SIZE(cur_offset, ALIGNOF(sxe_max_align_t));
 	header.stab_offset = cur_offset;
 
 	pdump_buf = xmalloc_atomic(max_size);
@@ -1086,7 +1086,7 @@ pdump(const char *dumpfile)
 		} else {
 
 			fwrite(&header, sizeof(header), 1, pdump_out);
-			PDUMP_ALIGN_OUTPUT(max_align_t);
+			PDUMP_ALIGN_OUTPUT(sxe_max_align_t);
 
 			pdump_scan_by_alignment(pdump_dump_data);
 

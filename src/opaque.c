@@ -59,7 +59,7 @@ static inline size_t
 aligned_sizeof_opaque(size_t opaque_size)
 {
 	return ALIGN_SIZE(offsetof(Lisp_Opaque, data) + opaque_size,
-			  ALIGNOF(max_align_t));
+			  ALIGNOF(sxe_max_align_t));
 }
 
 static size_t sizeof_opaque(const void *header)

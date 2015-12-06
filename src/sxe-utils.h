@@ -191,7 +191,7 @@ extern char *strdup(const char *s);
 #endif
 
 
-/* No type has a greater alignment requirement than max_align_t.
+/* No type has a greater alignment requirement than sxe_max_align_t.
    (except perhaps for types we don't use, like long double) */
 typedef union {
 	struct {
@@ -206,7 +206,7 @@ typedef union {
 	struct {
 		double d;
 	} d;
-} max_align_t;
+} sxe_max_align_t;
 
 #ifndef ALIGNOF
 # if defined (__GNUC__) && (__GNUC__ >= 2)
