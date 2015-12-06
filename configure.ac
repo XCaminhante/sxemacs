@@ -1740,10 +1740,30 @@ fi
 after_morecore_hook_exists=yes
 AC_CHECK_FUNC(malloc_set_state, ,doug_lea_malloc=no)
 AC_MSG_CHECKING(whether __after_morecore_hook exists)
-AC_LINK_IFELSE([AC_LANG_SOURCE([[extern void (* __after_morecore_hook)();],[__after_morecore_hook = 0]])],
+AC_LINK_IFELSE([AC_LANG_SOURCE([
+	[extern void (* __after_morecore_hook)();]
+	[main() {__after_morecore_hook = 0;}]
+	])],
   [AC_MSG_RESULT(yes)],
   [AC_MSG_RESULT(no)
    after_morecore_hook_exists=no])
+if test "$after_morecore_hook_exists" = "yes" ; then
+   AC_DEFINE([HAVE_MORECORE_HOOK], [1], [Define if __after_morecore_hook is available])
+fi
+AC_SUBST(HAVE_MORECORE_HOOK)
+free_hook_exists=yes
+AC_MSG_CHECKING(whether __free_hook exists)
+AC_LINK_IFELSE([AC_LANG_SOURCE([
+	[extern void (* __free_hook)();]
+	[main() {__free_hook = 0;}]
+	])],
+  [AC_MSG_RESULT(yes)],
+  [AC_MSG_RESULT(no)
+   free_hook_exists=no])
+if test "$free_hook_exists" = "yes" ; then
+   AC_DEFINE([HAVE_FREE_HOOK], [1], [Define if __free_hook is available])
+fi
+AC_SUBST(HAVE_FREE_HOOK)
 if test "$system_malloc" = "yes" ; then
   GNU_MALLOC=no
   GNU_MALLOC_reason="

@@ -2364,7 +2364,7 @@ x_widget_instantiate(Lisp_Object image_instance, Lisp_Object instantiator,
 	struct device *d = XDEVICE(device);
 	Lisp_Object frame = DOMAIN_FRAME(domain);
 	struct frame *f = XFRAME(frame);
-	char *nm = 0;
+	char *nm = 0;  // unused
 	Widget wid;
 	Arg al[32];
 	int ac = 0;
@@ -2383,6 +2383,8 @@ x_widget_instantiate(Lisp_Object image_instance, Lisp_Object instantiator,
 	if (!NILP(IMAGE_INSTANCE_WIDGET_TEXT(ii)))
 		LISP_STRING_TO_EXTERNAL(IMAGE_INSTANCE_WIDGET_TEXT(ii), nm,
 					Qnative);
+
+	SXE_SET_UNUSED(nm);
 
 	ii->data = xnew_and_zero(struct x_subwindow_data);
 

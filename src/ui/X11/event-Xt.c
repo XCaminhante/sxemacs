@@ -600,13 +600,18 @@ whatever(Display *dspl, struct x_device *xd, struct mod_clo_s *clo)
 		[modifier_index * mkpm + modifier_key];
 
 	for (int column = 0; column < 4; column += 2) {
-		KeySym sym = code
 #ifdef HAVE_XKBKEYCODETOKEYSYM
-			? XkbKeycodeToKeysym(dspl, code, 0, column)
+                KeySym sym = code
+                        ? XkbKeycodeToKeysym(dspl, code, 0, column)
+                        : 0;
 #else
-			? XKeycodeToKeysym(dspl, code, column)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+                KeySym sym = code
+                        ? XKeycodeToKeysym(dspl, code, column)
+                        : 0;
+#pragma GCC diagnostic pop
 #endif
-			: 0;
 
 		if (LIKELY(sym == last_sym)) {
 			continue;

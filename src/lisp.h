@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 /* the old SXEmacs general includes and utility macros moved here: */
 #include "sxe-utils.h"
+#include "sxe-memory.h"
 
 /* ------------------------ dynamic arrays ------------------- */
 
@@ -644,8 +645,7 @@ PRIVATE_EXTERNAL_LIST_LOOP_6 (elt, list, len, tail,			\
 	     (CONSP (hare) ? ((elt = XCAR (hare)), 1) :			\
 	      (NILP (hare) ? 0 :					\
 	       (signal_malformed_list_error (list), 0)));		\
-									\
-	     (hare = XCDR (hare)),					\
+	     (hare = XCDR (hare)), SXE_SET_UNUSED(elt),		        \
 		     (void)((++len > suspicion_length) &&		\
 			    ((void)(((len & 1) != 0)&&			\
 				    ((tortoise = XCDR (tortoise)), 0)),	\
@@ -785,6 +785,7 @@ PRIVATE_EXTERNAL_ALIST_LOOP_8 (elt, elt_car, elt_cdr, list,		\
 
 #define PRIVATE_EXTERNAL_ALIST_LOOP_8(elt, elt_car, elt_cdr, list, len, \
 				      hare, tortoise, suspicion_length)	\
+SXE_SET_UNUSED(elt_car),SXE_SET_UNUSED(elt_cdr);			\
 PRIVATE_EXTERNAL_LIST_LOOP_6 (elt, list, len, hare, tortoise,		\
 			      suspicion_length)				\
   if (CONSP (elt) ? (elt_car = XCAR (elt), elt_cdr = XCDR (elt), 0) :1)	\

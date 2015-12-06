@@ -500,6 +500,12 @@ static Boolean safe_strcmp(const char *s1, const char *s2)
 	return (s1 && s2) ? strcmp(s1, s2) : s1 ? False : !!s2;
 }
 
+
+/* We only expect to use the following max function */
+#ifdef max
+#undef max
+#endif
+
 static change_type max(change_type i1, change_type i2)
 {
 	return (int)i1 > (int)i2 ? i1 : i2;

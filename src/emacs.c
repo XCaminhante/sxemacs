@@ -2778,8 +2778,15 @@ main(int argc, char **argv, char **envp)
 /* various system shared libraries have been built and linked with */
 /* GCC >= 2.8.  -slb */
 #if defined(GNU_MALLOC)
+#if defined(HAVE_MORECORE_HOOK)
 static void voodoo_free_hook(void *mem)
 {
+  /* If it no longer works, we'll know about it. For now there is really no
+     good alternatic. Shut the warning off
+  */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 	/* Disable all calls to free() when SXEmacs is exiting and it doesn't */
 	/* matter. */
 	__free_hook =
@@ -2788,7 +2795,9 @@ static void voodoo_free_hook(void *mem)
 	    (__typeof__(__free_hook))
 #endif
 	    voodoo_free_hook;
+#pragma GCC diagnostic pop
 }
+#endif
 #endif				/* GNU_MALLOC */
 
 DEFUN("kill-emacs", Fkill_emacs, 0, 1, "P", /*
@@ -2843,12 +2852,17 @@ all of which are called before SXEmacs is actually killed.
 	shut_down_emacs(0, STRINGP(arg) ? arg : Qnil, 0);
 
 #if defined(GNU_MALLOC)
+#if defined(HAVE_MORECORE_HOOK)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	__free_hook =
 #if defined __GNUC__ || defined __INTEL_COMPILER
 /* prototype of __free_hook varies with glibc version */
 	    (__typeof__(__free_hook))
 #endif
 	    voodoo_free_hook;
+#pragma GCC diagnostic pop
+#endif
 #endif
 
 	exit(INTP(arg) ? XINT(arg) : 0);
@@ -3064,6 +3078,7 @@ and announce itself normally when it is run.
 		garbage_collect_1();
 
 #ifdef PDUMP
+		SXE_SET_UNUSED(symfile_ext);
 		pdump(filename_ext);
 #else
 
@@ -3212,6 +3227,8 @@ static int assertions_dont_abort = 0;
 #endif
 
 #define enter_debugger()
+
+void debug_backtrace();
 
 void
 assert_failed(const char *file, int line, const char *expr)

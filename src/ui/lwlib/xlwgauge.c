@@ -380,6 +380,8 @@ static void GaugeExpose(Widget w, XEvent * event, Region region)
 		hgt = gw->core.width;
 	}
 
+	SXE_SET_UNUSED(hgt);
+
 	/* if the gauge is selected, signify by drawing the background
 	 * in a contrasting color.
 	 */

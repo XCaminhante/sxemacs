@@ -186,7 +186,7 @@ aligned_sizeof_lstream(size_t lstream_type_specific_size)
 {
 	return ALIGN_SIZE(offsetof(struct lstream_s, data) +
 			  lstream_type_specific_size,
-			  ALIGNOF(max_align_t));
+			  ALIGNOF(sxe_max_align_t));
 }
 
 static inline size_t

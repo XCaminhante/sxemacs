@@ -947,6 +947,8 @@ void media_internal_analyse_stream(Lisp_Media_Stream *ms)
 		mkfp = media_stream_kind_properties(ms).fprops;
 		TO_EXTERNAL_FORMAT(LISP_STRING, mkfp->filename,
 				   ALLOCA, (file, file_len), Qnil);
+		SXE_SET_UNUSED(file_len);
+
 		if (file == NULL || (fd = open(file, O_RDONLY, 0)) < 0) {
 			xfree(data);
 			return;

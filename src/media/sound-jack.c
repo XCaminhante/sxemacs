@@ -336,6 +336,9 @@ finish:
 /* pull one channel out of a multi-channel stream */
 static size_t
 demux_internal(float *dst, char *src,
+	       size_t n, int chan, sound_jack_aj_data_t *f);
+static size_t
+demux_internal(float *dst, char *src,
 	       size_t n, int chan, sound_jack_aj_data_t *f)
 {
 	/* dst: destination buffer */
@@ -446,6 +449,8 @@ sound_jack_handle_aj_events(audio_job_t aj)
 
 	SXE_MUTEX_LOCK(&aj->mtx);
 	sasd = audio_job_device_data(aj);
+	SXE_SET_UNUSED(sasd);
+
 	if ((ev = eq_noseeum_dequeue(audio_job_queue(aj))) == NULL) {
 		SXE_MUTEX_UNLOCK(&aj->mtx);
 		return;
@@ -495,8 +500,11 @@ sound_jack_process(jack_nframes_t nframes, void *userdata)
 	aj = userdata;
 	SXE_MUTEX_LOCK(&aj->mtx);
 	mss = aj->substream;
+	SXE_SET_UNUSED(mss);
+
 	sjsd = audio_job_device_data(aj);
 	buffer = aj->buffer;
+	SXE_SET_UNUSED(buffer);
 
 #ifdef EF_USE_ASYNEQ
 	/* stuff on the event queue? */

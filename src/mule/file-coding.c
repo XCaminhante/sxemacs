@@ -1228,6 +1228,7 @@ and `coding-system-canonical-name-p'.
 
 	/* Checks that aliasee names a coding-system */
 	real_coding_system = Fget_coding_system(aliasee);
+	SXE_SET_UNUSED(real_coding_system);
 
 	/* Check for coding system alias loops */
 	if (EQ(alias, aliasee))
@@ -1851,7 +1852,11 @@ static Lisp_Object coding_system_from_mask(int mask)
 
 void
 autodetect_real_coding_system(lstream_t stream, Lisp_Object * codesys_in_out,
-			     eol_type_t * eol_type_in_out)
+			      eol_type_t * eol_type_in_out);
+
+void
+autodetect_real_coding_system(lstream_t stream, Lisp_Object * codesys_in_out,
+			      eol_type_t * eol_type_in_out)
 {
 	static const char mime_name_valid_chars[] =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"

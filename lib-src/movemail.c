@@ -344,14 +344,18 @@ int main(int argc, char *argv[])
 		int retcode = popmail(inname + 3, outname, poppass);
 		exit(retcode);
 	}
-	setuid(getuid());
+	if (0 != setuid(getuid())) {
+	        exit(1);
+	}
 #endif				/* MAIL_USE_POP */
 
 #ifndef DISABLE_DIRECT_ACCESS
 
 
 	if (fork() == 0) {
-		setuid(getuid());
+	        if (0 != setuid(getuid())) {
+	                exit(1);
+		}
 
 		VERBOSE(("opening input file\n"));
 

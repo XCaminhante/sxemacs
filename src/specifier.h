@@ -230,7 +230,7 @@ struct Lisp_Specifier {
 	Lisp_Object fallback;
 
 	/* type-specific extra data attached to a specifier */
-	max_align_t data[1];
+	sxe_max_align_t data[1];
 };
 typedef struct Lisp_Specifier Lisp_Specifier;
 

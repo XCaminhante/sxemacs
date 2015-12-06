@@ -238,66 +238,6 @@ ase_make_neighbourhood(Lisp_Object pt, Lisp_Object rad, Lisp_Object metric)
 	return result;
 }
 
-/* accessors */
-inline Lisp_Object
-ase_neighbourhood_point(ase_neighbourhood_t n)
-{
-	return n->point;
-}
-
-inline Lisp_Object
-ase_neighbourhood_radius(ase_neighbourhood_t n)
-{
-	return n->radius;
-}
-
-/* Measures */
-static inline void
-_ase_neighbourhood_update_lebesgue(ase_neighbourhood_t n)
-{
-	if (n && NILP(n->lebesgue_measure)) {
-		Lisp_Object i = n->ldata;
-		n->lebesgue_measure = Fase_interval_lebesgue_measure(i);
-	}
-	return;
-}
-
-static inline Lisp_Object
-_ase_neighbourhood_lebesgue(ase_neighbourhood_t n)
-{
-	return n->lebesgue_measure;
-}
-
-inline Lisp_Object
-ase_neighbourhood_lebesgue_measure(ase_neighbourhood_t n)
-{
-	_ase_neighbourhood_update_lebesgue(n);
-	return _ase_neighbourhood_lebesgue(n);
-}
-
-static inline void
-_ase_neighbourhood_update_rational(ase_neighbourhood_t n)
-{
-	if (n && NILP(n->rational_measure)) {
-		Lisp_Object i = n->ldata;
-		n->rational_measure = Fase_interval_rational_measure(i);
-	}
-	return;
-}
-
-static inline Lisp_Object
-_ase_neighbourhood_rational(ase_neighbourhood_t n)
-{
-	return n->rational_measure;
-}
-
-inline Lisp_Object
-ase_neighbourhood_rational_measure(ase_neighbourhood_t n)
-{
-	_ase_neighbourhood_update_rational(n);
-	return _ase_neighbourhood_rational(n);
-}
-
 
 /* lisp level */
 DEFUN("ase-neighbourhoodp", Fase_neighbourhoodp, 1, 1, 0, /*

@@ -1371,6 +1371,7 @@ static void tty_init_sys_modes_on_device(struct device *d)
 
 	input_fd = CONSOLE_TTY_DATA(con)->infd;
 	output_fd = CONSOLE_TTY_DATA(con)->outfd;
+	SXE_SET_UNUSED(output_fd);
 
 	emacs_get_tty(input_fd, &CONSOLE_TTY_DATA(con)->old_tty);
 	tty = CONSOLE_TTY_DATA(con)->old_tty;
@@ -1725,6 +1726,7 @@ static void tty_reset_sys_modes_on_device(struct device *d)
 
 	input_fd = CONSOLE_TTY_DATA(con)->infd;
 	output_fd = CONSOLE_TTY_DATA(con)->outfd;
+	SXE_SET_UNUSED(output_fd);
 
 #if defined (IBMR2AIX) && defined (AIXHFT)
 	{

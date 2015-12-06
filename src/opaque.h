@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 typedef struct Lisp_Opaque {
 	struct lcrecord_header header;
 	size_t size;
-	max_align_t data[1];
+	sxe_max_align_t data[1];
 } Lisp_Opaque;
 
 DECLARE_LRECORD(opaque, Lisp_Opaque);

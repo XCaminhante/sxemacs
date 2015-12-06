@@ -54,9 +54,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #else
 # define SXE_UNUSED(x) x
 #endif
+
 #ifdef UNUSED
 #undef UNUSED
 #define UNUSED(x) SXE_UNUSED(x)
+#endif
+
+#ifdef SXE_SET_UNUSED
+#else
+#  define SXE_SET_UNUSED(x) ((void)(x))
 #endif
 
 #ifdef WEAK_EXTERN
@@ -78,6 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #else
 #define LIKELY(_x)	__builtin_expect(!!(_x), 1)
 #endif
+
 #ifdef UNLIKELY
 #else
 #define UNLIKELY(_x)	__builtin_expect(!!(_x), 0)
@@ -101,13 +108,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #define SXE_CRITICAL(args...)		__SXE_DEBUG__("CRITICAL: " args)
 
 
-
 /* We define assert iff USE_ASSERTIONS or DEBUG_SXEMACS is defined.
    Otherwise we define it to be empty.  Quantify has shown that the
    time the assert checks take is measurable so let's not include them
    in production binaries. */
 
-#ifdef USE_ASSERTIONS
+#if defined(USE_ASSERTIONS) && defined(emacs)
 /* Highly dubious kludge */
 /*   (thanks, Jamie, I feel better now -- ben) */
 void assert_failed(const char *, int, const char *);
@@ -117,7 +123,7 @@ void assert_failed(const char *, int, const char *);
 # ifdef DEBUG_SXEMACS
 #  define assert(x) ((x) ? (void) 0 : (void) abort ())
 # else
-#  define assert(x)
+#  define assert(x) ((void)0)
 # endif
 #endif
 
@@ -143,21 +149,7 @@ void assert_failed(const char *, int, const char *);
 #endif
 
 
-/* generally useful */
 #define countof(x) ((int) (sizeof(x)/sizeof((x)[0])))
-#define xnew(type) ((type *) xmalloc (sizeof (type)))
-#define xnew_atomic(type) ((type *) xmalloc_atomic (sizeof (type)))
-#define xnew_array(type, len) ((type *) xmalloc ((len) * sizeof (type)))
-#define xnew_atomic_array(type, len)			\
-	((type*)xmalloc_atomic((len) * sizeof(type)))
-#define xnew_and_zero(type) ((type *) xmalloc_and_zero (sizeof (type)))
-#define xzero(lvalue) ((void) memset (&(lvalue), '\0', sizeof (lvalue)))
-#define xnew_array_and_zero(type, len)				\
-	((type*)xmalloc_and_zero ((len) * sizeof (type)))
-#define xrealloc_array(ptr, type, len)				\
-	((void) (ptr = (type *) xrealloc (ptr, (len) * sizeof (type))))
-#define XREALLOC_ARRAY		xrealloc_array
-#define alloca_array(type, len) ((type *) alloca ((len) * sizeof (type)))
 
 #if !defined HAVE_DECL_STRDUP
 extern char *strdup(const char *s);
@@ -199,7 +191,7 @@ extern char *strdup(const char *s);
 #endif
 
 
-/* No type has a greater alignment requirement than max_align_t.
+/* No type has a greater alignment requirement than sxe_max_align_t.
    (except perhaps for types we don't use, like long double) */
 typedef union {
 	struct {
@@ -214,7 +206,7 @@ typedef union {
 	struct {
 		double d;
 	} d;
-} max_align_t;
+} sxe_max_align_t;
 
 #ifndef ALIGNOF
 # if defined (__GNUC__) && (__GNUC__ >= 2)
@@ -253,143 +245,6 @@ template < typename T > struct alignment_trick {
 #ifndef DECLARE_NOTHING
 #define DECLARE_NOTHING struct nosuchstruct
 #endif
-
-
-/************************************************************************/
-/*				  Memory				*/
-/************************************************************************/
-
-#ifdef ALL_DEBUG_FLAGS
-#undef GC_DEBUG_FLAG
-#define GC_DEBUG_FLAG
-#endif
-
-#if !defined GC_DEBUG_FLAG
-# define SXE_DEBUG_GC(args...)
-#else
-# define SXE_DEBUG_GC(args...)		__SXE_DEBUG__("[gc] " args)
-#endif
-#define SXE_DEBUG_GC_PT(args...)	SXE_DEBUG_GC("[pthread]: " args)
-#define SXE_CRITICAL_GC(args...)	__SXE_DEBUG__("[gc] CRITICAL: " args)
-
-void malloc_warning(const char *);
-
-#if defined HAVE_BDWGC && defined EF_USE_BDWGC
-# if defined HAVE_THREADS
-#  if !defined GC_PTHREADS
-#   define GC_PTHREADS	1
-#  endif  /* !GC_PTHREADS */
-#  if !defined GC_THREADS
-#   define GC_THREADS	1
-#  endif  /* !GC_THREADS */
-# endif	 /* HAVE_THREADS */
-
-# undef GC_DEBUG
-# if defined GC_DEBUG_FLAG
-#  define GC_DEBUG	1
-# endif	 /* GC_DEBUG_FLAG */
-# if defined HAVE_GC_GC_H
-#  include <gc/gc.h>
-# elif defined HAVE_GC_H
-#  include <gc.h>
-# else
-#  error "Take less of those pills!"
-# endif
-
-# if defined GC_DEBUG_FLAG
-#  define zmalloc		GC_MALLOC_IGNORE_OFF_PAGE
-#  define zcalloc(n, m)	GC_MALLOC((n)*(m))
-#  define zmalloc_atomic	GC_MALLOC_ATOMIC_IGNORE_OFF_PAGE
-#  define zmalloc_and_zero	GC_MALLOC
-#  define zrealloc		GC_REALLOC
-#  define zstrdup		GC_STRDUP
-#  undef zfree
-#  define zfree(x)		GC_FREE(x)
-# else	/* !GC_DEBUG_FLAG */
-#  define zmalloc		GC_malloc_ignore_off_page
-#  define zcalloc(n, m)		GC_malloc((n)*(m))
-#  define zmalloc_atomic	GC_malloc_atomic_ignore_off_page
-#  define zmalloc_and_zero	GC_malloc
-#  define zrealloc		GC_realloc
-#  define zstrdup		GC_strdup
-#  undef zfree
-#  define zfree(x)
-# endif	/* GC_DEBUG_FLAG */
-
-#else  /* !BDWGC */
-#define zmalloc		F&^!
-#define zcalloc		F&^!
-#define zmalloc_atomic	F&^!
-#define zmalloc_and_zero	F&^!
-#define zrealloc	F&^!
-#define zstrdrup	F&^!
-#endif	/* BDWGC */
-
-/* also define libc mem funs */
-#define ymalloc		malloc
-#define ycalloc(n, m)	calloc(n, m)
-#define ymalloc_atomic(n)	ycalloc(1, n)
-#define ymalloc_and_zero(x)	ycalloc(1, x)
-#define yrealloc	realloc
-#define ystrdup		strdup
-#define yfree(x)	free(x)
-/* and their convenience companions */
-#define ynew(type)		((type*)ymalloc(sizeof(type)))
-#define ynew_array(type, len)	((type*)ymalloc((len) * sizeof(type)))
-#define ynew_and_zero(type)	((type*)ymalloc_and_zero(sizeof(type)))
-#define ynew_array_and_zero(type, len)			\
-	((type*)ymalloc_and_zero((len) * sizeof(type)))
-#define YREALLOC_ARRAY(ptr, type, len)					\
-	((void)(ptr = (type *)yrealloc(ptr, (len) * sizeof (type))))
-
-#if defined HAVE_BDWGC && defined EF_USE_BDWGC
-/* and now the x* series */
-# define xmalloc		zmalloc
-# define xcalloc		zcalloc
-# define xmalloc_atomic		zmalloc_atomic
-# define xmalloc_and_zero	zmalloc_and_zero
-# define xrealloc		zrealloc
-# define xstrdup		zstrdup
-# if defined ERROR_CHECK_MALLOC
-#  define xfree(args...)	zfree(args)
-# else	/* !ERROR_CHECK_MALLOC */
-#  define xfree(args...)
-# endif	 /* ERROR_CHECK_MALLOC */
-
-#else  /* !BDWGC */
-void *xmalloc(size_t size);
-void *xmalloc_atomic(size_t size);
-void *xmalloc_and_zero(size_t size);
-void *xrealloc(void *, size_t size);
-char *xstrdup(const char *);
-# if defined ERROR_CHECK_MALLOC
-#  if SIZEOF_VOID_P == 4
-#   define xfree(lvalue)					\
-	do {							\
-		void *volatile *xfree_ptr =			\
-			(void *volatile*)			\
-			((volatile void*)&(lvalue));		\
-		assert(*xfree_ptr != (void*)0xB00BB4BE);	\
-		yfree(*xfree_ptr);				\
-		*xfree_ptr = (void*)0xB00BB4BE;			\
-	} while (0)
-#  elif SIZEOF_VOID_P == 8
-#   define xfree(lvalue)							\
-	do {								\
-		void *volatile *xfree_ptr =				\
-			(void *volatile*)				\
-			((volatile void*)&(lvalue));			\
-		assert(*xfree_ptr != (void*)0xCAFEBABEDEADBEEF);	\
-		yfree(*xfree_ptr);					\
-		*xfree_ptr = (void*)0xCAFEBABEDEADBEEF;			\
-	} while (0)
-#  else  /* huh? */
-#   error "Strange-arse system detected.  Watch a movie, it\'s more fun!"
-#  endif
-# else	/* !ERROR_CHECK_MALLOC */
-#  define xfree(args...)	yfree(args)
-# endif	 /* ERROR_CHECK_MALLOC */
-#endif	/* BDWGC */
 
 
 /* str funs */

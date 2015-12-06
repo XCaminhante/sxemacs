@@ -203,7 +203,7 @@ struct lstream_s {
 
 	Lstream_data_count byte_count;
 	int flags;
-	max_align_t data[1];
+	sxe_max_align_t data[1];
 };
 
 #define LSTREAM_TYPE_P(lstr, type)		\

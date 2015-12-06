@@ -146,6 +146,8 @@ static widget_value *dbox_descriptor_to_widget_value(Lisp_Object keys)
 		}
 	}
 
+	SXE_SET_UNUSED(title);
+
 	if (NILP(question))
 		syntax_error("Dialog descriptor provides no question", keys);
 

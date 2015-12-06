@@ -83,6 +83,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 # undef REL_ALLOC
 #endif
 
+#include "sxe-utils.h"
+
 /* The `emacs' switch turns on certain matching commands
    that make sense only in Emacs. */
 #ifdef emacs
@@ -5855,6 +5857,7 @@ re_match_2_internal(struct re_pattern_buffer *bufp, re_char * string1,
 					  dummy_low_reg, dummy_high_reg,
 					  reg_dummy, reg_dummy,
 					  reg_info_dummy);
+                        SXE_SET_UNUSED(pdummy), SXE_SET_UNUSED(sdummy);
 		}
 			/* Note fall through.  */
 

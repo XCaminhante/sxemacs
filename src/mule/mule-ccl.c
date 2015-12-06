@@ -809,6 +809,7 @@ static int stack_idx_of_map_multiple;
 	      }							\
 	  }							\
       }								\
+      SXE_SET_UNUSED(bytes);                                    \
   } while (0)
 
 /* Read one byte from the current input buffer into Rth register.  */
