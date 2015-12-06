@@ -64,7 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
    is equally lame in that it supplies "fixed" headers for curses.h
    but not term.h.) However, it seems to work to just not include
    term.h under Solaris, so we try that.  KLUDGE! */
-#ifdef TERN_H_FILE
+#ifdef TERM_H_FILE
 #if !(defined (__GNUC__) && defined (SOLARIS2))
 #include TERM_H_FILE
 #endif
