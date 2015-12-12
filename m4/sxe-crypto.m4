@@ -19,8 +19,9 @@ AC_DEFUN([SXE_OPENSSL_VERSION], [dnl
 	AC_MSG_RESULT([$OPENSSL_VERSION])
 
 	AC_MSG_CHECKING([whether OpenSSL version is recent enough])
-	## we allow 0.9.7e-?, 0.9.8* and 0.9.9*
-	allowed_versions="0.9.7[e-z] 0.9.8* 0.9.9* 1.0.0*"
+	## we allow 0.9.8z*, 1.0.0[n-z]* 1.0.1[mz]* 1.0.2*
+	## As vulnerabilities are uncovered we should update this
+	allowed_versions="0.9.8z 1.0.0[[n-z]] 1.0.1[[m-z]] 1.0.2[[d-z]]"
 	OPENSSL_SANE_P=no
 	for ver in $allowed_versions; do
 	       if echo "$OPENSSL_VERSION" | ${GREP-grep} -q "$ver"; then
@@ -72,6 +73,12 @@ AC_DEFUN([SXE_TRY_OPENSSL_BIN_PREFIX], [dnl
 	SXE_APPEND_UNDUP([$OPENSSL_LDFLAGS], [LDFLAGS])
 
 	## check again
+	SXE_CHECK_HEADERS([openssl/opensslconf.h])
+	SXE_CHECK_HEADERS([openssl/evp.h])
+	SXE_CHECK_HEADERS([openssl/rand.h openssl/hmac.h])
+	SXE_CHECK_HEADERS([openssl/rsa.h openssl/dsa.h])
+	SXE_CHECK_HEADERS([openssl/ec.h openssl/ecdh.h])
+	SXE_CHECK_HEADERS([openssl/ecdsa.h openssl/dh.h])
 	SXE_CHECK_HEADERS([openssl/crypto.h])
 	SXE_CHECK_HEADERS([openssl/x509.h openssl/pem.h])
 	SXE_CHECK_HEADERS([openssl/ssl.h openssl/bio.h])
@@ -96,6 +103,12 @@ AC_DEFUN([SXE_CHECK_OPENSSL_LOCS], [dnl
 
 	dnl Look for these standard header file locations
 	OPENSSL_LIBS="-lssl -lcrypto"
+	SXE_CHECK_HEADERS([openssl/opensslconf.h])
+	SXE_CHECK_HEADERS([openssl/evp.h])
+	SXE_CHECK_HEADERS([openssl/rand.h openssl/hmac.h])
+	SXE_CHECK_HEADERS([openssl/rsa.h openssl/dsa.h])
+	SXE_CHECK_HEADERS([openssl/ec.h openssl/ecdh.h])
+	SXE_CHECK_HEADERS([openssl/ecdsa.h openssl/dh.h])
 	SXE_CHECK_HEADERS([openssl/crypto.h])
 	SXE_CHECK_HEADERS([openssl/x509.h openssl/pem.h])
 	SXE_CHECK_HEADERS([openssl/ssl.h openssl/bio.h])
@@ -149,10 +162,82 @@ AC_DEFUN([SXE_CHECK_OPENSSL_FEATURES], [dnl
 		AC_DEFINE([OPENSSL_NO_DH], [1], [Description here!])
 	fi
 
+	AC_CHECK_TYPES([SSL], [:], [:], [
+#if defined HAVE_OPENSSL_OPENSSLCONF_H
+# include <openssl/opensslconf.h>
+#endif
+#if defined HAVE_OPENSSL_SSL_H
+# include <openssl/ssl.h>
+#endif
+		])
+	AC_CHECK_TYPES([SSL_METHOD], [:], [:], [
+#if defined HAVE_OPENSSL_OPENSSLCONF_H
+# include <openssl/opensslconf.h>
+#endif
+#if defined HAVE_OPENSSL_SSL_H
+# include <openssl/ssl.h>
+#endif
+		])
+	AC_CHECK_TYPES([SSL_CTX], [:], [:], [
+#if defined HAVE_OPENSSL_OPENSSLCONF_H
+# include <openssl/opensslconf.h>
+#endif
+#if defined HAVE_OPENSSL_SSL_H
+# include <openssl/ssl.h>
+#endif
+		])
+	AC_CHECK_TYPES([BIO], [:], [:], [
+#if defined HAVE_OPENSSL_OPENSSLCONF_H
+# include <openssl/opensslconf.h>
+#endif
+#if defined HAVE_OPENSSL_SSL_H
+# include <openssl/ssl.h>
+#endif
+#if defined HAVE_OPENSSL_BIO_H
+# include <openssl/bio.h>
+#endif
+		])
+	AC_CHECK_TYPES([X509], [:], [:], [
+#if defined HAVE_OPENSSL_OPENSSLCONF_H
+# include <openssl/opensslconf.h>
+#endif
+#if defined HAVE_OPENSSL_SSL_H
+# include <openssl/ssl.h>
+#endif
+#if defined HAVE_OPENSSL_X509_H
+# include <openssl/x509.h>
+#endif
+		])
+	AC_CHECK_TYPES([EVP_PKEY], [:], [:], [
+#if defined HAVE_OPENSSL_OPENSSLCONF_H
+# include <openssl/opensslconf.h>
+#endif
+#if defined HAVE_OPENSSL_EVP_H
+# include <openssl/evp.h>
+#endif
+#if defined HAVE_OPENSSL_SSL_H
+# include <openssl/ssl.h>
+#endif
+#if defined HAVE_OPENSSL_X509_H
+# include <openssl/x509.h>
+#endif
+		])
 	dnl check for libssl support
 	AC_CHECK_LIB([ssl], [SSL_new], [openssl_ssl=yes], [openssl_ssl=no])
-	if test "$openssl_ssl" = "yes"; then
-		AC_DEFINE([OPENSSL_SSL], [1], [Description here!])
+	AC_MSG_CHECKING([for openssl types sufficent])
+	if test "x$ac_cv_type_EVP_PKEY"   = xyes -a \
+                "x$ac_cv_type_X509"       = xyes -a \
+                "x$ac_cv_type_BIO"        = xyes -a \
+                "x$ac_cv_type_SSL"        = xyes -a \
+                "x$ac_cv_type_SSL_METHOD" = xyes -a \
+                "x$ac_cv_type_SSL_CTX"    = xyes; then
+		AC_MSG_RESULT([yes])
+		if test "$openssl_ssl" = "yes"; then
+			AC_DEFINE([OPENSSL_SSL], [1], [Description here!])
+		fi
+	else
+		have_openssl=no
+		AC_MSG_RESULT([no])
 	fi
 ])dnl SXE_CHECK_OPENSSL_FEATURES
 

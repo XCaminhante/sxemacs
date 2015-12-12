@@ -24,35 +24,57 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #define INCLUDED_openssl_h_ 1
 
 /* this is to determine what has been configured */
+#ifdef HAVE_OPENSSL_OPENSSLCONF_H
 #include <openssl/opensslconf.h>
+#endif
 
+#ifdef HAVE_OPENSSL_EVP_H
 #include <openssl/evp.h>
+#endif
+
+#ifdef HAVE_OPENSSL_RAND_H
 #include <openssl/rand.h>
+#endif
+
+#ifdef HAVE_OPENSSL_HMAC_H
 #include <openssl/hmac.h>
+#endif
 
 /* special asymmetric crypto systems */
+#ifdef HAVE_OPENSSL_RSA_H
 #ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #endif
+#endif
 
+#ifdef HAVE_OPENSSL_DSA_H
 #ifndef OPENSSL_NO_DSA
 #include <openssl/dsa.h>
 #endif
+#endif
 
+#ifdef HAVE_OPENSSL_EC_H
 #ifndef OPENSSL_NO_EC
 #include <openssl/ec.h>
 #endif
+#endif
 
+#ifdef HAVE_OPENSSL_ECDH_H
 #ifndef OPENSSL_NO_ECDH
 #include <openssl/ecdh.h>
 #endif
+#endif
 
+#ifdef HAVE_OPENSSL_ECDSA_H
 #ifndef OPENSSL_NO_ECDSA
 #include <openssl/ecdsa.h>
 #endif
+#endif
 
+#ifdef HAVE_OPENSSL_DH
 #ifndef OPENSSL_NO_DH
 #include <openssl/dh.h>
+#endif
 #endif
 
 #if defined HAVE_OPENSSL_X509_H
@@ -84,8 +106,6 @@ DECLARE_LRECORD(evp_pkey, Lisp_EVP_PKEY);
 #define CHECK_EVPPKEY(x)	CHECK_RECORD (x, evp_pkey)
 #define wrap_evppkey(p)		wrap_object(p)
 
-
-#if !defined(OPENSSL_NO_SSL2) || !defined(OPENSSL_NO_SSL3)
 /* opaque SSL_CONN object structure
  * this is just an ssl-ish wrap around the process object
  */
@@ -135,5 +155,4 @@ DECLARE_LRECORD(ssl_conn, Lisp_SSL_CONN);
 #define OSSL_DEBUG_FLAG
 #endif
 
-#endif	/* !OPENSSL_NO_SSL2 || !OPENSSL_NO_SSL3 */
 #endif /* INCLUDED_openssl_h_ */
