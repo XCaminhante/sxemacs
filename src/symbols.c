@@ -612,11 +612,11 @@ SUBR must be a built-in function.
 */
        (subr))
 {
-	const char *name;
+        const char *name;
 	if (!SUBRP (subr))
 		wrong_type_argument (Qsubrp, subr);
 	name = XSUBR (subr)->name;
-	return make_string ((Bufbyte *)name, strlen (name));
+	return make_string ((const Bufbyte *)name, strlen (name));
 }
 
 

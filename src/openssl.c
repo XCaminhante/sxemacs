@@ -895,6 +895,7 @@ binary string data.
 	mdctx = xnew(EVP_MD_CTX);
 	EVP_MD_CTX_init(mdctx);
 	md_blocksize = (unsigned int)(EVP_MD_block_size(md) / 8);
+	SXE_SET_UNUSED(md_blocksize);
 
 	EVP_DigestInit_ex(mdctx, md, NULL);
 
@@ -2980,6 +2981,7 @@ Write PKEY (the public part) in a PEM structure to FILE.
 
 	pk = XEVPPKEY(pkey)->evp_pkey;
 	pk509 = XEVPPKEY(pkey)->x509;
+	SXE_SET_UNUSED(pk509);
 
 	if ((fp = fopen((char *)XSTRING_DATA(file), "w")) == NULL)
 		error ("error opening file.");
@@ -3019,6 +3021,7 @@ PASSWORD is ignored in this case.
 
 	pk = XEVPPKEY(pkey)->evp_pkey;
 	pk509 = XEVPPKEY(pkey)->x509;
+	SXE_SET_UNUSED(pk509);
 
 	if (!ossl_pkey_has_private_data(pk))
 		return Fossl_pem_write_public_key(file, pkey);
@@ -3471,13 +3474,21 @@ ossl_bio_dump_callback(BIO *bio, int cmd, const char *argp,
 static Lisp_Object
 ossl_ssl_prepare_cmeth(Lisp_Object method)
 {
-	SSL_METHOD *meth = NULL;
+        SSL_METHOD *meth = NULL;
 	Lisp_SSL_CONN *lisp_ssl_conn;
 
 	/* start preparing the conn object */
 	SSL_library_init();
 	SSL_load_error_strings();
 
+	/* I would love to make 'meth' const SSL_METHOD* as well as the
+	   'ssl_meth' member of 'Lisp_SSL_CONN' unfortunately not all
+	   supported versions of OpenSSL then take const SSL_METHOD*
+	   as arguments, so turning off the cast qualifier warning and
+	   store non-const is a more reasonable solution.
+	*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 	if (0) {
 	} else if (EQ(method, Qssl2)) {
 #if HAVE_SSLV2_CLIENT_METHOD
@@ -3510,6 +3521,7 @@ ossl_ssl_prepare_cmeth(Lisp_Object method)
 		error("default tlsv1 client method not supported");
 #endif
 	}
+#pragma GCC diagnostic pop
 	if (!RAND_status())
 		error("OSSL: not enough random data");
 
@@ -3533,6 +3545,14 @@ ossl_ssl_prepare_smeth(Lisp_Object method)
 	SSL_library_init();
 	SSL_load_error_strings();
 
+	/* I would love to make 'meth' const SSL_METHOD* as well as the
+	   'ssl_meth' member of 'Lisp_SSL_CONN' unfortunately not all
+	   supported versions of OpenSSL then take const SSL_METHOD*
+	   as arguments, so turning off the cast qualifier warning and
+	   store non-const is a more reasonable solution. 
+	*/
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 	if (0) {
 	} else if (EQ(method, Qssl2)) {
 #if HAVE_SSLV2_SERVER_METHOD
@@ -3565,6 +3585,7 @@ ossl_ssl_prepare_smeth(Lisp_Object method)
 		error("default sslv23 client method not supported");
 #endif
 	}
+#pragma GCC diagnostic pop
 	if (!RAND_status())
 		error("OSSL: not enough random data");
 
@@ -4259,6 +4280,8 @@ block of data sent through SSL-CONN.
 		error("SSL connection dead");
 
 	conn = XSSLCONN(ssl_conn)->ssl_conn;
+	SXE_SET_UNUSED(conn);
+
 	process = XSSLCONN(ssl_conn)->parent;
 
 	/* Make sure the process is really alive.  */
@@ -4307,6 +4330,7 @@ Send STRING to the tunnel SSL-CONN.
 
 	/* store the original process filter */
 	proc_filter = XPROCESS(process)->filter;
+	SXE_SET_UNUSED(proc_filter);
 
 	ret = Lstream_write(out, XSTRING_DATA(string), XSTRING_LENGTH(string));
 	Lstream_flush(out);
