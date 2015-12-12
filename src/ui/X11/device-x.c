@@ -1952,8 +1952,8 @@ See also `x-set-font-path'.
 {
 	Display *dpy = get_x_display(device);
 	int ndirs_return;
-	const char **directories =
-	    (const char **)XGetFontPath(dpy, &ndirs_return);
+	const char * const *directories =
+	    (const char * const *)XGetFontPath(dpy, &ndirs_return);
 	Lisp_Object font_path = Qnil;
 
 	if (!directories)
