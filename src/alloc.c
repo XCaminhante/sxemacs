@@ -3306,7 +3306,7 @@ Lisp_Object make_string_nocopy(Bufbyte *contents, Bytecount length)
 #ifdef EF_USE_COMPRE
 	s->compre = Qnil;
 #endif
-	set_string_data(s, (Bufbyte*)contents);
+	set_string_data(s, contents);
 	set_string_length(s, length);
 
 	XSETSTRING(val, s);

@@ -766,8 +766,11 @@ fast_string_match(Lisp_Object regexp, const Bufbyte * nonreloc,
 				   return with failure...
 				*/
 				return -1;
-			newnonreloc = alloca(length);
-			memcpy((void*)newnonreloc, (void*)XSTRING_DATA(reloc), length);
+			Bufbyte *copy = alloca(length);
+			memcpy((void*)copy,
+                               (const void*)XSTRING_DATA(reloc),
+                               length);
+			newnonreloc = copy;
 		}
 	}
 

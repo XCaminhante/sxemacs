@@ -86,11 +86,17 @@ char *emacs_tparam(const char *string, char *outstring, int len, int arg1,
 		   int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
 		   int arg8, int arg9)
 {
-	char *temp;
 	size_t slen = len;
 
-	temp = (char *)tparm((char *)string, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
-			     arg8, arg9);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
+	char *paramstring = (char *)string;
+	char *temp = (char *)
+	        tparm(paramstring, arg1, arg2, arg3, arg4, arg5, arg6, arg7,
+		      arg8, arg9);
+#pragma GCC diagnostic pop
+
+
 	if (outstring == 0) {
 		slen = strlen(temp)+1;
 		outstring = (char *)xmalloc_atomic( slen );

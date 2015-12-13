@@ -3777,10 +3777,13 @@ void init_event_Xt_late(void)
 		      (XtPointer) (XtInputReadMask /* | XtInputExceptMask */ ),
 		      Xt_what_callback, 0);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 	XtAppSetTypeConverter(Xt_app_con, XtRString, XtRPixel,
 			      EmacsXtCvtStringToPixel,
 			      (XtConvertArgList)colorConvertArgs,
 			      2, XtCacheByDisplay, EmacsFreePixel);
+#pragma GCC diagnostic pop
 
 #ifdef XIM_XLIB
 	XtAppSetTypeConverter(Xt_app_con, XtRString, XtRXimStyles,

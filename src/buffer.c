@@ -3046,7 +3046,7 @@ static int directory_is_current_directory(Extbyte * pwd)
 		/* Failure for failure, lets try using the external
 		   format anyway..
 		*/
-		pwd_internal=pwd;
+	        pwd_internal=(Bufbyte*)pwd;
 
 	}
 	if( pwd_internal == NULL ) {

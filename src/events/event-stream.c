@@ -4878,7 +4878,8 @@ asyneq_handle_non_command_event(event_queue_t eq)
 	WITH_DLLIST_TRAVERSE(
 		eq_queue(eq),
 		if (!command_event_p((Lisp_Object)dllist_item)) {
-			eqev = (Lisp_Object)dllist_pop_inner(eq_queue(eq), _el);
+		        void *eqev_p=dllist_pop_inner(eq_queue(eq), _el);
+			eqev = (Lisp_Object)eqev_p;
 			break;
 		});
 

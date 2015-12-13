@@ -739,7 +739,7 @@ gif_instantiate(Lisp_Object image_instance, Lisp_Object instantiator,
 						while (row >= height)
 							row =
 							    InterlacedOffset
-							    [++pass];
+							  	      [++pass];
 					}
 				eip =
 				    unwind.eimage +

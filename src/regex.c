@@ -1495,7 +1495,7 @@ typedef struct {
 					  string2, size2);		\
 		DEBUG_PRINT1("'\n");					\
 									\
-		pat = (unsigned char *) POP_FAILURE_POINTER();		\
+		pat = (const unsigned char*)POP_FAILURE_POINTER();	\
 		DEBUG_PRINT2 ("  Popping pattern %p: ", pat);		\
 		DEBUG_PRINT_COMPILED_PATTERN(bufp, pat, pend);		\
 									\
@@ -3811,8 +3811,11 @@ int re_compile_fastmap(struct re_pattern_buffer *bufp)
 				/* fuck, p isnt const thanks to that
 				 * unified range table function below */
 #ifdef MULE
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
 				p = (unsigned char*)fail_stack.
 				    stack[--fail_stack.avail].pointer;
+#pragma GCC diagnostic pop
 #else
 				p = fail_stack.stack[--fail_stack.avail]
 					.pointer;
@@ -6267,9 +6270,16 @@ re_match_2_internal(struct re_pattern_buffer *bufp, re_char * string1,
 		if (!FAIL_STACK_EMPTY()) {
 			/* A restart point is known.  Restore to that state.  */
 			DEBUG_PRINT1("\nFAIL:\n");
-			POP_FAILURE_POINT(d, p, lowest_active_reg,
+			
+			const unsigned char* cpat = p;
+			
+			POP_FAILURE_POINT(d, cpat, lowest_active_reg,
 					  highest_active_reg, regstart, regend,
 					  reg_info);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-qual"
+			p = (unsigned char*)cpat;
+#pragma GCC diagnostic pop
 
 			/* If this failure point is a dummy, try the next one.  */
 			if (!p)

@@ -33,6 +33,7 @@ extern EMACS_INT Vmost_negative_int, Vmost_positive_int;
 extern Lisp_Object Qzero, Qone;
 
 #if defined HAVE_MPZ && (defined WITH_GMP || defined WITH_MP)
+extern Lisp_Object make_bigz(long);
 #define make_integer(x)							\
 	(NUMBER_FITS_IN_AN_EMACS_INT(x) ? make_int(x) : make_bigz(x))
 #else
