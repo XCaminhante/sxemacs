@@ -64,15 +64,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
    is equally lame in that it supplies "fixed" headers for curses.h
    but not term.h.) However, it seems to work to just not include
    term.h under Solaris, so we try that.  KLUDGE! */
+#ifdef HAVE_TERM_H
 #ifdef TERM_H_FILE
 #if !(defined (__GNUC__) && defined (SOLARIS2))
 #include TERM_H_FILE
 #endif
 #endif
+#endif
 
 extern void *xmalloc_atomic(int size);
 
-#if 0				/* If this isn't declared somewhere, too bad */
+#ifndef HAVE_TPARM_PROTOTYPE
+/* Canonical for one, in their infinite wisdom ships the tinfo library without
+   any headers of which we'd need for proper tparm prototype.
+   If it is not defined, let's define it here, since if we are linking this
+   configure has determined we have a linkable tparm
+*/
 extern char *tparm(const char *string, int arg1, int arg2, int arg3,
 		   int arg4, int arg5, int arg6, int arg7, int arg8, int arg9);
 #endif
