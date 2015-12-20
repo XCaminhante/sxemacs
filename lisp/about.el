@@ -90,6 +90,7 @@
     ;; to sort the stuff below, use M-x sort-regexp-fields RET
     ;; ^.*$ RET (\([a-z]*\) RET
     (adrian    "Adrian Aichner"    "adrian@xemacs.org")
+    (aidan     "Aidan Kehoe"       "aidan@xemacs.org")
     (aj        "Andreas Jaeger"    "aj@xemacs.org")
     (ajc       "Andrew Cosgriff"   "ajc@xemacs.org")
     (alastair  "Alastair Houghton" "alastair@xemacs.org")
@@ -171,7 +172,7 @@
 
 (defvar about-current-release-maintainers
   ;; this list should not necessarily be in sorted order.
-  '(steve hroptatyr njsf lg horst))
+  '(steve njsf horst hroptatyr lg))
 
 (defvar about-other-current-hackers '(erik hynek))
 
@@ -219,9 +220,11 @@
     (rossini    . "http://faculty.washington.edu/rossini/")
     (steve      . "http://www.steveyoungs.com/")
     (steve-emchat . "http://www.emchat.org/")
-    (steve-g+   . "http://plus.steveyoungs.com/about/")
+    (steve-g+   . "https://plus.google.com/u/0/+SteveYoungs")
+    (steve-fb   . "https://facebook.com/steve.r.youngs/")
+    (steve-li   . "http://www.linkedin.com/in/steveyoungs")
     (steve-inits . "http://bastard.steveyoungs.com/~steve/SXEmacs/htmlinits/")
-    (steve-twit . "https://twitter.com/#!/SteveYoungs")
+    (steve-twit . "https://twitter.com/SteveYoungs")
     (stigb      . "http://www.tihlde.hist.no/~stigb/")
     (sxemacs    . "http://www.sxemacs.org/")
     (sxemacs-shop . "http://store.sxemacs.org/")
@@ -1282,16 +1285,13 @@ programming languages and their implementation, and hopes that one day
 XEmacs will speak Scheme.\n"))
     (steve
      (widget-insert "
-I live in Brisbane, Australia with my wife, Michelle, our daughter,
-Kaitlyn, and our son, Blake.
+I live in Brisbane, Australia with my wife, Michelle, and our children,
+Kaitlyn and Blake.
 
-In past lives, I've been a bank officer, car salesman, insurance
-agent, managed a computer firm and owned and operated my own
-business.  I now divide my time between my family, planning my
-next business, and maintaining a few open source projects.
-
-I am also having delusions of grandeur over becoming an honest to
-goodness author of fiction.  You know... books 'n' stories 'n' shit.
+In past lives, I've been a bank officer, car salesman, insurance agent,
+managed a computer firm and owned and operated my own business.  I now
+divide my time between my family, planning my next business, writing,
+and maintaining a few open source projects.
 
 "
 		    (about-with-face "My current open source obsessions are:"
@@ -1318,12 +1318,18 @@ goodness author of fiction.  You know... books 'n' stories 'n' shit.
 		    (about-with-face
 		     "More of me on the Interwebz:\n\n"
 		     'font-lock-warning-face))
-     (widget-insert (about-with-face "   My Blog:\t\t"
+     ; (widget-insert (about-with-face "   My Blog:\t\t"
+     ;    			     'font-lock-string-face))
+     ; (about-url-link 'steve nil "Visit my infrequently updated blog")
+     (widget-insert (about-with-face "   Facebook:\t\t"
 				     'font-lock-string-face))
-     (about-url-link 'steve nil "Visit my infrequently updated blog")
+     (about-url-link 'steve-fb nil "My Facebook Profile")
      (widget-insert (about-with-face "\n   Google+:\t\t"
 				     'font-lock-string-face))
      (about-url-link 'steve-g+ nil "My Google+ Profile")
+     (widget-insert (about-with-face "\n   LinkedIn:\t\t"
+				     'font-lock-string-face))
+     (about-url-link 'steve-li nil "My LinkedIn Profile")
      (widget-insert (about-with-face "\n   Twitter:\t\t"
 				     'font-lock-string-face))
      (about-url-link 'steve-twit nil "Follow me on Twitter")
