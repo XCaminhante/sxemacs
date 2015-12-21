@@ -56,23 +56,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #endif
 #endif
 
-/* These headers #define all kinds of common words like "columns"...
-   What a bunch of losers.  If we were to include them, we'd have to
-   include them last to prevent them from messing up our own header
-   files (struct slot names, etc.).  But it turns out that there are
-   other conflicts as well on some systems, so screw it: we'll just
-   re-declare the routines we use and assume the code in this file is
-   invoking them correctly. */
-/* # include <curses.h> */
-/* # include <term.h> */
-#ifndef CURSES_H_FILE
+#ifdef HAVE_TERM_H
+#ifdef TERM_H_FILE
+#include TERM_H_FILE
+#endif
+#endif
+
+#ifndef HAVE_TGETENT_PROTOTYPE
 EXTERN_C int tgetent(const char *, const char *);
+#endif
+
+#ifndef HAVE_TGETFLAG_PROTOTYPE
 EXTERN_C int tgetflag(const char *);
+#endif
+
+#ifndef HAVE_TGETNUM_PROTOTYPE
 EXTERN_C int tgetnum(const char *);
+#endif
+
+#ifndef HAVE_TGETSTR_PROTOTYPE
 EXTERN_C char *tgetstr(const char *, char **);
 #endif
 
-#ifndef TERMCAP_H_FILE
+#ifndef HAVE_TPUTS_PROTOTYPE
 EXTERN_C void tputs(const char *, int, int (*)(int));
 #endif
 

@@ -2952,24 +2952,140 @@ AS_IF([test "$with_tty" != "no"],[
    if test -n "$curses_h_file"; then
 	AC_DEFINE_UNQUOTED([HAVE_CURSES_H], [1],
 			   [There is a curses.h header file available])
+	AC_DEFINE_UNQUOTED([CURSES_H_FILE], ["${curses_h_file}"],
+            	           [The curses.h header file])
    fi
 
    if test -n "$termcap_h_file"; then
 	AC_DEFINE_UNQUOTED([HAVE_TERMCAP_H], [1],
 	                   [There is a termcap.h header available])
+	AC_DEFINE_UNQUOTED([TERMCAP_H_FILE], ["${termcap_h_file}"],
+        	           [The termcap.h header file])
    fi
 
    if test -n "$term_h_file"; then
 	AC_DEFINE_UNQUOTED([HAVE_TERM_H], [1],
 	                   [There is a term.h header available])
+	AC_DEFINE_UNQUOTED([TERM_H_FILE], ["${term_h_file}"],
+        		   [The term.h header file])
    fi
 
-   AC_DEFINE_UNQUOTED([CURSES_H_FILE], ["${curses_h_file-curses.h}"],
-                      [The curses.h header file])
-   AC_DEFINE_UNQUOTED([TERMCAP_H_FILE], ["${termcap_h_file-termcap.h}"],
-                      [The termcap.h header file])
-   AC_DEFINE_UNQUOTED([TERM_H_FILE], ["${term_h_file-term.h}"],
-                      [The term.h header file])
+   # Finally let's see if we have prototype for the elusive tparm
+   AC_MSG_CHECKING(for tparm prototype)
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef TERM_H_FILE
+#include TERM_H_FILE
+#endif
+#ifdef TERMCAP_H_FILE
+#include TERMCAP_H_FILE
+#endif
+#ifdef CURSES_H_FILE
+#include CURSES_H_FILE
+#endif
+/* Completely incompatible prototype with all tparm ones
+   if files above define it, compilation should fail
+*/
+extern void tparm(void);
+	]], [[ tparm(); ]])],
+	[AC_MSG_RESULT(no)],
+	[AC_MSG_RESULT(yes)
+         AC_DEFINE_UNQUOTED([HAVE_TPARM_PROTOTYPE], [1],
+	 	            [tparm has a prototype defined])])
+
+   # Finally let's see if we have prototype for tgetent
+   AC_MSG_CHECKING(for tgetent prototype)
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef TERM_H_FILE
+#include TERM_H_FILE
+#endif
+#ifdef TERMCAP_H_FILE
+#include TERMCAP_H_FILE
+#endif
+#ifdef CURSES_H_FILE
+#include CURSES_H_FILE
+#endif
+extern void tgetent(void);
+	]], [[ tgetent(); ]])],
+	[AC_MSG_RESULT(no)],
+	[AC_MSG_RESULT(yes)
+         AC_DEFINE_UNQUOTED([HAVE_TGETENT_PROTOTYPE], [1],
+	                    [tgetent has a prototype defined])])
+
+
+   # Finally let's see if we have prototype for tgetflag
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef TERM_H_FILE
+#include TERM_H_FILE
+#endif
+#ifdef TERMCAP_H_FILE
+#include TERMCAP_H_FILE
+#endif
+#ifdef CURSES_H_FILE
+#include CURSES_H_FILE
+#endif
+extern void tgetflag(void);
+	]], [[ tgetflag(); ]])],
+	[AC_MSG_RESULT(no)],
+	[AC_MSG_RESULT(yes)
+         AC_DEFINE_UNQUOTED([HAVE_TGETFLAG_PROTOTYPE], [1],
+	                         [tgetflag has a prototype defined])])
+
+   # Finally let's see if we have prototype for tgetnum
+   AC_MSG_CHECKING(for tgetnum prototype)
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef TERM_H_FILE
+#include TERM_H_FILE
+#endif
+#ifdef TERMCAP_H_FILE
+#include TERMCAP_H_FILE
+#endif
+#ifdef CURSES_H_FILE
+#include CURSES_H_FILE
+#endif
+extern void tgetnum(void);
+	]], [[ tgetnum(); ]])],
+	[AC_MSG_RESULT(no)],
+	[AC_MSG_RESULT(yes)
+	 AC_DEFINE_UNQUOTED([HAVE_TGETNUM_PROTOTYPE], [1],
+	                    [tgetnum has a prototype defined])])
+
+   # Finally let's see if we have prototype for tgetnum
+   AC_MSG_CHECKING(for tgetstr prototype)
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef TERM_H_FILE
+#include TERM_H_FILE
+#endif
+#ifdef TERMCAP_H_FILE
+#include TERMCAP_H_FILE
+#endif
+#ifdef CURSES_H_FILE
+#include CURSES_H_FILE
+#endif
+extern void tgetstr(void);
+	]], [[ tgetstr(); ]])],
+	[AC_MSG_RESULT(no)],
+        [AC_MSG_RESULT(yes)
+	 AC_DEFINE_UNQUOTED([HAVE_TGETSTR_PROTOTYPE], [1],
+	                    [tgetstr has a prototype defined])])
+
+   # Finally let's see if we have prototype for tgetnum
+   AC_MSG_CHECKING(for tputs prototype)
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef TERM_H_FILE
+#include TERM_H_FILE
+#endif
+#ifdef TERMCAP_H_FILE
+#include TERMCAP_H_FILE
+#endif
+#ifdef CURSES_H_FILE
+#include CURSES_H_FILE
+#endif
+extern void tputs(void);
+	]], [[ tputs(); ]])],
+	[AC_MSG_RESULT(no)],
+	[AC_MSG_RESULT(yes)
+         AC_DEFINE_UNQUOTED([HAVE_TPUTS_PROTOTYPE], [1],
+	                    [tputs has a prototype defined])])
 ],[
   for feature in ncurses curses termcap terminfo termlib gpm; do
     if eval "test -n \"\$with_${feature}\" -a \"\$with_${feature}\" != no" ; then
