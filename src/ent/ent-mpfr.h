@@ -41,7 +41,7 @@ extern Lisp_Object Qbigfrp;
 
 extern Lisp_Object Veuler;
 extern Lisp_Object Veuler_mascheroni;
-extern Lisp_Object Vbigfr_pi;
+extern Lisp_Object Vpi;
 
 
 typedef struct Lisp_Bigfr Lisp_Bigfr;

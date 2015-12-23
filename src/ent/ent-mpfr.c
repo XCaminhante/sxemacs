@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 Lisp_Object Veuler;
 Lisp_Object Veuler_mascheroni;
-Lisp_Object Vbigfr_pi;
+Lisp_Object Vpi;
 
 bigfr ent_scratch_bigfr;
 static ase_nullary_operation_f Qent_mpfr_zero, Qent_mpfr_one;
@@ -1599,8 +1599,8 @@ void init_ent_mpfr(void)
 	Veuler_mascheroni = make_bigfr(0.0, 2048UL);
 	mpfr_const_euler(XBIGFR_DATA(Veuler_mascheroni), GMP_RNDN);
 
-	Vbigfr_pi = make_bigfr(0.0, 2048UL);
-	mpfr_const_pi(XBIGFR_DATA(Vbigfr_pi), GMP_RNDN);
+	Vpi = make_bigfr(0.0, 2048UL);
+	mpfr_const_pi(XBIGFR_DATA(Vpi), GMP_RNDN);
 }
 
 void syms_of_ent_mpfr(void)
@@ -1620,7 +1620,7 @@ void vars_of_ent_mpfr(void)
 	/* just some dummy values atm, to make the dumper smile */
 	Veuler = make_int(1L);
 	Veuler_mascheroni = make_int(1L);
-	Vbigfr_pi = make_int(1L);
+	Vpi = make_int(1L);
 
 	DEFVAR_CONST_LISP("euler", &Veuler /*
 The value of Euler's constant e (2.7182818...).
@@ -1628,7 +1628,11 @@ The value of Euler's constant e (2.7182818...).
 	DEFVAR_CONST_LISP("euler-mascheroni", &Veuler_mascheroni /*
 The value of the Euler-Mascheroni constant (0.5772156...).
 								 */);
-	DEFVAR_CONST_LISP("bigfr-pi", &Vbigfr_pi /*
+	/*
+	 * See http://issues.sxemacs.org/show_bug.cgi?id=176 for why this
+	 * is no longer a constant. -SY.
+	 */
+	DEFVAR_LISP("pi", &Vpi /*
 The value of pi (3.1415926...).
 				     */);
 
