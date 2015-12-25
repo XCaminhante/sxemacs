@@ -763,6 +763,9 @@ If this is nil, no message will be displayed.")
 
 ;;; Load user's init file and default ones.
 (defun load-init-file ()
+
+  (require 'const-aliases)
+
   (run-hooks 'before-init-hook)
 
   ;; Run the site-start library if it exists.  The point of this file is
