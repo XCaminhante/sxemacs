@@ -36,7 +36,10 @@
     (error "Floating point was disabled at compile time"))
 
 ;; define pi and e via math-lib calls. (much less prone to killer typos.)
-(unless (featurep 'bigfr)
+(if (featurep 'bigfr)
+    (progn
+      (defconst pi bigfr-pi "The value of Pi (3.1415926...)")
+      (defconst e euler "The value of e (2.7182818...)"))
   (defconst pi (* 4 (atan 1)) "The value of Pi (3.1415926...)")
   (defconst e (exp 1) "The value of e (2.7182818...)"))
 
