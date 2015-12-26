@@ -76,16 +76,16 @@ corelispels =								\
 	build-rpt.el byte-optimize.el bytecomp-runtime.el bytecomp.el	\
 	callers-of-rpt.el cl-compat.el cl-extra.el cl-macs.el cl-seq.el \
 	cl.el cmdloop.el code-cmds.el code-files.el code-process.el	\
-	coding.el compat.el config.el console.el cus-dep.el		\
-	cus-edit.el cus-face.el cus-file.el cus-load.el cus-start.el	\
-	custom.el derived.el device.el dialog-items.el dialog.el	\
-	disass.el disp-table.el dragdrop.el easy-mmode.el easymenu.el	\
-	emod-utils.el etags.el events.el extents.el faces.el ffi.el	\
-	files-nomule.el files.el fill.el float-sup.el font-lock.el	\
-	font-menu.el font.el fontl-hooks.el format.el frame.el          \
-	glyphs.el gnuserv.el gpm.el gui.el gutter-items.el gutter.el	\
-	help-macro.el help-nomule.el help.el hyper-apropos.el indent.el	\
-	info.el isearch-mode.el iso8859-1.el issue-tracker.el		\
+	coding.el compat.el config.el console.el const-aliases.el	\
+	cus-dep.el cus-edit.el cus-face.el cus-file.el cus-load.el	\
+	cus-start.el custom.el derived.el device.el dialog-items.el	\
+	dialog.el disass.el disp-table.el dragdrop.el easy-mmode.el	\
+	easymenu.el emod-utils.el etags.el events.el extents.el		\
+	faces.el ffi.el files-nomule.el files.el fill.el float-sup.el	\
+	font-lock.el font-menu.el font.el fontl-hooks.el format.el	\
+	frame.el glyphs.el gnuserv.el gpm.el gui.el gutter-items.el	\
+	gutter.el help-macro.el help-nomule.el help.el hyper-apropos.el \
+	indent.el info.el isearch-mode.el iso8859-1.el issue-tracker.el	\
 	itimer-autosave.el itimer.el keydefs.el keymap.el ldap.el	\
 	lib-complete.el lisp-initd.el lisp-mnt.el lisp-mode.el lisp.el	\
 	list-mode.el loaddefs.el loadhist.el map-ynp.el			\
