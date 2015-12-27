@@ -128,40 +128,64 @@ media_ffmpeg_bitrate(AVCodecContext *enc)
 
 char *media_ffmpeg_streaminfo(Lisp_Media_Stream *ms)
 {
-	AVFormatContext *avfc = NULL;
-	char *out;
-	int chars_left = 4095;
+	AVFormatContext   *avfc   = NULL;
+	AVDictionaryEntry *curr   = NULL;
+	char              *out    = NULL;
+	int chars_left            = 4095;
 
 	avfc = media_stream_data(ms);
 	out = xmalloc_atomic(chars_left+1);
-	out[0] = '\0';
+	if (! out)
+	        return out;
+
+	out[0]          = '\0';
 	out[chars_left] = '\0';
 
 	/* cannot use ffmpeg on corrupt streams */
 	if (media_stream_driver(ms) != MYSELF || avfc == NULL)
 		return out;
+	
+	if (! avfc->metadata)
+	        return out;
 
-	if (avfc->author && *avfc->author) {
-		strncat(out, " :author \"", chars_left);
-		chars_left -= 10;
-		strncat(out, avfc->author, chars_left);
-		chars_left -= strlen(avfc->author);
-		strncat(out, "\"", chars_left--);
-	}
-	if (avfc->title && *avfc->title) {
-		strncat(out, " :title: \"", chars_left);
-		chars_left -= 10;
-		strncat(out, avfc->title, chars_left);
-		chars_left -= strlen(avfc->title);
-		strncat(out, "\"", chars_left--);
-	}
-	if (avfc->year) {
-		char year[12];
-		int sz = snprintf(year, sizeof(year), "%d", avfc->year);
-		assert(sz>=0 && sz<sizeof(year));
-		strncat(out, " :year ", chars_left);
-		chars_left -= 7;
-		strncat(out, year, chars_left);
+	{
+	        static const char   *keys[] = { "author", "title", "date" };
+		static const size_t  nkeys  = sizeof(keys)/sizeof(keys[0]);
+		int           i      = 0;
+
+		for (i = 0; i < nkeys; ++i ) {
+		        curr = av_dict_get(avfc->metadata,
+					   keys[i],
+					   curr,
+					   AV_DICT_IGNORE_SUFFIX);
+			if (! curr)
+			        continue;
+
+			strncat(out, " :", chars_left);
+			chars_left -= 2;
+			if (chars_left < 0)
+			        break;
+
+			strncat(out, curr->key, chars_left);
+			chars_left -= strlen(curr->key);
+			if (chars_left < 0)
+	                        break;
+
+			strncat(out, " \"", chars_left);
+			chars_left -= 2;
+			if (chars_left < 0)
+	                        break;
+
+			strncat(out, curr->value, chars_left);
+			chars_left -= strlen(curr->value);
+			if (chars_left < 0)
+	                        break;
+
+			strncat(out, "\"", chars_left);
+			chars_left -= 1;
+			if (chars_left < 0)
+	                        break;
+		}
 	}
 
 	return out;
@@ -1244,22 +1268,26 @@ stream_component_close(VideoState *is, int stream_index)
 static void
 dump_stream_info(const AVFormatContext *s)
 {
-	if (s->track != 0)
-		fprintf(stderr, "Track: %d\n", s->track);
-	if (s->title[0] != '\0')
-		fprintf(stderr, "Title: %s\n", s->title);
-	if (s->author[0] != '\0')
-		fprintf(stderr, "Author: %s\n", s->author);
-	if (s->copyright[0] != '\0')
-		fprintf(stderr, "Copyright: %s\n", s->copyright);
-	if (s->comment[0] != '\0')
-		fprintf(stderr, "Comment: %s\n", s->comment);
-	if (s->album[0] != '\0')
-		fprintf(stderr, "Album: %s\n", s->album);
-	if (s->year != 0)
-		fprintf(stderr, "Year: %d\n", s->year);
-	if (s->genre[0] != '\0')
-		fprintf(stderr, "Genre: %s\n", s->genre);
+        static const char   *keys[] = {
+		"track", "title", "author", "copyright", "comment",
+		"album", "date",  "genre"
+	};
+        static const size_t  nkeys  = sizeof(keys)/sizeof(keys[0]);
+        int           i      = 0;
+	AVDictionaryEntry *curr = NULL;
+	if (! s->metadata) {
+	        fprintf(stderr, "No metadata\n");
+		return;
+	}
+
+	for (i = 0; i < nkeys; ++i ) {
+	        curr = av_dict_get(s->metadata,
+				   keys[i],
+				   curr,
+				   AV_DICT_IGNORE_SUFFIX);
+		if (curr)
+		    fprintf(stderr, "%s: %s\n", curr->key, curr->value);
+	}
 }
 
 enum {

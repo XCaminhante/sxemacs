@@ -24,12 +24,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #define INCLUDED_media_ffmpeg_h_
 
 #include "media.h"
+
 #if defined HAVE_LIBAVFORMAT_AVFORMAT_H
 # include <libavformat/avformat.h>
 #elif defined HAVE_FFMPEG_AVFORMAT_H
 # include <ffmpeg/avformat.h>
 #elif defined HAVE_AVFORMAT_H
 # include <avformat.h>
+#endif
+
+#if defined HAVE_LIBAVUTIL_DICT_H
+# include <libavutil/dict.h>
+#elif defined HAVE_FFMPEG_DICT_H
+# include <ffmpeg/dict.h>
 #endif
 
 /* Newer ffmpeg do not declare this macro... */
