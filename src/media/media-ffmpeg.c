@@ -434,34 +434,34 @@ media_ffmpeg_analyse_audio(media_substream *mss, AVFormatContext *avfc, int st)
 
 		/* samplewidth and framesize */
 		switch (avcc->sample_fmt) {
-		case SAMPLE_FMT_U8:
+		case AV_SAMPLE_FMT_U8:
 			mtap->samplewidth = 8;
 			mtap->framesize = mtap->channels * 1;
 			mtap->msf = sxe_msf_U8;
 			break;
-		case SAMPLE_FMT_S16:
+		case AV_SAMPLE_FMT_S16:
 			mtap->samplewidth = 16;
 			mtap->framesize = mtap->channels * 2;
 			mtap->msf = sxe_msf_S16;
 			break;
-#if defined SAMPLE_FMT_S24
-		case SAMPLE_FMT_S24:
+#if defined AV_SAMPLE_FMT_S24
+		case AV_SAMPLE_FMT_S24:
 			mtap->samplewidth = 32;
 			mtap->framesize = mtap->channels * 4;
 			mtap->msf = sxe_msf_S24;
 			break;
 #endif	/* SAMPLE_FMT_S24 */
-		case SAMPLE_FMT_S32:
+		case AV_SAMPLE_FMT_S32:
 			mtap->samplewidth = 32;
 			mtap->framesize = mtap->channels * 4;
 			mtap->msf = sxe_msf_S32;
 			break;
-		case SAMPLE_FMT_FLT:
+		case AV_SAMPLE_FMT_FLT:
 			mtap->samplewidth = 8*sizeof(float);
 			mtap->framesize = mtap->channels * sizeof(float);
 			mtap->msf = sxe_msf_FLT;
 			break;
-		case SAMPLE_FMT_NONE:
+		case AV_SAMPLE_FMT_NONE:
 		default:
 			mtap->samplewidth = 0;
 			break;
@@ -585,7 +585,7 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 			avcc = avst->codec;
 			if (avcc &&
 			    avcc->codec_id != CODEC_ID_NONE &&
-			    avcc->codec_type != CODEC_TYPE_DATA &&
+			    avcc->codec_type != AVMEDIA_TYPE_DATA &&
 			    (avc = avcodec_find_decoder(avcc->codec_id)) &&
 			    (avc && (avcodec_open(avcc, avc) >= 0))) {
 
@@ -593,19 +593,19 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 				mss = make_media_substream_append(ms);
 
 				switch ((unsigned int)avcc->codec_type) {
-				case CODEC_TYPE_VIDEO:
+				case AVMEDIA_TYPE_VIDEO:
 					/* assign substream props */
 					media_substream_type(mss) = MTYPE_VIDEO;
 					media_ffmpeg_analyse_video(mss, avfc, st);
 					break;
-				case CODEC_TYPE_AUDIO:
+				case AVMEDIA_TYPE_AUDIO:
 					/* assign substream props */
 					media_substream_type(mss) = MTYPE_AUDIO;
 					media_ffmpeg_analyse_audio(mss, avfc, st);
 					/* set some stream handlers */
 					media_stream_set_meths(ms, media_ffmpeg);
 					break;
-				case CODEC_TYPE_DATA:
+				case AVMEDIA_TYPE_DATA:
 					media_substream_type(mss) = MTYPE_IMAGE;
 					break;
 				default:
@@ -1096,7 +1096,7 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 	enc = ic->streams[stream_index]->codec;
 
 	/* prepare audio output */
-	if (enc->codec_type == CODEC_TYPE_AUDIO) {
+	if (enc->codec_type == AVMEDIA_TYPE_AUDIO) {
 #if 0
 		wanted_spec.freq = enc->sample_rate;
 		wanted_spec.format = AUDIO_S16SYS;
@@ -1142,7 +1142,7 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 	mss = make_media_substream_append(ms);
 
 	switch ((unsigned int)enc->codec_type) {
-	case CODEC_TYPE_AUDIO:
+	case AVMEDIA_TYPE_AUDIO:
 		is->audio_stream = stream_index;
 		is->audio_st = ic->streams[stream_index];
 		is->audio_buf_size = 0;
@@ -1162,7 +1162,7 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 		media_substream_type(mss) = MTYPE_AUDIO;
 		media_ffmpeg_analyse_audio(mss, is->ic, stream_index);
 		break;
-	case CODEC_TYPE_VIDEO:
+	case AVMEDIA_TYPE_VIDEO:
 		is->video_stream = stream_index;
 		is->video_st = ic->streams[stream_index];
 
@@ -1182,7 +1182,7 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 		media_substream_type(mss) = MTYPE_VIDEO;
 		media_ffmpeg_analyse_video(mss, is->ic, stream_index);
 		break;
-	case CODEC_TYPE_SUBTITLE:
+	case AVMEDIA_TYPE_SUBTITLE:
 		is->subtitle_stream = stream_index;
 		is->subtitle_st = ic->streams[stream_index];
 		packet_queue_init(&is->subtitleq);
@@ -1207,14 +1207,14 @@ stream_component_close(VideoState *is, int stream_index)
 	enc = ic->streams[stream_index]->codec;
 
 	switch ((unsigned int)enc->codec_type) {
-	case CODEC_TYPE_AUDIO:
+	case AVMEDIA_TYPE_AUDIO:
 		packet_queue_abort(&is->audioq);
 #if 0
 		SDL_CloseAudio();
 #endif
 		packet_queue_end(&is->audioq);
 		break;
-	case CODEC_TYPE_VIDEO:
+	case AVMEDIA_TYPE_VIDEO:
 		packet_queue_abort(&is->videoq);
 
 		/* note: we also signal this mutex to make sure we deblock the
@@ -1227,7 +1227,7 @@ stream_component_close(VideoState *is, int stream_index)
 #endif
 		packet_queue_end(&is->videoq);
 		break;
-	case CODEC_TYPE_SUBTITLE:
+	case AVMEDIA_TYPE_SUBTITLE:
 		packet_queue_abort(&is->subtitleq);
 
 		/* note: we also signal this mutex to make sure we deblock the
@@ -1248,15 +1248,15 @@ stream_component_close(VideoState *is, int stream_index)
 
 	avcodec_close(enc);
 	switch ((unsigned int)enc->codec_type) {
-	case CODEC_TYPE_AUDIO:
+	case AVMEDIA_TYPE_AUDIO:
 		is->audio_st = NULL;
 		is->audio_stream = -1;
 		break;
-	case CODEC_TYPE_VIDEO:
+	case AVMEDIA_TYPE_VIDEO:
 		is->video_st = NULL;
 		is->video_stream = -1;
 		break;
-	case CODEC_TYPE_SUBTITLE:
+	case AVMEDIA_TYPE_SUBTITLE:
 		is->subtitle_st = NULL;
 		is->subtitle_stream = -1;
 		break;
@@ -1413,12 +1413,12 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 	for (size_t i = 0; i < vs->ic->nb_streams; i++) {
 		AVCodecContext *enc = vs->ic->streams[i]->codec;
 		switch ((unsigned int)enc->codec_type) {
-		case CODEC_TYPE_AUDIO:
+		case AVMEDIA_TYPE_AUDIO:
 			if ((audio_index < 0 || wanted_audio_stream-- > 0)) {
 				audio_index = i;
 			}
 			break;
-		case CODEC_TYPE_VIDEO:
+		case AVMEDIA_TYPE_VIDEO:
 			if ((video_index < 0 || wanted_video_stream-- > 0)) {
 				video_index = i;
 			}
