@@ -220,15 +220,9 @@ media_ffmpeg_open_file(const char *file)
 
 
 static int
-media_ffmpeg_vio_open(URLContext *h, const char *filename, int flags)
+media_ffmpeg_vio_read(void *h, unsigned char *buf, int size)
 {
-	return 0;
-}
-
-static int
-media_ffmpeg_vio_read(URLContext *h, unsigned char *buf, int size)
-{
-	media_data *sd = (media_data*)h->priv_data;
+	media_data *sd = (media_data*)h;
 
 	FFMPEG_DEBUG_AVS("reading %d bytes to 0x%x, respecting seek %ld\n",
 			 size, (unsigned int)buf, sd->seek);
@@ -244,16 +238,10 @@ media_ffmpeg_vio_read(URLContext *h, unsigned char *buf, int size)
 	return size;
 }
 
-static int
-media_ffmpeg_vio_write(URLContext *h, unsigned char *buf, int size)
-{
-	return -1;
-}
-
 static int64_t
-media_ffmpeg_vio_seek(URLContext *h, int64_t pos, int whence)
+media_ffmpeg_vio_seek(void *h, int64_t pos, int whence)
 {
-	media_data *sd = (media_data*)h->priv_data;
+	media_data *sd = (media_data*)h;
 
 	FFMPEG_DEBUG_AVS("seeking to %ld via %d\n", (long int)pos, whence);
 
@@ -274,25 +262,6 @@ media_ffmpeg_vio_seek(URLContext *h, int64_t pos, int whence)
 	return sd->seek;
 }
 
-static int
-media_ffmpeg_vio_close(URLContext *h)
-{
-	if (h->priv_data)
-		xfree(h->priv_data);
-	h->priv_data = NULL;
-	return 0;
-}
-
-/* this is a memory-i/o protocol in case we have to deal with string data */
-static URLProtocol media_ffmpeg_protocol = {
-	"SXEmff",
-	media_ffmpeg_vio_open,
-	media_ffmpeg_vio_read,
-	media_ffmpeg_vio_write,
-	media_ffmpeg_vio_seek,
-	media_ffmpeg_vio_close,
-};
-
 /** Size of probe buffer, for guessing file type from file contents. */
 #define PROBE_BUF_MIN 2048
 #define PROBE_BUF_MAX 131072
@@ -300,79 +269,61 @@ static URLProtocol media_ffmpeg_protocol = {
 AVFormatContext*
 media_ffmpeg_open_data(char *data, size_t size)
 {
-#if defined HAVE_AVFORMAT_ALLOC_CONTEXT
-	AVFormatContext *avfc = avformat_alloc_context();
-#elif defined HAVE_AV_ALLOC_FORMAT_CONTEXT
-	/* deprecated already, but `people' like Horst still use this */
-	AVFormatContext *avfc = av_alloc_format_context();
-#else
-# error "Your ffmpeg library is too old.  Adopt a new one."
-#endif	/* HAVE_AVFORMAT_ALLOC_CONTEXT */
-	AVProbeData *pd = NULL;
-	ByteIOContext *bioctx = NULL;
-	AVInputFormat *fmt = NULL;
-	char file[] = "SXEmff:SXEmacs.mp3\000";
-	media_data *sd = NULL;
+        AVFormatContext *avfc    = NULL;
+	AVIOContext     *avio    = NULL;
+	media_data      *sd      = NULL;
+	unsigned char   *buffer  = NULL;
+	static const int bufsize = 65536;
+	
+	/* initialise our media_data. Note that we need to use
+	 * ffmpeg's malloc because it will free it on cleaning of the
+	 * context and we don't want allocators corrupting each other.
+	 */
+	sd = av_malloc(sizeof(media_data));
+	if (!sd)
+	      return NULL;
 
-	/* register our virtual i/o */
-#if defined HAVE_AV_REGISTER_PROTOCOL
-	av_register_protocol(&media_ffmpeg_protocol);
-#elif defined HAVE_REGISTER_PROTOCOL
-	register_protocol(&media_ffmpeg_protocol);
-#else
-# error "Get a recent ffmpeg or get a life."
-#endif
-
-	/* initialise our media_data */
-	sd = xnew_and_zero(media_data);
 	sd->length = size;
 	sd->seek = 0;
 	sd->data = data;
 
-	/* register ffmpeg byteio */
-	bioctx = xnew_and_zero(ByteIOContext);
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
-	url_fopen(&bioctx, file, URL_RDONLY);
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-	url_fopen(bioctx, file, URL_RDONLY);
-#endif
-	/* erm, register us at the byteio context */
-	((URLContext*)(bioctx->opaque))->priv_data = sd;
+	/* allocate the buffer  */
+	buffer = av_malloc(bufsize);
+	if (!buffer)
+		return NULL;
 
-	/* take a probe */
-	pd = xnew_and_zero(AVProbeData);
-	pd->filename = file;
-	pd->buf = NULL;
-	pd->buf_size = 0;
+	/* create ffmpeg avio context. Note that at this point thea
+	 * AVIOContext has lifetime control of the previously
+	 * allocated sd and buffer.
+	 */
+	avio = avio_alloc_context(buffer,
+				  bufsize,
+				  0, /* No writes */
+				  sd,
+				  media_ffmpeg_vio_read,
+				  NULL,
+				  media_ffmpeg_vio_seek);
 
-	pd->buf = (void*)sd->data;
-	pd->buf_size = PROBE_BUF_MIN;
-	fmt = av_probe_input_format(pd, 1);
+	/* create format context, and make it use the avio above.
+	   Note that at this point avfc has lifetime control of avio,
+	   through avformat_free_context */
+	avfc = avformat_alloc_context();
+	avfc->pb = avio;
+	avfc->flags = AVFMT_FLAG_CUSTOM_IO;
 
-	/* if still no format found, error */
-	if (!fmt) {
-		xfree(pd);
-		xfree(bioctx);
-		xfree(sd);
-		xfree(avfc);
+	/* open the input */
+	if (avformat_open_input(&avfc, NULL, NULL, NULL) < 0) {
+		FFMPEG_DEBUG_AVF("opening file failed.\n");
+		/* Abundance of caution, as on failure open input
+		   should clear the context, but when it does it also
+		   sets avfc to NULL so this is safe. */
+		avformat_free_context(avfc);
 		return NULL;
 	}
-
-	/* open the file */
-	if (av_open_input_stream(&avfc, bioctx, file, fmt, NULL) < 0) {
-		xfree(pd);
-		xfree(bioctx);
-		xfree(sd);
-		xfree(avfc);
-		return NULL;
-	}
-
+	
 	/* Retrieve stream information */
-	if (av_find_stream_info(avfc) < 0) {
-		xfree(pd);
-		xfree(bioctx);
-		xfree(sd);
-		xfree(avfc);
+	if (avformat_find_stream_info(avfc,NULL) < 0) {
+		avformat_close_input(&avfc);
 		return NULL;
 	}
 
