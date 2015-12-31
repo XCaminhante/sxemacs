@@ -87,6 +87,10 @@ DEFINE_MEDIA_DRIVER_CUSTOM(new_media_ffmpeg,
 			   new_media_ffmpeg_rewind, NULL);
 
 
+#ifndef AVCODEC_MAX_AUDIO_FRAME_SIZE
+#define AVCODEC_MAX_AUDIO_FRAME_SIZE 19200
+#endif
+
 static int
 media_ffmpeg_bitrate(AVCodecContext *enc)
 {
@@ -529,7 +533,7 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 			    avcc->codec_id != CODEC_ID_NONE &&
 			    avcc->codec_type != AVMEDIA_TYPE_DATA &&
 			    (avc = avcodec_find_decoder(avcc->codec_id)) &&
-			    (avc && (avcodec_open(avcc, avc) >= 0))) {
+			    (avc && (avcodec_open2(avcc, avc, NULL) >= 0))) {
 
 				/* create a substream */
 				mss = make_media_substream_append(ms);
@@ -611,7 +615,7 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	AVFormatContext *avfc;
 	AVStream *avst;
 	AVCodecContext *avcc;
-	AVCodec *avc;
+	const AVCodec *avc;
 	AVPacket pkt;
 	/* buffering */
 	/* the size we present here, is _not_ the size we want, however
@@ -637,6 +641,7 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	avst = avfc->streams[si];
 	avcc = avst->codec;
 	avc = avcc->codec;
+	SXE_SET_UNUSED(avc);
 
 	/* unpack the substream */
 	if ((mtap = media_substream_type_properties(mss).aprops) == NULL) {
@@ -695,6 +700,8 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 					 (long long int)pkt.pts,
 					 (long long int)pkt.dts,
 					 pkt.size, size, declen);
+			/* Because FFMPEG_DEBUG_AVF may expand to nothing ... */
+			SXE_SET_UNUSED(declen);
 
 			/* memcpy(outbuf+bufseek, (char*)buffer, size); */
 			bufseek += size;

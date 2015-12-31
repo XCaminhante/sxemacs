@@ -332,29 +332,51 @@ AC_DEFUN([SXE_MM_CHECK_FFMPEG], [
 	if test "$ac_cv_header_avformat_h" = "yes" -o \
 		"$ac_cv_header_ffmpeg_avformat_h" = "yes" -o \
 		"$ac_cv_header_libavformat_avformat_h" = "yes"; then
-	        if test "$ac_cv_header_avcodec_h" = "yes" -o \
+		sxe_cv_feat_ffmpeg_headers="yes"
+	else
+		sxe_cv_feat_ffmpeg_headers="no"
+	fi
+
+	if test "$sxe_cv_feat_ffmpeg_headers" = "yes"; then
+		if test "$ac_cv_header_avcodec_h" = "yes" -o \
                         "$ac_cv_header_ffmpeg_avcodec_h" = "yes" -o \
 		 	"$ac_cv_header_libavcodec_avcodec_h" = "yes"; then
-			if test "$ac_cv_header_ffmpeg_dict_h" = "yes" -o \
-			 	"$ac_cv_header_libavutil_dict_h" = "yes"; then
-				sxe_cv_feat_ffmpeg_headers="yes"
-			fi
+			sxe_cv_feat_ffmpeg_headers="yes"
+		else
+			sxe_cv_feat_ffmpeg_headers="no"
 		fi
 	fi
 
-	## make sure either decode_audio is there
+	if test "$sxe_cv_feat_ffmpeg_headers" = "yes"; then
+	        if test "$ac_cv_header_ffmpeg_dict_h" = "yes" -o \
+			"$ac_cv_header_libavutil_dict_h" = "yes"; then
+			sxe_cv_feat_ffmpeg_headers="yes"
+		else
+			sxe_cv_feat_ffmpeg_headers="no"
+		fi
+	fi
+
+	if test "$sxe_cv_feat_ffmpeg_headers" = "yes"; then
+	        if test "$ac_cv_header_ffmpeg_time_h" = "yes" -o \
+			"$ac_cv_header_libavutil_time_h" = "yes"; then
+			sxe_cv_feat_ffmpeg_headers="yes"
+		else
+			sxe_cv_feat_ffmpeg_headers="no"
+		fi
+	fi
+
+        ## make sure either decode_audio is there
 	if test "$ac_cv_lib_avcodec_avcodec_decode_audio4" = "yes"; then
 		sxe_cv_feat_ffmpeg_decoders="yes"
 	fi
-	## make sure this bloody av context allocator is there
-	if test "$ac_cv_lib_avformat_avformat_alloc_context" = "yes"; then
-		sxe_cv_feat_ffmpeg_avformat_alloc="yes"
-	fi
+
 	if test "$sxe_cv_feat_ffmpeg_headers" = "yes" -a \
 		"$sxe_cv_feat_ffmpeg_decoders" = "yes" -a \
-		"$sxe_cv_feat_ffmpeg_avformat_alloc" = "yes" -a \
+		"$ac_cv_lib_avformat_avformat_alloc_context" = "yes" -a \
+		"$ac_cv_lib_avformat_avformat_free_context" = "yes" -a \
 		"$ac_cv_lib_avformat_avio_alloc_context" = "yes" -a \
 		"$ac_cv_lib_avformat_avio_size" = "yes" -a \
+		"$ac_cv_lib_avformat_avio_feof" = "yes" -a \
 		"$ac_cv_lib_avformat_avformat_open_input" = "yes" -a \
 		"$ac_cv_lib_avformat_avformat_close_input" = "yes" -a \
 		"$ac_cv_lib_avformat_avformat_find_stream_info" = "yes" -a \
@@ -390,8 +412,10 @@ AC_DEFUN([SXE_CHECK_FFMPEG_HEADERS], [dnl
 	SXE_DUMP_LIBS
 	CPPFLAGS="${CPPFLAGS} ${FFMPEG_CPPFLAGS}"
 	AC_CHECK_HEADERS([avformat.h avcodec.h])
-	AC_CHECK_HEADERS([ffmpeg/avformat.h ffmpeg/avcodec.h ffmpeg/dict.h])
-	AC_CHECK_HEADERS([libavformat/avformat.h libavcodec/avcodec.h libavutil/dict.h])
+	AC_CHECK_HEADERS([ffmpeg/avformat.h ffmpeg/avcodec.h])
+	AC_CHECK_HEADERS([ffmpeg/dict.h ffmpeg/time.h])
+	AC_CHECK_HEADERS([libavformat/avformat.h libavcodec/avcodec.h])
+	AC_CHECK_HEADERS([libavutil/dict.h libavutil/time.h])
 
 	## restore configuration
 	SXE_RESTORE_LIBS
@@ -419,8 +443,10 @@ AC_DEFUN([SXE_CHECK_FFMPEG_LIBS], [dnl
 	AC_CHECK_LIB([avformat], [av_register_all], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_dump_format], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avformat_alloc_context], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avformat_free_context], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avio_alloc_context], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avio_size], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avio_feof], [:], [:], [${FFMPEG_LIBS}])
 
 	AC_CHECK_LIB([avutil], [av_dict_get], [:], [:], [${FFMPEG_LIBS}])
 

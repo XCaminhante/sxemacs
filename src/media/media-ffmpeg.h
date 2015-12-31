@@ -47,6 +47,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 # include <ffmpeg/dict.h>
 #endif
 
+#if defined HAVE_LIBAVUTIL_TIME_H
+# include <libavutil/time.h>
+#elif defined HAVE_FFMPEG_TIME_H
+# include <ffmpeg/time.h>
+#endif
+
 /* Newer ffmpeg do not declare this macro... */
 #ifndef DECLARE_ALIGNED
 #ifdef __ICC
