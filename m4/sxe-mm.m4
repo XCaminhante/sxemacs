@@ -366,7 +366,9 @@ AC_DEFUN([SXE_MM_CHECK_FFMPEG], [
 	fi
 
         ## make sure either decode_audio is there
-	if test "$ac_cv_lib_avcodec_avcodec_decode_audio4" = "yes"; then
+	if test "$ac_cv_lib_avcodec_avcodec_decode_audio" = "yes" -o \
+	        "$ac_cv_lib_avcodec_avcodec_decode_audio2" = "yes" -o \
+	 	"$ac_cv_lib_avcodec_avcodec_decode_audio3" = "yes"; then
 		sxe_cv_feat_ffmpeg_decoders="yes"
 	fi
 
@@ -381,6 +383,7 @@ AC_DEFUN([SXE_MM_CHECK_FFMPEG], [
 		"$ac_cv_lib_avformat_avformat_close_input" = "yes" -a \
 		"$ac_cv_lib_avformat_avformat_find_stream_info" = "yes" -a \
 		"$ac_cv_lib_avformat_av_probe_input_format" = "yes" -a \
+		"$ac_cv_lib_avformat_av_iformat_next" = "yes" -a \
 		"$ac_cv_lib_avformat_av_read_frame" = "yes" -a \
 		"$ac_cv_lib_avformat_av_seek_frame" = "yes" -a \
 		"$ac_cv_lib_avformat_av_register_all" = "yes" -a \
@@ -432,11 +435,15 @@ AC_DEFUN([SXE_CHECK_FFMPEG_LIBS], [dnl
 
 	AC_CHECK_LIB([avcodec], [avcodec_find_decoder], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avcodec], [avcodec_open2], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_decode_audio], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_decode_audio2], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_decode_audio3], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avcodec], [avcodec_decode_audio4], [:], [:], [${FFMPEG_LIBS}])
 
 	AC_CHECK_LIB([avformat], [avformat_open_input], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avformat_close_input], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avformat_find_stream_info], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [av_iformat_next], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_probe_input_format], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_read_frame], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_seek_frame], [:], [:], [${FFMPEG_LIBS}])
@@ -450,6 +457,22 @@ AC_DEFUN([SXE_CHECK_FFMPEG_LIBS], [dnl
 
 	AC_CHECK_LIB([avutil], [av_dict_get], [:], [:], [${FFMPEG_LIBS}])
 
+	if test "$ac_cv_lib_avcodec_avcodec_decode_audio" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO], [1],
+		          [Define to 1 if avcodec_decode_audio is usable.])
+	fi
+	if test "$ac_cv_lib_avcodec_avcodec_decode_audio2" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO2], [1],
+		          [Define to 1 if avcodec_decode_audio2 is usable.])
+	fi
+	if test	"$ac_cv_lib_avcodec_avcodec_decode_audio3" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO3], [1],
+		          [Define to 1 if avcodec_decode_audio is usable.])
+	fi
+	if test	"$ac_cv_lib_avcodec_avcodec_decode_audio4" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO4], [1],
+		          [Define to 1 if avcodec_decode_audio is usable.])
+	fi
 
 	## restore configuration
 	SXE_RESTORE_LIBS

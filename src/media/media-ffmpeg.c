@@ -681,7 +681,13 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 
 		dec = pkt.size;
 		/* decode the demuxed packet */
-#ifdef HAVE_AVCODEC_DECODE_AUDIO2
+#ifdef HAVE_AVCODEC_DECODE_AUDIO3
+/* prefer decode_audio3() if available */
+		size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
+		declen = avcodec_decode_audio3(
+			avcc, (void*)((char*)outbuf+bufseek),
+			&size, &pkt);
+#elif HAVE_AVCODEC_DECODE_AUDIO2
 /* prefer decode_audio2() if available */
 		size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
 		declen = avcodec_decode_audio2(
@@ -1012,22 +1018,14 @@ packet_queue_get(PacketQueue *q, AVPacket *pkt, int block)
 static uint64_t global_video_pkt_pts = AV_NOPTS_VALUE;
 
 static int
-my_get_buffer(struct AVCodecContext *c, AVFrame *pic)
+my_get_buffer(struct AVCodecContext *c, AVFrame *pic, int flags)
 {
-	int ret= avcodec_default_get_buffer(c, pic);
+        int ret= avcodec_default_get_buffer2(c, pic, flags);
 	uint64_t *pts= av_malloc(sizeof(uint64_t));
 	*pts= global_video_pkt_pts;
 	pic->opaque= pts;
 	return ret;
 }
-
-static void
-my_release_buffer(struct AVCodecContext *c, AVFrame *pic)
-{
-	if(pic) av_freep(&pic->opaque);
-	avcodec_default_release_buffer(c, pic);
-}
-
 
 static int
 stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
@@ -1079,12 +1077,12 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 	enc->error_resilience = FF_ER_CAREFUL; /* error_resilience; */
 #endif
 	enc->error_concealment = 3; /* error_concealment; */
-	if (!codec ||
-	    avcodec_open(enc, codec) < 0)
-		return -1;
 	if (1 /* thread_count */ > 1)
-		avcodec_thread_init(enc, 1 /*thread_count*/);
-	enc->thread_count= 1 /* thread_count */;
+	        enc->thread_count = 1 /* thread_count */;
+
+	if (!codec ||
+	    avcodec_open2(enc, codec, NULL) < 0)
+		return -1;
 
 	/* create a substream */
 	mss = make_media_substream_append(ms);
@@ -1124,10 +1122,9 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 		packet_queue_init(&is->videoq);
 		is->video_tid = 0 /* SDL_CreateThread(video_thread, is) */;
 
-		enc->    get_buffer=     my_get_buffer;
-		enc->release_buffer= my_release_buffer;
-
+		enc->get_buffer2          = my_get_buffer;
 		media_substream_type(mss) = MTYPE_VIDEO;
+
 		media_ffmpeg_analyse_video(mss, is->ic, stream_index);
 		break;
 	case AVMEDIA_TYPE_SUBTITLE:
@@ -1247,9 +1244,9 @@ enum {
 static VideoState *
 stream_open(char *filename, size_t filelen)
 {
-	VideoState *is = xnew(VideoState);
-	AVFormatParameters params, *ap = &params;
-	int err = 0;
+	VideoState   *is      = xnew(VideoState);
+	AVDictionary *options = NULL;
+	int err               = 0;
 
 	is->filename = filename;
 	is->filelen = filelen;
@@ -1264,7 +1261,7 @@ stream_open(char *filename, size_t filelen)
 	is->av_sync_type = AV_SYNC_AUDIO_MASTER;
 	is->parse_tid = 0; /* SDL_CreateThread(decode_thread, is); */
 
-	memset(ap, 0, sizeof(*ap));
+#if 0
 	/* we force a pause when starting an RTSP stream */
 	ap->initial_pause = 1;
 
@@ -1272,8 +1269,9 @@ stream_open(char *filename, size_t filelen)
 	ap->height= 0; /* frame_height; */
 	ap->time_base= (AVRational){1, 25};
 	ap->pix_fmt = PIX_FMT_NONE; /* frame_pix_fmt; */
+#endif
 
-	err = avformat_open_input(&is->ic, is->filename, is->iformat, NULL /*ap*/);
+	err = avformat_open_input(&is->ic, is->filename, is->iformat, &options);
 	if (UNLIKELY(err < 0)) {
 		FFMPEG_DEBUG_AVF("Could not open \"%s\" (errno %d)\n",
 				 is->filename, err);
@@ -1338,11 +1336,7 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 		}
 		/* FIXME hack,
 		 * ffplay maybe should not use url_feof() to test for the end */
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
 		vs->ic->pb->eof_reached = 0;
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-		vs->ic->pb.eof_reached = 0;
-#endif
 	}
 
 	/* now we can begin to play (RTSP stream only) */
@@ -1504,25 +1498,14 @@ new_media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 		if (is->audioq.size > MAX_AUDIOQ_SIZE ||
 		    is->videoq.size > MAX_VIDEOQ_SIZE ||
 		    is->subtitleq.size > MAX_SUBTITLEQ_SIZE ||
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
-		    url_feof(is->ic->pb)
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-		    url_feof(&is->ic->pb)
-#endif
-			) {
+		    avio_feof(is->ic->pb)) {
 			/* wait 10 ms */
 			usleep(10);
 			continue;
 		}
 		ret = av_read_frame(is->ic, pkt);
 		if (ret < 0) {
-			if (url_ferror(
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
-				    is->ic->pb
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-				    &is->ic->pb
-#endif
-				    ) == 0) {
+			if (is->ic->pb->error == 0) {
 				usleep(100); /* wait for user event */
 				continue;
 			} else
@@ -1556,7 +1539,10 @@ new_media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 		avformat_close_input(&is->ic);
 		is->ic = NULL; /* safety */
 	}
+
+#if 0
 	url_set_interrupt_cb(NULL);
+#endif
 
 	if (ret != 0) {
 #if 0
@@ -1619,12 +1605,12 @@ Lisp_Object
 media_ffmpeg_available_formats(void)
 {
 	Lisp_Object formats;
-	AVInputFormat *avif;
+	AVInputFormat *avif = NULL;
 
 	formats = Qnil;
 
 	av_register_all();
-	avif = first_iformat;
+	avif = av_iformat_next(avif);
 
 	while (avif) {
 		if (avif->name) {
@@ -1632,7 +1618,7 @@ media_ffmpeg_available_formats(void)
 				Fintern(build_string(avif->name), Qnil);
 			formats = Fcons(fmtname, formats);
 		}
-		avif = avif->next;
+		avif = av_iformat_next(avif);
 	}
 
 	return formats;
