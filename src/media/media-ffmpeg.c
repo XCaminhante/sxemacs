@@ -932,7 +932,6 @@ typedef struct VideoState {
 
 /* since we have only one decoding thread, we can use a global
    variable instead of a thread local variable */
-static VideoState *global_video_state;
 AVPacket flush_pkt;
 
 /* packet queue handling */
@@ -1587,8 +1586,6 @@ new_media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	}
 
 	ret = 0;
-	/* disable interrupting */
-	global_video_state = NULL;
 
 	/* close each stream */
 	if (is->audio_stream >= 0)
