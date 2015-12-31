@@ -200,29 +200,18 @@ media_ffmpeg_print(Lisp_Object ms, Lisp_Object pcfun, int ef)
 static AVFormatContext*
 media_ffmpeg_open_file(const char *file)
 {
-#if defined HAVE_AVFORMAT_ALLOC_CONTEXT
-	AVFormatContext *avfc = avformat_alloc_context();
-#elif defined HAVE_AV_ALLOC_FORMAT_CONTEXT
-	/* deprecated already, but `people' like Horst still use this */
-	AVFormatContext *avfc = av_alloc_format_context();
-#else
-# error "Your ffmpeg library is too old.  Adopt a new one."
-#endif	/* HAVE_AVFORMAT_ALLOC_CONTEXT */
+	AVFormatContext *avfc = NULL;
 
 	/* open the file */
-	if (av_open_input_file(&avfc, file, NULL, 0, NULL) < 0) {
+	if (avformat_open_input(&avfc, file, NULL, NULL) < 0) {
 		FFMPEG_DEBUG_AVF("opening file failed.\n");
-		if (avfc)
-			xfree(avfc);
 		return NULL;
 	}
 
 	/* Retrieve stream information */
-	if (av_find_stream_info(avfc) < 0) {
+	if (avformat_find_stream_info(avfc, NULL) < 0) {
 		FFMPEG_DEBUG_AVS("opening stream inside file failed.\n");
-		av_close_input_file(avfc);
-		if (avfc)
-			xfree(avfc);
+		avformat_close_input(&avfc);
 		return NULL;
 	}
 
@@ -397,7 +386,7 @@ media_ffmpeg_close(ms_driver_data_t data)
 	FFMPEG_DEBUG_AVF("closing AVFormatContext: 0x%lx\n",
 			 (long unsigned int)avfc);
 	if (avfc && avfc->iformat)
-		av_close_input_file(avfc);
+		avformat_close_input(&avfc);
 }
 
 static void
@@ -541,6 +530,8 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 		mkfp = media_stream_kind_properties(ms).fprops;
 		TO_EXTERNAL_FORMAT(LISP_STRING, mkfp->filename,
 				   ALLOCA, (file, file_len), Qnil);
+		SXE_SET_UNUSED(file_len);
+
 		avfc = media_ffmpeg_open_file(file);
 		if (!avfc) {
 			media_stream_set_meths(ms, NULL);
@@ -549,7 +540,7 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 		}
 
 		/* store the filesize */
-		mkfp->filesize = avfc->file_size;
+		mkfp->filesize = avio_size(avfc->pb);
 		break;
 	}
 	case MKIND_STRING: {
@@ -1325,7 +1316,7 @@ stream_open(char *filename, size_t filelen)
 	ap->time_base= (AVRational){1, 25};
 	ap->pix_fmt = PIX_FMT_NONE; /* frame_pix_fmt; */
 
-	err = av_open_input_file(&is->ic, is->filename, is->iformat, 0, ap);
+	err = avformat_open_input(&is->ic, is->filename, is->iformat, NULL /*ap*/);
 	if (UNLIKELY(err < 0)) {
 		FFMPEG_DEBUG_AVF("Could not open \"%s\" (errno %d)\n",
 				 is->filename, err);
@@ -1381,7 +1372,7 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 	}
 
 	if (!use_play) {
-		err = av_find_stream_info(vs->ic);
+	        err = avformat_find_stream_info(vs->ic, NULL);
 		if (err < 0) {
 			FFMPEG_DEBUG_AVF("\"%s\": "
 					 "could not find codec parameters\n",
@@ -1401,7 +1392,7 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 	av_read_play(vs->ic);
 
 	if (use_play) {
-		err = av_find_stream_info(vs->ic);
+            	err = avformat_find_stream_info(vs->ic, NULL);
 		if (err < 0) {
 			FFMPEG_DEBUG_AVF("\"%s\": "
 					 "could not find codec parameters\n",
@@ -1428,7 +1419,7 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 		}
 	}
 	if (1 /* show_status */) {
-		dump_format(vs->ic, 0, vs->filename, 0);
+		av_dump_format(vs->ic, 0, vs->filename, 0);
 		dump_stream_info(vs->ic);
 	}
 
@@ -1607,7 +1598,7 @@ new_media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	if (is->subtitle_stream >= 0)
 		stream_component_close(is, is->subtitle_stream);
 	if (is->ic) {
-		av_close_input_file(is->ic);
+		avformat_close_input(&is->ic);
 		is->ic = NULL; /* safety */
 	}
 	url_set_interrupt_cb(NULL);

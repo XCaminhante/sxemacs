@@ -33,6 +33,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 # include <avformat.h>
 #endif
 
+#if defined HAVE_LIBAVCODEC_AVCODEC_H
+# include <libavcodec/avcodec.h>
+#elif defined HAVE_FFMPEG_AVCODEC_H
+# include <ffmpeg/avcodec.h>
+#elif defined HAVE_AVCODEC_H
+# include <avcodec.h>
+#endif
+
 #if defined HAVE_LIBAVUTIL_DICT_H
 # include <libavutil/dict.h>
 #elif defined HAVE_FFMPEG_DICT_H
