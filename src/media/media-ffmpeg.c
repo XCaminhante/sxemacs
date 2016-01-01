@@ -87,6 +87,10 @@ DEFINE_MEDIA_DRIVER_CUSTOM(new_media_ffmpeg,
 			   new_media_ffmpeg_rewind, NULL);
 
 
+#ifndef AVCODEC_MAX_AUDIO_FRAME_SIZE
+#define AVCODEC_MAX_AUDIO_FRAME_SIZE 19200
+#endif
+
 static int
 media_ffmpeg_bitrate(AVCodecContext *enc)
 {
@@ -128,40 +132,64 @@ media_ffmpeg_bitrate(AVCodecContext *enc)
 
 char *media_ffmpeg_streaminfo(Lisp_Media_Stream *ms)
 {
-	AVFormatContext *avfc = NULL;
-	char *out;
-	int chars_left = 4095;
+	AVFormatContext   *avfc   = NULL;
+	AVDictionaryEntry *curr   = NULL;
+	char              *out    = NULL;
+	int chars_left            = 4095;
 
 	avfc = media_stream_data(ms);
 	out = xmalloc_atomic(chars_left+1);
-	out[0] = '\0';
+	if (! out)
+	        return out;
+
+	out[0]          = '\0';
 	out[chars_left] = '\0';
 
 	/* cannot use ffmpeg on corrupt streams */
 	if (media_stream_driver(ms) != MYSELF || avfc == NULL)
 		return out;
+	
+	if (! avfc->metadata)
+	        return out;
 
-	if (avfc->author && *avfc->author) {
-		strncat(out, " :author \"", chars_left);
-		chars_left -= 10;
-		strncat(out, avfc->author, chars_left);
-		chars_left -= strlen(avfc->author);
-		strncat(out, "\"", chars_left--);
-	}
-	if (avfc->title && *avfc->title) {
-		strncat(out, " :title: \"", chars_left);
-		chars_left -= 10;
-		strncat(out, avfc->title, chars_left);
-		chars_left -= strlen(avfc->title);
-		strncat(out, "\"", chars_left--);
-	}
-	if (avfc->year) {
-		char year[12];
-		int sz = snprintf(year, sizeof(year), "%d", avfc->year);
-		assert(sz>=0 && sz<sizeof(year));
-		strncat(out, " :year ", chars_left);
-		chars_left -= 7;
-		strncat(out, year, chars_left);
+	{
+	        static const char   *keys[] = { "author", "title", "date" };
+		static const size_t  nkeys  = sizeof(keys)/sizeof(keys[0]);
+		int           i      = 0;
+
+		for (i = 0; i < nkeys; ++i ) {
+		        curr = av_dict_get(avfc->metadata,
+					   keys[i],
+					   curr,
+					   AV_DICT_IGNORE_SUFFIX);
+			if (! curr)
+			        continue;
+
+			strncat(out, " :", chars_left);
+			chars_left -= 2;
+			if (chars_left < 0)
+			        break;
+
+			strncat(out, curr->key, chars_left);
+			chars_left -= strlen(curr->key);
+			if (chars_left < 0)
+	                        break;
+
+			strncat(out, " \"", chars_left);
+			chars_left -= 2;
+			if (chars_left < 0)
+	                        break;
+
+			strncat(out, curr->value, chars_left);
+			chars_left -= strlen(curr->value);
+			if (chars_left < 0)
+	                        break;
+
+			strncat(out, "\"", chars_left);
+			chars_left -= 1;
+			if (chars_left < 0)
+	                        break;
+		}
 	}
 
 	return out;
@@ -176,29 +204,18 @@ media_ffmpeg_print(Lisp_Object ms, Lisp_Object pcfun, int ef)
 static AVFormatContext*
 media_ffmpeg_open_file(const char *file)
 {
-#if defined HAVE_AVFORMAT_ALLOC_CONTEXT
-	AVFormatContext *avfc = avformat_alloc_context();
-#elif defined HAVE_AV_ALLOC_FORMAT_CONTEXT
-	/* deprecated already, but `people' like Horst still use this */
-	AVFormatContext *avfc = av_alloc_format_context();
-#else
-# error "Your ffmpeg library is too old.  Adopt a new one."
-#endif	/* HAVE_AVFORMAT_ALLOC_CONTEXT */
+	AVFormatContext *avfc = NULL;
 
 	/* open the file */
-	if (av_open_input_file(&avfc, file, NULL, 0, NULL) < 0) {
+	if (avformat_open_input(&avfc, file, NULL, NULL) < 0) {
 		FFMPEG_DEBUG_AVF("opening file failed.\n");
-		if (avfc)
-			xfree(avfc);
 		return NULL;
 	}
 
 	/* Retrieve stream information */
-	if (av_find_stream_info(avfc) < 0) {
+	if (avformat_find_stream_info(avfc, NULL) < 0) {
 		FFMPEG_DEBUG_AVS("opening stream inside file failed.\n");
-		av_close_input_file(avfc);
-		if (avfc)
-			xfree(avfc);
+		avformat_close_input(&avfc);
 		return NULL;
 	}
 
@@ -207,15 +224,9 @@ media_ffmpeg_open_file(const char *file)
 
 
 static int
-media_ffmpeg_vio_open(URLContext *h, const char *filename, int flags)
+media_ffmpeg_vio_read(void *h, unsigned char *buf, int size)
 {
-	return 0;
-}
-
-static int
-media_ffmpeg_vio_read(URLContext *h, unsigned char *buf, int size)
-{
-	media_data *sd = (media_data*)h->priv_data;
+	media_data *sd = (media_data*)h;
 
 	FFMPEG_DEBUG_AVS("reading %d bytes to 0x%x, respecting seek %ld\n",
 			 size, (unsigned int)buf, sd->seek);
@@ -231,16 +242,10 @@ media_ffmpeg_vio_read(URLContext *h, unsigned char *buf, int size)
 	return size;
 }
 
-static int
-media_ffmpeg_vio_write(URLContext *h, unsigned char *buf, int size)
-{
-	return -1;
-}
-
 static int64_t
-media_ffmpeg_vio_seek(URLContext *h, int64_t pos, int whence)
+media_ffmpeg_vio_seek(void *h, int64_t pos, int whence)
 {
-	media_data *sd = (media_data*)h->priv_data;
+	media_data *sd = (media_data*)h;
 
 	FFMPEG_DEBUG_AVS("seeking to %ld via %d\n", (long int)pos, whence);
 
@@ -261,25 +266,6 @@ media_ffmpeg_vio_seek(URLContext *h, int64_t pos, int whence)
 	return sd->seek;
 }
 
-static int
-media_ffmpeg_vio_close(URLContext *h)
-{
-	if (h->priv_data)
-		xfree(h->priv_data);
-	h->priv_data = NULL;
-	return 0;
-}
-
-/* this is a memory-i/o protocol in case we have to deal with string data */
-static URLProtocol media_ffmpeg_protocol = {
-	"SXEmff",
-	media_ffmpeg_vio_open,
-	media_ffmpeg_vio_read,
-	media_ffmpeg_vio_write,
-	media_ffmpeg_vio_seek,
-	media_ffmpeg_vio_close,
-};
-
 /** Size of probe buffer, for guessing file type from file contents. */
 #define PROBE_BUF_MIN 2048
 #define PROBE_BUF_MAX 131072
@@ -287,79 +273,61 @@ static URLProtocol media_ffmpeg_protocol = {
 AVFormatContext*
 media_ffmpeg_open_data(char *data, size_t size)
 {
-#if defined HAVE_AVFORMAT_ALLOC_CONTEXT
-	AVFormatContext *avfc = avformat_alloc_context();
-#elif defined HAVE_AV_ALLOC_FORMAT_CONTEXT
-	/* deprecated already, but `people' like Horst still use this */
-	AVFormatContext *avfc = av_alloc_format_context();
-#else
-# error "Your ffmpeg library is too old.  Adopt a new one."
-#endif	/* HAVE_AVFORMAT_ALLOC_CONTEXT */
-	AVProbeData *pd = NULL;
-	ByteIOContext *bioctx = NULL;
-	AVInputFormat *fmt = NULL;
-	char file[] = "SXEmff:SXEmacs.mp3\000";
-	media_data *sd = NULL;
+        AVFormatContext *avfc    = NULL;
+	AVIOContext     *avio    = NULL;
+	media_data      *sd      = NULL;
+	unsigned char   *buffer  = NULL;
+	static const int bufsize = 65536;
+	
+	/* initialise our media_data. Note that we need to use
+	 * ffmpeg's malloc because it will free it on cleaning of the
+	 * context and we don't want allocators corrupting each other.
+	 */
+	sd = av_malloc(sizeof(media_data));
+	if (!sd)
+	      return NULL;
 
-	/* register our virtual i/o */
-#if defined HAVE_AV_REGISTER_PROTOCOL
-	av_register_protocol(&media_ffmpeg_protocol);
-#elif defined HAVE_REGISTER_PROTOCOL
-	register_protocol(&media_ffmpeg_protocol);
-#else
-# error "Get a recent ffmpeg or get a life."
-#endif
-
-	/* initialise our media_data */
-	sd = xnew_and_zero(media_data);
 	sd->length = size;
 	sd->seek = 0;
 	sd->data = data;
 
-	/* register ffmpeg byteio */
-	bioctx = xnew_and_zero(ByteIOContext);
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
-	url_fopen(&bioctx, file, URL_RDONLY);
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-	url_fopen(bioctx, file, URL_RDONLY);
-#endif
-	/* erm, register us at the byteio context */
-	((URLContext*)(bioctx->opaque))->priv_data = sd;
+	/* allocate the buffer  */
+	buffer = av_malloc(bufsize);
+	if (!buffer)
+		return NULL;
 
-	/* take a probe */
-	pd = xnew_and_zero(AVProbeData);
-	pd->filename = file;
-	pd->buf = NULL;
-	pd->buf_size = 0;
+	/* create ffmpeg avio context. Note that at this point thea
+	 * AVIOContext has lifetime control of the previously
+	 * allocated sd and buffer.
+	 */
+	avio = avio_alloc_context(buffer,
+				  bufsize,
+				  0, /* No writes */
+				  sd,
+				  media_ffmpeg_vio_read,
+				  NULL,
+				  media_ffmpeg_vio_seek);
 
-	pd->buf = (void*)sd->data;
-	pd->buf_size = PROBE_BUF_MIN;
-	fmt = av_probe_input_format(pd, 1);
+	/* create format context, and make it use the avio above.
+	   Note that at this point avfc has lifetime control of avio,
+	   through avformat_free_context */
+	avfc = avformat_alloc_context();
+	avfc->pb = avio;
+	avfc->flags = AVFMT_FLAG_CUSTOM_IO;
 
-	/* if still no format found, error */
-	if (!fmt) {
-		xfree(pd);
-		xfree(bioctx);
-		xfree(sd);
-		xfree(avfc);
+	/* open the input */
+	if (avformat_open_input(&avfc, NULL, NULL, NULL) < 0) {
+		FFMPEG_DEBUG_AVF("opening file failed.\n");
+		/* Abundance of caution, as on failure open input
+		   should clear the context, but when it does it also
+		   sets avfc to NULL so this is safe. */
+		avformat_free_context(avfc);
 		return NULL;
 	}
-
-	/* open the file */
-	if (av_open_input_stream(&avfc, bioctx, file, fmt, NULL) < 0) {
-		xfree(pd);
-		xfree(bioctx);
-		xfree(sd);
-		xfree(avfc);
-		return NULL;
-	}
-
+	
 	/* Retrieve stream information */
-	if (av_find_stream_info(avfc) < 0) {
-		xfree(pd);
-		xfree(bioctx);
-		xfree(sd);
-		xfree(avfc);
+	if (avformat_find_stream_info(avfc,NULL) < 0) {
+		avformat_close_input(&avfc);
 		return NULL;
 	}
 
@@ -373,7 +341,7 @@ media_ffmpeg_close(ms_driver_data_t data)
 	FFMPEG_DEBUG_AVF("closing AVFormatContext: 0x%lx\n",
 			 (long unsigned int)avfc);
 	if (avfc && avfc->iformat)
-		av_close_input_file(avfc);
+		avformat_close_input(&avfc);
 }
 
 static void
@@ -410,34 +378,34 @@ media_ffmpeg_analyse_audio(media_substream *mss, AVFormatContext *avfc, int st)
 
 		/* samplewidth and framesize */
 		switch (avcc->sample_fmt) {
-		case SAMPLE_FMT_U8:
+		case AV_SAMPLE_FMT_U8:
 			mtap->samplewidth = 8;
 			mtap->framesize = mtap->channels * 1;
 			mtap->msf = sxe_msf_U8;
 			break;
-		case SAMPLE_FMT_S16:
+		case AV_SAMPLE_FMT_S16:
 			mtap->samplewidth = 16;
 			mtap->framesize = mtap->channels * 2;
 			mtap->msf = sxe_msf_S16;
 			break;
-#if defined SAMPLE_FMT_S24
-		case SAMPLE_FMT_S24:
+#if defined AV_SAMPLE_FMT_S24
+		case AV_SAMPLE_FMT_S24:
 			mtap->samplewidth = 32;
 			mtap->framesize = mtap->channels * 4;
 			mtap->msf = sxe_msf_S24;
 			break;
 #endif	/* SAMPLE_FMT_S24 */
-		case SAMPLE_FMT_S32:
+		case AV_SAMPLE_FMT_S32:
 			mtap->samplewidth = 32;
 			mtap->framesize = mtap->channels * 4;
 			mtap->msf = sxe_msf_S32;
 			break;
-		case SAMPLE_FMT_FLT:
+		case AV_SAMPLE_FMT_FLT:
 			mtap->samplewidth = 8*sizeof(float);
 			mtap->framesize = mtap->channels * sizeof(float);
 			mtap->msf = sxe_msf_FLT;
 			break;
-		case SAMPLE_FMT_NONE:
+		case AV_SAMPLE_FMT_NONE:
 		default:
 			mtap->samplewidth = 0;
 			break;
@@ -517,6 +485,8 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 		mkfp = media_stream_kind_properties(ms).fprops;
 		TO_EXTERNAL_FORMAT(LISP_STRING, mkfp->filename,
 				   ALLOCA, (file, file_len), Qnil);
+		SXE_SET_UNUSED(file_len);
+
 		avfc = media_ffmpeg_open_file(file);
 		if (!avfc) {
 			media_stream_set_meths(ms, NULL);
@@ -525,7 +495,7 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 		}
 
 		/* store the filesize */
-		mkfp->filesize = avfc->file_size;
+		mkfp->filesize = avio_size(avfc->pb);
 		break;
 	}
 	case MKIND_STRING: {
@@ -561,27 +531,27 @@ media_ffmpeg_open(Lisp_Media_Stream *ms)
 			avcc = avst->codec;
 			if (avcc &&
 			    avcc->codec_id != CODEC_ID_NONE &&
-			    avcc->codec_type != CODEC_TYPE_DATA &&
+			    avcc->codec_type != AVMEDIA_TYPE_DATA &&
 			    (avc = avcodec_find_decoder(avcc->codec_id)) &&
-			    (avc && (avcodec_open(avcc, avc) >= 0))) {
+			    (avc && (avcodec_open2(avcc, avc, NULL) >= 0))) {
 
 				/* create a substream */
 				mss = make_media_substream_append(ms);
 
 				switch ((unsigned int)avcc->codec_type) {
-				case CODEC_TYPE_VIDEO:
+				case AVMEDIA_TYPE_VIDEO:
 					/* assign substream props */
 					media_substream_type(mss) = MTYPE_VIDEO;
 					media_ffmpeg_analyse_video(mss, avfc, st);
 					break;
-				case CODEC_TYPE_AUDIO:
+				case AVMEDIA_TYPE_AUDIO:
 					/* assign substream props */
 					media_substream_type(mss) = MTYPE_AUDIO;
 					media_ffmpeg_analyse_audio(mss, avfc, st);
 					/* set some stream handlers */
 					media_stream_set_meths(ms, media_ffmpeg);
 					break;
-				case CODEC_TYPE_DATA:
+				case AVMEDIA_TYPE_DATA:
 					media_substream_type(mss) = MTYPE_IMAGE;
 					break;
 				default:
@@ -645,7 +615,7 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	AVFormatContext *avfc;
 	AVStream *avst;
 	AVCodecContext *avcc;
-	AVCodec *avc;
+	const AVCodec *avc;
 	AVPacket pkt;
 	/* buffering */
 	/* the size we present here, is _not_ the size we want, however
@@ -671,6 +641,7 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	avst = avfc->streams[si];
 	avcc = avst->codec;
 	avc = avcc->codec;
+	SXE_SET_UNUSED(avc);
 
 	/* unpack the substream */
 	if ((mtap = media_substream_type_properties(mss).aprops) == NULL) {
@@ -710,7 +681,13 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 
 		dec = pkt.size;
 		/* decode the demuxed packet */
-#ifdef HAVE_AVCODEC_DECODE_AUDIO2
+#ifdef HAVE_AVCODEC_DECODE_AUDIO3
+/* prefer decode_audio3() if available */
+		size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
+		declen = avcodec_decode_audio3(
+			avcc, (void*)((char*)outbuf+bufseek),
+			&size, &pkt);
+#elif HAVE_AVCODEC_DECODE_AUDIO2
 /* prefer decode_audio2() if available */
 		size = AVCODEC_MAX_AUDIO_FRAME_SIZE;
 		declen = avcodec_decode_audio2(
@@ -729,6 +706,8 @@ media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 					 (long long int)pkt.pts,
 					 (long long int)pkt.dts,
 					 pkt.size, size, declen);
+			/* Because FFMPEG_DEBUG_AVF may expand to nothing ... */
+			SXE_SET_UNUSED(declen);
 
 			/* memcpy(outbuf+bufseek, (char*)buffer, size); */
 			bufseek += size;
@@ -917,7 +896,6 @@ typedef struct VideoState {
 
 /* since we have only one decoding thread, we can use a global
    variable instead of a thread local variable */
-static VideoState *global_video_state;
 AVPacket flush_pkt;
 
 /* packet queue handling */
@@ -1040,22 +1018,14 @@ packet_queue_get(PacketQueue *q, AVPacket *pkt, int block)
 static uint64_t global_video_pkt_pts = AV_NOPTS_VALUE;
 
 static int
-my_get_buffer(struct AVCodecContext *c, AVFrame *pic)
+my_get_buffer(struct AVCodecContext *c, AVFrame *pic, int flags)
 {
-	int ret= avcodec_default_get_buffer(c, pic);
+        int ret= avcodec_default_get_buffer2(c, pic, flags);
 	uint64_t *pts= av_malloc(sizeof(uint64_t));
 	*pts= global_video_pkt_pts;
 	pic->opaque= pts;
 	return ret;
 }
-
-static void
-my_release_buffer(struct AVCodecContext *c, AVFrame *pic)
-{
-	if(pic) av_freep(&pic->opaque);
-	avcodec_default_release_buffer(c, pic);
-}
-
 
 static int
 stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
@@ -1072,7 +1042,7 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 	enc = ic->streams[stream_index]->codec;
 
 	/* prepare audio output */
-	if (enc->codec_type == CODEC_TYPE_AUDIO) {
+	if (enc->codec_type == AVMEDIA_TYPE_AUDIO) {
 #if 0
 		wanted_spec.freq = enc->sample_rate;
 		wanted_spec.format = AUDIO_S16SYS;
@@ -1107,18 +1077,18 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 	enc->error_resilience = FF_ER_CAREFUL; /* error_resilience; */
 #endif
 	enc->error_concealment = 3; /* error_concealment; */
-	if (!codec ||
-	    avcodec_open(enc, codec) < 0)
-		return -1;
 	if (1 /* thread_count */ > 1)
-		avcodec_thread_init(enc, 1 /*thread_count*/);
-	enc->thread_count= 1 /* thread_count */;
+	        enc->thread_count = 1 /* thread_count */;
+
+	if (!codec ||
+	    avcodec_open2(enc, codec, NULL) < 0)
+		return -1;
 
 	/* create a substream */
 	mss = make_media_substream_append(ms);
 
 	switch ((unsigned int)enc->codec_type) {
-	case CODEC_TYPE_AUDIO:
+	case AVMEDIA_TYPE_AUDIO:
 		is->audio_stream = stream_index;
 		is->audio_st = ic->streams[stream_index];
 		is->audio_buf_size = 0;
@@ -1138,7 +1108,7 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 		media_substream_type(mss) = MTYPE_AUDIO;
 		media_ffmpeg_analyse_audio(mss, is->ic, stream_index);
 		break;
-	case CODEC_TYPE_VIDEO:
+	case AVMEDIA_TYPE_VIDEO:
 		is->video_stream = stream_index;
 		is->video_st = ic->streams[stream_index];
 
@@ -1152,13 +1122,12 @@ stream_component_open(VideoState *is, int stream_index, Lisp_Media_Stream *ms)
 		packet_queue_init(&is->videoq);
 		is->video_tid = 0 /* SDL_CreateThread(video_thread, is) */;
 
-		enc->    get_buffer=     my_get_buffer;
-		enc->release_buffer= my_release_buffer;
-
+		enc->get_buffer2          = my_get_buffer;
 		media_substream_type(mss) = MTYPE_VIDEO;
+
 		media_ffmpeg_analyse_video(mss, is->ic, stream_index);
 		break;
-	case CODEC_TYPE_SUBTITLE:
+	case AVMEDIA_TYPE_SUBTITLE:
 		is->subtitle_stream = stream_index;
 		is->subtitle_st = ic->streams[stream_index];
 		packet_queue_init(&is->subtitleq);
@@ -1183,14 +1152,14 @@ stream_component_close(VideoState *is, int stream_index)
 	enc = ic->streams[stream_index]->codec;
 
 	switch ((unsigned int)enc->codec_type) {
-	case CODEC_TYPE_AUDIO:
+	case AVMEDIA_TYPE_AUDIO:
 		packet_queue_abort(&is->audioq);
 #if 0
 		SDL_CloseAudio();
 #endif
 		packet_queue_end(&is->audioq);
 		break;
-	case CODEC_TYPE_VIDEO:
+	case AVMEDIA_TYPE_VIDEO:
 		packet_queue_abort(&is->videoq);
 
 		/* note: we also signal this mutex to make sure we deblock the
@@ -1203,7 +1172,7 @@ stream_component_close(VideoState *is, int stream_index)
 #endif
 		packet_queue_end(&is->videoq);
 		break;
-	case CODEC_TYPE_SUBTITLE:
+	case AVMEDIA_TYPE_SUBTITLE:
 		packet_queue_abort(&is->subtitleq);
 
 		/* note: we also signal this mutex to make sure we deblock the
@@ -1224,15 +1193,15 @@ stream_component_close(VideoState *is, int stream_index)
 
 	avcodec_close(enc);
 	switch ((unsigned int)enc->codec_type) {
-	case CODEC_TYPE_AUDIO:
+	case AVMEDIA_TYPE_AUDIO:
 		is->audio_st = NULL;
 		is->audio_stream = -1;
 		break;
-	case CODEC_TYPE_VIDEO:
+	case AVMEDIA_TYPE_VIDEO:
 		is->video_st = NULL;
 		is->video_stream = -1;
 		break;
-	case CODEC_TYPE_SUBTITLE:
+	case AVMEDIA_TYPE_SUBTITLE:
 		is->subtitle_st = NULL;
 		is->subtitle_stream = -1;
 		break;
@@ -1244,22 +1213,26 @@ stream_component_close(VideoState *is, int stream_index)
 static void
 dump_stream_info(const AVFormatContext *s)
 {
-	if (s->track != 0)
-		fprintf(stderr, "Track: %d\n", s->track);
-	if (s->title[0] != '\0')
-		fprintf(stderr, "Title: %s\n", s->title);
-	if (s->author[0] != '\0')
-		fprintf(stderr, "Author: %s\n", s->author);
-	if (s->copyright[0] != '\0')
-		fprintf(stderr, "Copyright: %s\n", s->copyright);
-	if (s->comment[0] != '\0')
-		fprintf(stderr, "Comment: %s\n", s->comment);
-	if (s->album[0] != '\0')
-		fprintf(stderr, "Album: %s\n", s->album);
-	if (s->year != 0)
-		fprintf(stderr, "Year: %d\n", s->year);
-	if (s->genre[0] != '\0')
-		fprintf(stderr, "Genre: %s\n", s->genre);
+        static const char   *keys[] = {
+		"track", "title", "author", "copyright", "comment",
+		"album", "date",  "genre"
+	};
+        static const size_t  nkeys  = sizeof(keys)/sizeof(keys[0]);
+        int           i      = 0;
+	AVDictionaryEntry *curr = NULL;
+	if (! s->metadata) {
+	        fprintf(stderr, "No metadata\n");
+		return;
+	}
+
+	for (i = 0; i < nkeys; ++i ) {
+	        curr = av_dict_get(s->metadata,
+				   keys[i],
+				   curr,
+				   AV_DICT_IGNORE_SUFFIX);
+		if (curr)
+		    fprintf(stderr, "%s: %s\n", curr->key, curr->value);
+	}
 }
 
 enum {
@@ -1271,9 +1244,9 @@ enum {
 static VideoState *
 stream_open(char *filename, size_t filelen)
 {
-	VideoState *is = xnew(VideoState);
-	AVFormatParameters params, *ap = &params;
-	int err = 0;
+	VideoState   *is      = xnew(VideoState);
+	AVDictionary *options = NULL;
+	int err               = 0;
 
 	is->filename = filename;
 	is->filelen = filelen;
@@ -1288,7 +1261,7 @@ stream_open(char *filename, size_t filelen)
 	is->av_sync_type = AV_SYNC_AUDIO_MASTER;
 	is->parse_tid = 0; /* SDL_CreateThread(decode_thread, is); */
 
-	memset(ap, 0, sizeof(*ap));
+#if 0
 	/* we force a pause when starting an RTSP stream */
 	ap->initial_pause = 1;
 
@@ -1296,8 +1269,9 @@ stream_open(char *filename, size_t filelen)
 	ap->height= 0; /* frame_height; */
 	ap->time_base= (AVRational){1, 25};
 	ap->pix_fmt = PIX_FMT_NONE; /* frame_pix_fmt; */
+#endif
 
-	err = av_open_input_file(&is->ic, is->filename, is->iformat, 0, ap);
+	err = avformat_open_input(&is->ic, is->filename, is->iformat, &options);
 	if (UNLIKELY(err < 0)) {
 		FFMPEG_DEBUG_AVF("Could not open \"%s\" (errno %d)\n",
 				 is->filename, err);
@@ -1353,7 +1327,7 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 	}
 
 	if (!use_play) {
-		err = av_find_stream_info(vs->ic);
+	        err = avformat_find_stream_info(vs->ic, NULL);
 		if (err < 0) {
 			FFMPEG_DEBUG_AVF("\"%s\": "
 					 "could not find codec parameters\n",
@@ -1362,18 +1336,14 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 		}
 		/* FIXME hack,
 		 * ffplay maybe should not use url_feof() to test for the end */
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
 		vs->ic->pb->eof_reached = 0;
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-		vs->ic->pb.eof_reached = 0;
-#endif
 	}
 
 	/* now we can begin to play (RTSP stream only) */
 	av_read_play(vs->ic);
 
 	if (use_play) {
-		err = av_find_stream_info(vs->ic);
+            	err = avformat_find_stream_info(vs->ic, NULL);
 		if (err < 0) {
 			FFMPEG_DEBUG_AVF("\"%s\": "
 					 "could not find codec parameters\n",
@@ -1385,12 +1355,12 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 	for (size_t i = 0; i < vs->ic->nb_streams; i++) {
 		AVCodecContext *enc = vs->ic->streams[i]->codec;
 		switch ((unsigned int)enc->codec_type) {
-		case CODEC_TYPE_AUDIO:
+		case AVMEDIA_TYPE_AUDIO:
 			if ((audio_index < 0 || wanted_audio_stream-- > 0)) {
 				audio_index = i;
 			}
 			break;
-		case CODEC_TYPE_VIDEO:
+		case AVMEDIA_TYPE_VIDEO:
 			if ((video_index < 0 || wanted_video_stream-- > 0)) {
 				video_index = i;
 			}
@@ -1400,7 +1370,7 @@ new_media_ffmpeg_open(Lisp_Media_Stream *ms)
 		}
 	}
 	if (1 /* show_status */) {
-		dump_format(vs->ic, 0, vs->filename, 0);
+		av_dump_format(vs->ic, 0, vs->filename, 0);
 		dump_stream_info(vs->ic);
 	}
 
@@ -1528,25 +1498,14 @@ new_media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 		if (is->audioq.size > MAX_AUDIOQ_SIZE ||
 		    is->videoq.size > MAX_VIDEOQ_SIZE ||
 		    is->subtitleq.size > MAX_SUBTITLEQ_SIZE ||
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
-		    url_feof(is->ic->pb)
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-		    url_feof(&is->ic->pb)
-#endif
-			) {
+		    avio_feof(is->ic->pb)) {
 			/* wait 10 ms */
 			usleep(10);
 			continue;
 		}
 		ret = av_read_frame(is->ic, pkt);
 		if (ret < 0) {
-			if (url_ferror(
-#if defined FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR
-				    is->ic->pb
-#elif defined FFMPEG_URL_FOPEN_BIOCTX_STAR
-				    &is->ic->pb
-#endif
-				    ) == 0) {
+			if (is->ic->pb->error == 0) {
 				usleep(100); /* wait for user event */
 				continue;
 			} else
@@ -1568,8 +1527,6 @@ new_media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	}
 
 	ret = 0;
-	/* disable interrupting */
-	global_video_state = NULL;
 
 	/* close each stream */
 	if (is->audio_stream >= 0)
@@ -1579,10 +1536,13 @@ new_media_ffmpeg_read(media_substream *mss, void *outbuf, size_t length)
 	if (is->subtitle_stream >= 0)
 		stream_component_close(is, is->subtitle_stream);
 	if (is->ic) {
-		av_close_input_file(is->ic);
+		avformat_close_input(&is->ic);
 		is->ic = NULL; /* safety */
 	}
+
+#if 0
 	url_set_interrupt_cb(NULL);
+#endif
 
 	if (ret != 0) {
 #if 0
@@ -1645,12 +1605,12 @@ Lisp_Object
 media_ffmpeg_available_formats(void)
 {
 	Lisp_Object formats;
-	AVInputFormat *avif;
+	AVInputFormat *avif = NULL;
 
 	formats = Qnil;
 
 	av_register_all();
-	avif = first_iformat;
+	avif = av_iformat_next(avif);
 
 	while (avif) {
 		if (avif->name) {
@@ -1658,7 +1618,7 @@ media_ffmpeg_available_formats(void)
 				Fintern(build_string(avif->name), Qnil);
 			formats = Fcons(fmtname, formats);
 		}
-		avif = avif->next;
+		avif = av_iformat_next(avif);
 	}
 
 	return formats;

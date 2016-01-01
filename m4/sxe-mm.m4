@@ -318,18 +318,12 @@ AC_DEFUN([SXE_MM_CHECK_FFMPEG], [
 	pushdef([ACTION_IF_NOT_FOUND], [$2])
 
 	sxe_cv_feat_ffmpeg=
-	## we can't use that one since we have to check multiple headers
-dnl	_SXE_MM_CHECK_pkgconfig_based([ffmpeg], [libavformat], [49.0.0], [dnl
-dnl		av_open_input_file av_close_input_file av_find_stream_info dnl
-dnl		url_fopen av_probe_input_format avcodec_find_decoder dnl
-dnl		avcodec_open av_read_frame av_seek_frame av_register_all dnl
-dnl		avcodec_decode_audio avcodec_decode_audio2], [avformat.h],
-dnl		[sxe_cv_feat_ffmpeg=yes], [sxe_cv_feat_ffmpeg=no])
 
-dnl	Dropped in favour of sxe-pkgconfig.m4 macros
-dnl	_SXE_CHECK_pkgconfig_based([ffmpeg], [libavformat], [49.0.0])
-
-	SXE_PC_CHECK_VERSION_ATLEAST([libavformat], [51.0.0])
+	## Minimum versions required matches FFmpeg stable v2.0.1
+	## released 2013-08-13
+	SXE_PC_CHECK_VERSION_ATLEAST([libavformat], [55.12.100])
+	SXE_PC_CHECK_VERSION_ATLEAST([libavcodec], [55.18.102])
+	SXE_PC_CHECK_VERSION_ATLEAST([libavutil], [52.38.100])
 
 	SXE_CHECK_FFMPEG_HEADERS
 	SXE_CHECK_FFMPEG_LIBS
@@ -339,107 +333,65 @@ dnl	_SXE_CHECK_pkgconfig_based([ffmpeg], [libavformat], [49.0.0])
 		"$ac_cv_header_ffmpeg_avformat_h" = "yes" -o \
 		"$ac_cv_header_libavformat_avformat_h" = "yes"; then
 		sxe_cv_feat_ffmpeg_headers="yes"
+	else
+		sxe_cv_feat_ffmpeg_headers="no"
 	fi
-	## make sure either decode_audio or decode_audio2 is there
-	if test "$ac_cv_lib_avformat_avcodec_decode_audio2" = "yes" -o \
-		"$ac_cv_lib_avformat_avcodec_decode_audio" = "yes"; then
+
+	if test "$sxe_cv_feat_ffmpeg_headers" = "yes"; then
+		if test "$ac_cv_header_avcodec_h" = "yes" -o \
+                        "$ac_cv_header_ffmpeg_avcodec_h" = "yes" -o \
+		 	"$ac_cv_header_libavcodec_avcodec_h" = "yes"; then
+			sxe_cv_feat_ffmpeg_headers="yes"
+		else
+			sxe_cv_feat_ffmpeg_headers="no"
+		fi
+	fi
+
+	if test "$sxe_cv_feat_ffmpeg_headers" = "yes"; then
+	        if test "$ac_cv_header_ffmpeg_dict_h" = "yes" -o \
+			"$ac_cv_header_libavutil_dict_h" = "yes"; then
+			sxe_cv_feat_ffmpeg_headers="yes"
+		else
+			sxe_cv_feat_ffmpeg_headers="no"
+		fi
+	fi
+
+	if test "$sxe_cv_feat_ffmpeg_headers" = "yes"; then
+	        if test "$ac_cv_header_ffmpeg_time_h" = "yes" -o \
+			"$ac_cv_header_libavutil_time_h" = "yes"; then
+			sxe_cv_feat_ffmpeg_headers="yes"
+		else
+			sxe_cv_feat_ffmpeg_headers="no"
+		fi
+	fi
+
+        ## make sure either decode_audio is there
+	if test "$ac_cv_lib_avcodec_avcodec_decode_audio" = "yes" -o \
+	        "$ac_cv_lib_avcodec_avcodec_decode_audio2" = "yes" -o \
+	 	"$ac_cv_lib_avcodec_avcodec_decode_audio3" = "yes"; then
 		sxe_cv_feat_ffmpeg_decoders="yes"
 	fi
-	## make sure we can either use av_register_protocol()
-	## or register_protocol()
-	if test "$ac_cv_lib_avformat_av_register_protocol" = "yes" -o \
-		"$ac_cv_lib_avformat_register_protocol" = "yes"; then
-		sxe_cv_feat_ffmpeg_proto_reg="yes"
-	fi
-	## make sure this bloody av context allocator is there
-	if test "$ac_cv_lib_avformat_avformat_alloc_context" = "yes" -o \
-		"$ac_cv_lib_avformat_av_alloc_format_context" = "yes"; then
-		sxe_cv_feat_ffmpeg_avformat_alloc="yes"
-	fi
+
 	if test "$sxe_cv_feat_ffmpeg_headers" = "yes" -a \
 		"$sxe_cv_feat_ffmpeg_decoders" = "yes" -a \
-		"$sxe_cv_feat_ffmpeg_proto_reg" = "yes" -a \
-		"$sxe_cv_feat_ffmpeg_avformat_alloc" = "yes" -a \
-		"$ac_cv_lib_avformat_av_close_input_file" = "yes" -a \
-		"$ac_cv_lib_avformat_av_find_stream_info" = "yes" -a \
-		"$ac_cv_lib_avformat_av_open_input_file" = "yes" -a \
+		"$ac_cv_lib_avformat_avformat_alloc_context" = "yes" -a \
+		"$ac_cv_lib_avformat_avformat_free_context" = "yes" -a \
+		"$ac_cv_lib_avformat_avio_alloc_context" = "yes" -a \
+		"$ac_cv_lib_avformat_avio_size" = "yes" -a \
+		"$ac_cv_lib_avformat_avio_feof" = "yes" -a \
+		"$ac_cv_lib_avformat_avformat_open_input" = "yes" -a \
+		"$ac_cv_lib_avformat_avformat_close_input" = "yes" -a \
+		"$ac_cv_lib_avformat_avformat_find_stream_info" = "yes" -a \
 		"$ac_cv_lib_avformat_av_probe_input_format" = "yes" -a \
+		"$ac_cv_lib_avformat_av_iformat_next" = "yes" -a \
 		"$ac_cv_lib_avformat_av_read_frame" = "yes" -a \
-		"$ac_cv_lib_avformat_av_register_all" = "yes" -a \
 		"$ac_cv_lib_avformat_av_seek_frame" = "yes" -a \
-		"$ac_cv_lib_avformat_avcodec_find_decoder" = "yes" -a \
-		"$ac_cv_lib_avformat_avcodec_open" = "yes" -a \
-		"$ac_cv_lib_avformat_url_fopen" = "yes"; then
+		"$ac_cv_lib_avformat_av_register_all" = "yes" -a \
+		"$ac_cv_lib_avformat_av_dump_format" = "yes" -a \
+		"$ac_cv_lib_avcodec_avcodec_find_decoder" = "yes" -a \
+		"$ac_cv_lib_avcodec_avcodec_open2" = "yes" -a \
+		"$ac_cv_lib_avutil_av_dict_get" = "yes"; then
 		sxe_cv_feat_ffmpeg="yes"
-	else
-		sxe_cv_feat_ffmpeg="no"
-	fi
-
-	## newer ffmpegs want a bioctx** in url_fopen, check that
-	AC_MSG_CHECKING([what url_fopen() needs])
-	sxe_cv_tmp_ffmpeg_url_fopen="uncertain"
-
-	SXE_DUMP_LIBS
-	CPPFLAGS="$CPPFLAGS ${FFMPEG_CPPFLAGS}"
-	SXE_LANG_WERROR([off])
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#if defined HAVE_ERRNO_H
-# include <errno.h>
-#endif
-#if defined HAVE_LIBAVFORMAT_AVFORMAT_H
-# include <libavformat/avformat.h>
-#elif defined HAVE_FFMPEG_AVFORMAT_H
-# include <ffmpeg/avformat.h>
-#elif defined HAVE_AVFORMAT_H
-# include <avformat.h>
-#endif
-
-extern int foobar(void);
-int foobar(void)
-{
-	ByteIOContext *bioctx = 0;
-
-	url_fopen(&bioctx, "/foobar", URL_RDONLY);
-	return 0;
-}
-		]])], [sxe_cv_tmp_ffmpeg_url_fopen="ByteIOContext**"], [:])
-	SXE_RESTORE_LIBS
-
-	SXE_DUMP_LIBS
-	CPPFLAGS="$CPPFLAGS ${FFMPEG_CPPFLAGS}"
-	SXE_LANG_WERROR([on])
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#if defined HAVE_ERRNO_H
-# include <errno.h>
-#endif
-#if defined HAVE_LIBAVFORMAT_AVFORMAT_H
-# include <libavformat/avformat.h>
-#elif defined HAVE_FFMPEG_AVFORMAT_H
-# include <ffmpeg/avformat.h>
-#elif defined HAVE_AVFORMAT_H
-# include <avformat.h>
-#endif
-
-extern int foobar(void);
-int foobar(void)
-{
-	ByteIOContext *bioctx = 0;
-
-	url_fopen(bioctx, "/foobar", URL_RDONLY);
-	return 0;
-}
-		]])], [sxe_cv_tmp_ffmpeg_url_fopen="ByteIOContext*"], [:])
-	SXE_RESTORE_LIBS
-
-	## post the result
-	AC_MSG_RESULT([$sxe_cv_tmp_ffmpeg_url_fopen])
-
-	if test "$sxe_cv_tmp_ffmpeg_url_fopen" = "ByteIOContext**"; then
-		AC_DEFINE([FFMPEG_URL_FOPEN_BIOCTX_STAR_STAR], [1],
-			[Whether url_fopen want a ByteIOContext**])
-	elif test "$sxe_cv_tmp_ffmpeg_url_fopen" = "ByteIOContext*"; then
-		AC_DEFINE([FFMPEG_URL_FOPEN_BIOCTX_STAR], [1],
-			[Whether url_fopen want a ByteIOContext*])
 	else
 		sxe_cv_feat_ffmpeg="no"
 	fi
@@ -457,64 +409,69 @@ int foobar(void)
 ])dnl SXE_MM_CHECK_FFMPEG
 
 AC_DEFUN([SXE_CHECK_FFMPEG_HEADERS], [dnl
-	FFMPEG_CPPFLAGS="$(${PKG_CONFIG} --cflags libavformat)"
+	FFMPEG_CPPFLAGS="$(${PKG_CONFIG} --cflags libavformat libavcodec libavutil)"
 
 	## backup current configuration
 	SXE_DUMP_LIBS
 	CPPFLAGS="${CPPFLAGS} ${FFMPEG_CPPFLAGS}"
-	AC_CHECK_HEADERS([avformat.h ffmpeg/avformat.h libavformat/avformat.h])
+	AC_CHECK_HEADERS([avformat.h avcodec.h])
+	AC_CHECK_HEADERS([ffmpeg/avformat.h ffmpeg/avcodec.h])
+	AC_CHECK_HEADERS([ffmpeg/dict.h ffmpeg/time.h])
+	AC_CHECK_HEADERS([libavformat/avformat.h libavcodec/avcodec.h])
+	AC_CHECK_HEADERS([libavutil/dict.h libavutil/time.h])
+
 	## restore configuration
 	SXE_RESTORE_LIBS
 ])dnl SXE_CHECK_FFMPEG_HEADERS
 
 AC_DEFUN([SXE_CHECK_FFMPEG_LIBS], [dnl
-	FFMPEG_LDFLAGS="$(${PKG_CONFIG} --libs-only-other libavformat) \
-		$(${PKG_CONFIG} --libs-only-L libavformat)"
-	FFMPEG_LIBS="$(${PKG_CONFIG} --libs-only-l libavformat)"
+	FFMPEG_LDFLAGS="$(${PKG_CONFIG} --libs-only-other libavformat libavcodec libavutil) \
+		$(${PKG_CONFIG} --libs-only-L libavformat libavcodec libavutil)"
+	FFMPEG_LIBS="$(${PKG_CONFIG} --libs-only-l libavformat libavcodec libavutil)"
 
 	## backup current configuration
 	SXE_DUMP_LIBS
 	LDFLAGS="${LDFLAGS} ${FFMPEG_LDFLAGS}"
 
-	AC_CHECK_LIB([avformat], [av_open_input_file], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [av_close_input_file], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [av_find_stream_info], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [url_fopen], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_find_decoder], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_open2], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_decode_audio], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_decode_audio2], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_decode_audio3], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avcodec], [avcodec_decode_audio4], [:], [:], [${FFMPEG_LIBS}])
+
+	AC_CHECK_LIB([avformat], [avformat_open_input], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avformat_close_input], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avformat_find_stream_info], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [av_iformat_next], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_probe_input_format], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [avcodec_find_decoder], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [avcodec_open], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_read_frame], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_seek_frame], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_register_all], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [avcodec_decode_audio], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [avcodec_decode_audio2], [:], [:], [${FFMPEG_LIBS}])
-
-	AC_CHECK_LIB([avformat], [av_alloc_format_context], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [av_dump_format], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avformat_alloc_context], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [register_protocol], [:], [:], [${FFMPEG_LIBS}])
-	AC_CHECK_LIB([avformat], [av_register_protocol], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avformat_free_context], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avio_alloc_context], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avio_size], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [avio_feof], [:], [:], [${FFMPEG_LIBS}])
 
-	if test "$ac_cv_lib_avformat_av_alloc_format_context" = "yes"; then
-		AC_DEFINE([HAVE_AV_ALLOC_FORMAT_CONTEXT], [1], [Description here!])
-	fi
-	if test "$ac_cv_lib_avformat_avformat_alloc_context" = "yes"; then
-		AC_DEFINE([HAVE_AVFORMAT_ALLOC_CONTEXT], [1], [Description here!])
-	fi
+	AC_CHECK_LIB([avutil], [av_dict_get], [:], [:], [${FFMPEG_LIBS}])
 
-	if test "$ac_cv_lib_avformat___avcodec_decode_audio2" = "yes" -o \
-		"$ac_cv_lib_avformat_avcodec_decode_audio2" = "yes"; then
-		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO2], [1], [Description here!])
+	if test "$ac_cv_lib_avcodec_avcodec_decode_audio" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO], [1],
+		          [Define to 1 if avcodec_decode_audio is usable.])
 	fi
-	if test "$ac_cv_lib_avformat___avcodec_decode_audio" = "yes" -o \
-		"$ac_cv_lib_avformat_avcodec_decode_audio" = "yes"; then
-		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO], [1], [Description here!])
+	if test "$ac_cv_lib_avcodec_avcodec_decode_audio2" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO2], [1],
+		          [Define to 1 if avcodec_decode_audio2 is usable.])
 	fi
-
-	if test "$ac_cv_lib_avformat_av_register_protocol" = "yes"; then
-		AC_DEFINE([HAVE_AV_REGISTER_PROTOCOL], [1], [Description here!])
+	if test	"$ac_cv_lib_avcodec_avcodec_decode_audio3" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO3], [1],
+		          [Define to 1 if avcodec_decode_audio is usable.])
 	fi
-	if test "$ac_cv_lib_avformat_register_protocol" = "yes"; then
-		AC_DEFINE([HAVE_REGISTER_PROTOCOL], [1], [Description here!])
+	if test	"$ac_cv_lib_avcodec_avcodec_decode_audio4" = "yes"; then
+		AC_DEFINE([HAVE_AVCODEC_DECODE_AUDIO4], [1],
+		          [Define to 1 if avcodec_decode_audio is usable.])
 	fi
 
 	## restore configuration
