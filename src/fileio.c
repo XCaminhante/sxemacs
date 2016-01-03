@@ -378,6 +378,22 @@ Return the directory component in file name FILENAME.
 Return nil if FILENAME does not include a directory.
 Otherwise return a directory spec.
 Given a Unix syntax file name, returns a string ending in slash.
+
+Concatenating the return of file-name-directory and the string
+returned by file-name-nondirectory yields a complete pathname.
+
+Samples:
+filename       file-name-directory   file-name-nondirectory
+"/usr/lib"     "/usr/"               "lib"
+"/usr/lib/"    "/usr/lib/"           ""
+"/usr/"        "/usr/"               ""
+"/usr"         "/"                   "usr"
+"usr"          nil                   "usr"
+"/"            "/"                   ""
+"."            nil                   "."
+"./"           "./"                  ""
+".."           nil                   ".."
+
 */
       (filename))
 {
@@ -415,6 +431,24 @@ Return file name FILENAME sans its directory.
 For example, in a Unix-syntax file name,
 this is everything after the last slash,
 or the entire name if it contains no slash.
+
+Concatenating the return of file-name-directory and the string
+returned by file-name-nondirectory yields a complete pathname.
+
+It is equivalent to the GNU version of basename.
+
+Samples:
+filename       file-name-directory   file-name-nondirectory
+"/usr/lib"     "/usr/"               "lib"
+"/usr/lib/"    "/usr/lib/"           ""
+"/usr/"        "/usr/"               ""
+"/usr"         "/"                   "usr"
+"usr"          nil                   "usr"
+"/"            "/"                   ""
+"."            nil                   "."
+"./"           "./"                  ""
+".."           nil                   ".."
+
 */
       (filename))
 {
