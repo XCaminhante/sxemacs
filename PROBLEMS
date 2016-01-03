@@ -476,6 +476,20 @@ XMODIFIERS environment variables which influence the behavior of
 XCreateIC.  Failures have been observed with XMODIFIERS=@im=ibus
 
 
+*** Text gets garbled/corrupted with Xorg ATI driver
+
+Some versions of the Xorg ATI driver present display issues where text
+display gets corrupted.  Because of the conservative way SXEmacs
+updates the screen it is more susceptible to these issues than other
+applications.
+
+Some users have reported the problem goes away when using proprietary
+drivers.  CAVEAT EMPTOR: Proprietary drivers have also been reported
+to break other parts of the system, most notabable are bad
+interactions with graphic boot package Plymouth when it asks for
+password for encrypted volumes at boot.
+
+
 * Original XEmacs PROBLEMS File
 ===============================
 
