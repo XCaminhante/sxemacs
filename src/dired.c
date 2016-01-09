@@ -130,7 +130,7 @@ dired_realpath(const char *file)
 {
 	char *result = xmalloc_atomic(4096);
 
-	if ( realpath(file, result) == NULL ) {
+	if ( xrealpath(file, result) == NULL ) {
 		xfree(result);
 		result = NULL;
 	}
