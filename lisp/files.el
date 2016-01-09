@@ -456,6 +456,30 @@ of the same functionality is available as `split-path', which see."
 	(t
 	 (setq default-directory dir))))
 
+(defun file-name-join (dirname basename)
+  "Return the filename defined by the concatenation of DIRNAME and BASENAME.
+Only one path component separator will ever be used in the result formation.
+
+Can be use to reassemble a file name separated by `file-name-directory'
+`file-name-nondirectory' and `file-dirname' `file-basename'."
+  (when (and (or (null dirname)  (equal 0 (length dirname)))
+	     (or (null basename) (equal 0 (length basename))))
+    (error "Both dirname (%S) and basename (%S) empty." dirname basename))
+  (let* ((dir  (if (and dirname (> (length dirname) 0))
+		   (if (equal "/" (substring dirname -1))
+		       (substring dirname 0 -1)
+		     dirname)
+		 "."))
+	 (base (if (and basename (> (length basename) 0))
+		   (if (equal "/" (substring basename 0 1))
+		       (substring basename 1)
+		     basename)
+		 (if (equal dir ".") "." ""))))
+    (if (and (equal 0 (length base))
+	     (> (length dir) 0))
+	(concat dir)
+      (concat dir "/" base))))
+
 (defun cd (dir)
   "Make DIR become the current buffer's default directory.
 If your environment includes a `CDPATH' variable, try each one of that
