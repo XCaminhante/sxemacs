@@ -77,7 +77,7 @@
 	 directories)
     (mapfam
      #'(lambda (f)
-	 (let ((d (car (last (split-string-by-char (file-dirname f) ?/) 2))))
+	 (let ((d (file-basename (file-dirname f))))
 	   (unless (bloom-owns-p dir-bloom d)
 	     (bloom-add dir-bloom d)
 	     (setq directories (cons d directories)))))
