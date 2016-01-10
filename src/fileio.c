@@ -378,6 +378,22 @@ Return the directory component in file name FILENAME.
 Return nil if FILENAME does not include a directory.
 Otherwise return a directory spec.
 Given a Unix syntax file name, returns a string ending in slash.
+
+Concatenating the return of file-name-directory and the string
+returned by file-name-nondirectory yields a complete pathname.
+
+Samples:
+filename       file-name-directory   file-name-nondirectory
+"/usr/lib"     "/usr/"               "lib"
+"/usr/lib/"    "/usr/lib/"           ""
+"/usr/"        "/usr/"               ""
+"/usr"         "/"                   "usr"
+"usr"          nil                   "usr"
+"/"            "/"                   ""
+"."            nil                   "."
+"./"           "./"                  ""
+".."           nil                   ".."
+
 */
       (filename))
 {
@@ -415,6 +431,24 @@ Return file name FILENAME sans its directory.
 For example, in a Unix-syntax file name,
 this is everything after the last slash,
 or the entire name if it contains no slash.
+
+Concatenating the return of file-name-directory and the string
+returned by file-name-nondirectory yields a complete pathname.
+
+It is equivalent to the GNU version of basename.
+
+Samples:
+filename       file-name-directory   file-name-nondirectory
+"/usr/lib"     "/usr/"               "lib"
+"/usr/lib/"    "/usr/lib/"           ""
+"/usr/"        "/usr/"               ""
+"/usr"         "/"                   "usr"
+"usr"          nil                   "usr"
+"/"            "/"                   ""
+"."            nil                   "."
+"./"           "./"                  ""
+".."           nil                   ".."
+
 */
       (filename))
 {
@@ -477,12 +511,30 @@ Bytecount file_basename_match_extension(Lisp_Object filename,
 
 DEFUN("file-basename", Ffile_basename, 1, 2, 0,	/*
 Return the basename of FILENAME sans its base directory.
-If EXTENSION is non-nil the extension is also removed if it matches the regexp.
-EXTENSION can be a list of regexps.
-For example, in a Unix-syntax file name,
-this is everything after the last slash,
-or the entire name if it contains no slash.
-It ignores trailing slash.
+
+If EXTENSION is non-nil the extension is also removed if it matches
+the regexp.  EXTENSION can be a list of regexps.
+
+For example, in a Unix-syntax file name, this is everything after the
+last slash, or the entire name if it contains no slash.
+It ignores trailing slash unless filename is '/' in which case it
+returns '/'.
+
+Concatenating the string returned by file-dirname, a "/", and the
+string returned by file-basename yields a complete pathname.
+
+Sample returns (POSIX 1003.1 compliant):
+
+filename       file-dirname   file-basename
+/usr/lib       /usr           lib
+/usr/lib/      /usr           lib
+/usr/          /              usr
+usr            .              usr
+/              /              /
+.              .              .
+./             .              .
+..             .              ..
+
 */
       (filename, extension))
 {
@@ -511,8 +563,11 @@ It ignores trailing slash.
 	beg = XSTRING_DATA(filename);
 	end = p = beg + XSTRING_LENGTH(filename);
 	if ( IS_ANY_SEP(p[-1]) ) {
-	  p--;
-	  end--;
+		p--;
+		end--;
+		if (p == beg) {
+			return filename;
+		}
 	}
 	while (p != beg && !IS_ANY_SEP(p[-1]))
 		p--;
@@ -541,18 +596,33 @@ It ignores trailing slash.
 
 
 DEFUN("file-dirname", Ffile_dirname, 1, 1, 0,	/*
-Return the directory component in file name FILENAME.
-Return nil if FILENAME does not include a directory.
-Otherwise return a directory spec.
-Given a Unix syntax file name, returns a string ending in slash.
-It ignores the trailing slash in FILENAME.
+Return the directory component in file name FILENAME as a directory
+spec.
+
+Given a Unix syntax file name, returns a string ending in slash.  It
+ignores the trailing slash in FILENAME.
+
+Concatenating the string returned by file-dirname, a "/", and the
+string returned by file-basename yields a complete pathname.
+
+Sample returns (POSIX 1003.1 compliant):
+
+filename       file-dirname   file-basename
+/usr/lib       /usr           lib
+/usr/lib/      /usr           lib
+/usr/          /              usr
+usr            .              usr
+/              /              /
+.              .              .
+./             .              .
+..             .              ..
+
 */
       (filename))
 {
 	/* This function can GC.  GC checked 2000-07-28 ben */
-	Bufbyte *beg, *p, *end;
-	Lisp_Object handler;
-
+	Lisp_Object  handler, result;
+	const char  *res;
 	CHECK_STRING(filename);
 
 	/* If the file name has special constructs in it,
@@ -562,19 +632,10 @@ It ignores the trailing slash in FILENAME.
 		return call2_check_string_or_nil(handler, Qfile_dirname,
 						 filename);
 
-	beg = XSTRING_DATA(filename);
-	end = p = beg + XSTRING_LENGTH(filename);
-	if ( IS_ANY_SEP(p[-1]) ) {
-	  p--;
-	  end--;
-	}
-	while (p != beg && !IS_ANY_SEP(p[-1])
-	       )
-		p--;
-
-	if ( beg == p )
-	  return Qnil;
-	return make_string(beg, p-beg);
+	res = xdirname((char*)XSTRING_DATA(filename));
+	result = make_string((const Bufbyte*)res, xstrlen(res));
+	xfree(res);
+	return result;
 }
 
 
