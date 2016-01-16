@@ -1331,7 +1331,7 @@ sxe_msf_DBL_down(void *d, void *s, size_t len)
 	int32_t *src = s;
 
 	/* len is the number of samples (== #frame * #channels) */
-	MEDIA_DEBUG_FMT("downsampling internal->FLT: %u samples\n", len);
+	MEDIA_DEBUG_FMT("downsampling internal->DBL: %u samples\n", len);
 
 	for (i = len-1; i >= 0; i--) {
 		dst[i] = (double)(src[i]) / SXE_MAX_S24;
