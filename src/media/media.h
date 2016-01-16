@@ -414,6 +414,7 @@ struct audio_coerce_chain_s {
 DECLARE_MEDIA_SAMPLE_FORMAT(sxe_msf_U8);
 DECLARE_MEDIA_SAMPLE_FORMAT(sxe_msf_S16);
 DECLARE_MEDIA_SAMPLE_FORMAT(sxe_msf_FLT);
+DECLARE_MEDIA_SAMPLE_FORMAT(sxe_msf_DBL);
 DECLARE_MEDIA_SAMPLE_FORMAT(sxe_msf_S32);
 DECLARE_MEDIA_SAMPLE_FORMAT(sxe_msf_S24); /* format internally used */
 
