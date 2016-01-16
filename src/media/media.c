@@ -1300,6 +1300,47 @@ sxe_msf_FLT_down(void *d, void *s, size_t len)
 	return;
 }
 
+DEFINE_MEDIA_SAMPLE_FORMAT_SIMPLE(sxe_msf_DBL);
+
+static void
+sxe_msf_DBL_up(void *d, void *s, size_t len)
+{
+	/* convert double samples to internal format (S24in32) */
+	size_t i;
+	int32_t *dst = d;
+	double *src = s;
+
+	/* len is the number of samples (== #frame * #channels) */
+	MEDIA_DEBUG_FMT("upsampling DBL->internal: %u samples\n", len);
+
+	for (i = 0; i < len; i++) {
+		dst[i] = (int32_t)(src[i] * SXE_MAX_S24);
+	}
+	MEDIA_DEBUG_FMT("s00:%f d00:%d  s01:%f d01:%d\n",
+			src[0], dst[0], src[1], dst[1]);
+
+	return;
+}
+
+static void
+sxe_msf_DBL_down(void *d, void *s, size_t len)
+{
+	/* convert samples from internal format (S24in32) to double */
+	int i;
+	float *dst = d;
+	int32_t *src = s;
+
+	/* len is the number of samples (== #frame * #channels) */
+	MEDIA_DEBUG_FMT("downsampling internal->DBL: %u samples\n", len);
+
+	for (i = len-1; i >= 0; i--) {
+		dst[i] = (double)(src[i]) / SXE_MAX_S24;
+	}
+	MEDIA_DEBUG_FMT("d00:%f  d01:%f\n", dst[0], dst[1]);
+
+	return;
+}
+
 /* `effects' */
 DEFINE_MEDIA_SAMPLE_EFFECT(sxe_mse_1ch_to_2ch, _sxe_mse_1ch_to_2ch);
 

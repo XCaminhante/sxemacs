@@ -388,6 +388,8 @@ AC_DEFUN([SXE_MM_CHECK_FFMPEG], [
 		"$ac_cv_lib_avformat_av_seek_frame" = "yes" -a \
 		"$ac_cv_lib_avformat_av_register_all" = "yes" -a \
 		"$ac_cv_lib_avformat_av_dump_format" = "yes" -a \
+		"$ac_cv_lib_avformat_av_get_sample_fmt_string" = "yes" -a \
+		"$ac_cv_lib_avformat_av_get_bytes_per_sample" = "yes" -a \
 		"$ac_cv_lib_avcodec_avcodec_find_decoder" = "yes" -a \
 		"$ac_cv_lib_avcodec_avcodec_open2" = "yes" -a \
 		"$ac_cv_lib_avutil_av_dict_get" = "yes"; then
@@ -449,6 +451,8 @@ AC_DEFUN([SXE_CHECK_FFMPEG_LIBS], [dnl
 	AC_CHECK_LIB([avformat], [av_seek_frame], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_register_all], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [av_dump_format], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [av_get_bytes_per_sample], [:], [:], [${FFMPEG_LIBS}])
+	AC_CHECK_LIB([avformat], [av_get_sample_fmt_string], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avformat_alloc_context], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avformat_free_context], [:], [:], [${FFMPEG_LIBS}])
 	AC_CHECK_LIB([avformat], [avio_alloc_context], [:], [:], [${FFMPEG_LIBS}])

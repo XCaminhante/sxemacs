@@ -376,39 +376,47 @@ media_ffmpeg_analyse_audio(media_substream *mss, AVFormatContext *avfc, int st)
 		mtap->samplerate = avcc->sample_rate;
 		mtap->bitrate = media_ffmpeg_bitrate(avcc);
 
+		int sample_bytes =
+			av_get_bytes_per_sample(avcc->sample_fmt);
+		mtap->samplewidth = 8 * sample_bytes;
+		mtap->framesize = mtap->channels * sample_bytes;
 		/* samplewidth and framesize */
 		switch (avcc->sample_fmt) {
 		case AV_SAMPLE_FMT_U8:
-			mtap->samplewidth = 8;
-			mtap->framesize = mtap->channels * 1;
+			assert(sample_bytes == 1);
 			mtap->msf = sxe_msf_U8;
 			break;
 		case AV_SAMPLE_FMT_S16:
-			mtap->samplewidth = 16;
-			mtap->framesize = mtap->channels * 2;
+			assert(sample_bytes == 2);
 			mtap->msf = sxe_msf_S16;
 			break;
-#if defined AV_SAMPLE_FMT_S24
-		case AV_SAMPLE_FMT_S24:
-			mtap->samplewidth = 32;
-			mtap->framesize = mtap->channels * 4;
-			mtap->msf = sxe_msf_S24;
-			break;
-#endif	/* SAMPLE_FMT_S24 */
 		case AV_SAMPLE_FMT_S32:
-			mtap->samplewidth = 32;
-			mtap->framesize = mtap->channels * 4;
+			assert(sample_bytes == 4);
 			mtap->msf = sxe_msf_S32;
 			break;
 		case AV_SAMPLE_FMT_FLT:
-			mtap->samplewidth = 8*sizeof(float);
-			mtap->framesize = mtap->channels * sizeof(float);
+			assert(sample_bytes == sizeof(float));
 			mtap->msf = sxe_msf_FLT;
 			break;
+		case AV_SAMPLE_FMT_DBL:
+			assert(sample_bytes == sizeof(double));
+			mtap->msf = sxe_msf_DBL;
+			break;
 		case AV_SAMPLE_FMT_NONE:
-		default:
 			mtap->samplewidth = 0;
 			break;
+		default:
+			{
+				char fmt_name[128];
+				error(("Unsupported sample format: "
+				       "%s (%d), %d bytes/sample"),
+				      av_get_sample_fmt_string(
+							       fmt_name,
+							       sizeof(fmt_name),
+							       avcc->sample_fmt),
+				      avcc->sample_fmt,
+				      sample_bytes);
+			}
 		}
 	}
 	mtap->endianness = 0;
