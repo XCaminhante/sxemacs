@@ -825,15 +825,17 @@ If second optional argument PRECISION is given, use its value
 		d = log10(XFLOAT_DATA(number));
 		return make_float(d);
 #elif HAVE_LOG2
-        static const fpflot log2_10 = log2(10);
-        d = log2(XFLOAT_DATA(number))/log2_10;
-		return make_float(d);
+                static const fpflot log2_10 = log2(10);
+                d = log2(XFLOAT_DATA(number));
+                RETURN_WHEN_INDEF(d);
+                return make_float(d/log2_10);
 #elif HAVE_LOG
-        static const fpflot log_10 - log(10);
-        d = log(XFLOAT_DATA(number))/log_10;
-		return make_float(d);
+                static const fpflot log_10 - log(10);
+                d = log(XFLOAT_DATA(number));
+                RETURN_WHEN_INDEF(d);
+                return make_float(d/log_10);
 #else
-        return ase_unary_operation_undefined(number);
+                return ase_unary_operation_undefined(number);
 #endif
 	}
 
@@ -851,40 +853,41 @@ If second optional argument PRECISION is given, use its value
 */
       (number, precision))
 {
-	RETURN_WHEN_INDEF(number);
+        RETURN_WHEN_INDEF(number);
 
 #if defined HAVE_MPFR && defined WITH_MPFR
-	Lisp_Object bfrnumber;
+        Lisp_Object bfrnumber;
 
-	bigfr_set_prec(ent_scratch_bigfr,
-		       internal_get_precision(precision));
+        bigfr_set_prec(ent_scratch_bigfr,
+                       internal_get_precision(precision));
 
-	bfrnumber = Fcoerce_number(number, Qbigfr, Qnil);
-	bigfr_log2(ent_scratch_bigfr, XBIGFR_DATA(bfrnumber));
-	return make_bigfr_bfr(ent_scratch_bigfr);
+        bfrnumber = Fcoerce_number(number, Qbigfr, Qnil);
+        bigfr_log2(ent_scratch_bigfr, XBIGFR_DATA(bfrnumber));
+        return make_bigfr_bfr(ent_scratch_bigfr);
 #else
-	number = ent_lift(number, FLOAT_T, NULL);
+        number = ent_lift(number, FLOAT_T, NULL);
 
-	RETURN_WHEN_INDEF(number);
+        RETURN_WHEN_INDEF(number);
 
-	if (FLOATP(number)) {
-		fpfloat d;
+        if (FLOATP(number)) {
+                fpfloat d;
 #if HAVE_LOG2
-		d = log2(XFLOAT_DATA(number));
-		return make_float(d);
+                d = log2(XFLOAT_DATA(number));
+                return make_float(d);
 #elif HAVE_LOG
-        static const fpflot log_2 - log(2);
-        d = log(XFLOAT_DATA(number))/log_2;
-		return make_float(d);
+                static const fpflot log_2 - log(2);
+                d = log(XFLOAT_DATA(number));
+                RETURN_WHEN_INDEF(d);
+                return make_float(d/log_2);
 #else
-        return ase_unary_operation_undefined(number);
+                return ase_unary_operation_undefined(number);
 #endif
-	}
+        }
 
-	Fsignal(Qarith_error, list1(number));
-	return Qnil;
+        Fsignal(Qarith_error, list1(number));
+        return Qnil;
 
-	if (NILP(precision));
+        if (NILP(precision));
 #endif	/* HAVE_MPFR */
 }
 
@@ -900,46 +903,42 @@ If third optional argument PRECISION is given, use its value
 	RETURN_WHEN_INDEF(number);
 
 	if (INTEGERP(base)) {
-		switch(XINT(base)) {
-		case 2 : return Flog2 (number, precision);
-		case 10: return Flog10(number, precision);
-		default: break; /* Intentional Fall through */
-		}
+                switch(XINT(base)) {
+                case 2 : return Flog2 (number, precision);
+                case 10: return Flog10(number, precision);
+                default: break; /* Intentional Fall through */
+                }
 	}
 
 
 #if defined HAVE_MPFR && defined WITH_MPFR
 	if (!NILP(base)) {
-		/* Not all bignumber libs optimize log2, for instance
-		   MPFR implements log2 in function of log. */
-		Lisp_Object _logn, _logb;
-		_logn = Flog(number, precision);
-		if (UNLIKELY(INDEFP(_logn))) {
-			return _logn;
-		}
-		_logb = Flog2(base, precision);
-		return ent_binop(ASE_BINARY_OP_QUO, _logn, _logb);
+                /* Not all bignumber libs optimize log2, for instance MPFR
+                   implements log2 in function of log. */
+                Lisp_Object _logn, _logb;
+                _logn = Flog(number, Qnil, precision);
+                RETURN_WHEN_INDEF(_logn);
+                _logb = Flog(base, Qnil, precision);
+                return ent_binop(ASE_BINARY_OP_QUO, _logn, _logb);
 	}
 
 	Lisp_Object bfrnumber;
 
 	bigfr_set_prec(ent_scratch_bigfr,
-		       internal_get_precision(precision));
+                       internal_get_precision(precision));
 
 	bfrnumber = Fcoerce_number(number, Qbigfr, Qnil);
 	bigfr_log(ent_scratch_bigfr, XBIGFR_DATA(bfrnumber));
 	return make_bigfr_bfr(ent_scratch_bigfr);
 
 #else  /* !HAVE_MPFR */
-	if (!NILP(base)) {
-        /* Processor implementations tend to give an edge to log2 */
-		Lisp_Object _logn, _logb;
-		_logn = Flog2(number, precision);
-		if (UNLIKELY(INDEFP(_logn))) {
-			return _logn;
-		}
-		_logb = Flog2(base, precision);
-		return ent_binop(ASE_BINARY_OP_QUO, _logn, _logb);
+        if (!NILP(base)) {
+                /* Processor implementations tend to give an edge to log2 */
+                Lisp_Object _logn, _logb;
+                _logn = Flog2(number, precision);
+                RETURN_WHEN_INDEF(_logn);
+                _logb = Flog2(base, precision);
+                return ent_binop(ASE_BINARY_OP_QUO, _logn, _logb);
 	}
 
 	number = ent_lift(number, FLOAT_T, NULL);
@@ -947,9 +946,9 @@ If third optional argument PRECISION is given, use its value
 	RETURN_WHEN_INDEF(number);
 
 	if (FLOATP(number)) {
-		fpfloat d;
-		d = log(XFLOAT_DATA(number));
-		return make_float(d);
+                fpfloat d;
+                d = log(XFLOAT_DATA(number));
+                return make_float(d);
 	}
 
 	Fsignal(Qarith_error, list1(number));
