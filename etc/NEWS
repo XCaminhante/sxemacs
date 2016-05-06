@@ -20,6 +20,74 @@ in each release should look at the appropriate section of this file.
 
 
 
+* Changes in SXEmacs 22.1.16 (Hillman Hunter)
+=============================================
+
+** Developer Stats
+
+           Nelson Ferreira -- 124 commits
+
+              Steve Youngs --  62 commits
+    Horst G. Burkhardt III --   6 commits
+             Evgeny Zajcev --   3 commits
+            Ruediger Meier --   3 commits
+         Sebastian Freundt --   1 commit
+
+** Bugs closed in this release:
+
+132, 141, 152, 155, 156, 158, 160, 161, 162, 163, 165, 169, 170, 171,
+172, 173, 174, 176, 181
+
+** Multimedia fixes/updates -- Ferreira, Youngs.
+
+SoX and FFmpeg support was brought back and mostly fixed.  PulseAudio
+has been brought back, and support for "media roles" was added.
+
+** Build chain fixes/updates -- Meier, Ferreira, Burkhardt, Youngs
+
+A lot of work went into stamping out compiler warnings and errors to
+give us a much cleaner/safer build.
+
+** FFI updates -- Zajcev, Youngs.
+
+** Don't reset the cursor upon exit on a TTY -- Youngs.
+
+** Contrib updates/fixes/additions -- Ferreira, Youngs.
+
+** Make docs compatible with Texinfo 5.x -- Youngs.
+
+** Support Unix user/group lookups -- Ferreira.
+
+** XDG compliance -- Youngs.
+
+SXEmacs now looks for user files in locations that are much more
+inline with modern standards and conventions.
+
+`user-init-directory' is now ${XDG_CONFIG_HOME}/sxemacs or
+~/.config/sxemacs if $XDG_CONFIG_HOME is not set.
+
+User packages will now be searched for in ${XDG_DATA_HOME}/sxemacs
+(~/.local/share/sxemacs).
+
+The old legacy directory `~/.sxemacs' is still supported, and in fact
+will still be used if the XDG directories don't exist and it (the
+legacy dir) does.  A user can also force use of the legacy directory
+if they so choose.
+
+** Add wildcard support to #'find-file et al. -- Youngs.
+
+** Fix coding cookies -- Youngs.
+
+** "In-tree builds" are no longer supported. -- Youngs.
+
+If you want to build SXEmacs, do the right thing and build OUTSIDE of
+the source tree.
+
+** TTY related fixes/updates -- Ferreira.
+
+** Various minor updates/tweaks/fixes -- Burkhardt, Ferreira, Youngs.
+
+
 * Changes in SXEmacs 22.1.15 (Goggomobil)
 =========================================
 

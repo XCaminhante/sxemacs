@@ -97,7 +97,7 @@ the author instead of in the original English.
 SXEmacs is the extensible, customizable, self-documenting real-time
 display editor.  This Info file describes how to edit with Emacs
 and some of how to customize it, but not how to extend it.  It
-corresponds to: v22.1.15
+corresponds to: v22.1.16
 
 Although, it hasn't had a complete rewrite for quite some time.
 
