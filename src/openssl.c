@@ -422,6 +422,19 @@ int ossl_ssl_inject_cert_file(Lisp_Object, Lisp_Object, Lisp_Object);
 
 Lisp_Object Qssl2, Qssl23, Qssl3, Qtls1;
 
+/* Problem Ciphers */
+Lisp_Object QAES_256_XTS, QAES_128_XTS, Qid_aes256_CCM, Qid_aes256_GCM;
+Lisp_Object Qid_aes192_CCM, Qid_aes192_GCM, Qid_aes128_CCM;
+Lisp_Object Qid_aes128_GCM, Qid_aes256_wrap, Qid_aes192_wrap;
+Lisp_Object Qid_aes128_wrap, QCAMELLIA_256_CFB8, QCAMELLIA_192_CFB8;
+Lisp_Object QCAMELLIA_128_CFB8, QCAMELLIA_256_CFB1, QCAMELLIA_192_CFB1;
+Lisp_Object QCAMELLIA_128_CFB1, QDES_EDE3_CFB8, QDES_EDE3_CFB1, QDES_CFB8;
+Lisp_Object QDES_CFB1, QAES_256_CFB8, QAES_192_CFB8, QAES_128_CFB8;
+Lisp_Object QAES_256_CFB1, QAES_192_CFB1, QAES_128_CFB1;
+Lisp_Object Qid_smime_alg_CMS3DESwrap;
+Lisp_Object Vossl_cipher_blacklist;
+int ossl_check_cipher(Lisp_Object);
+
 extern Lisp_Object Qfile_readable_p;
 extern Lisp_Object Qfile_writable_p;
 
@@ -465,6 +478,15 @@ This yields a plain list of symbols.
 	return digests;
 }
 
+int
+ossl_check_cipher(Lisp_Object cipher)
+{
+	if (!NILP(Fmember(cipher, Vossl_cipher_blacklist))) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
 
 DEFUN("ossl-available-ciphers", Fossl_available_ciphers, 0, 0, 0, /*
 Return a list of cipher algorithms in the underlying crypto library.
@@ -482,7 +504,8 @@ This yields a plain list of symbols.
 	/* is there a better way to get the size of the nid list? */
 	for (nid = 10000; nid >= 0; --nid) {
 		const EVP_CIPHER *cipher = EVP_get_cipherbynid(nid);
-		if (cipher) {
+		if (cipher &&
+		    (ossl_check_cipher(intern(OBJ_nid2sn(nid))) == 0)) {
 			ciphers = Fcons(intern(OBJ_nid2sn(nid)), ciphers);
 		}
 	}
@@ -535,7 +558,7 @@ Return the hash length of DIGEST in bytes.
 	int size = ossl_digest_size(digest);
 
 	if (size < 0)
-		error ("no such cipher");
+		error ("no such digest");
 
 	return make_int(size);
 }
@@ -572,7 +595,10 @@ Return the block size of DIGEST in bytes.
 do {									\
 	int __kl;							\
 	const EVP_CIPHER *__ciph;					\
-									\
+	                                                                \
+	if (ossl_check_cipher(var) != 0)                                \
+		error("use of blacklisted cipher prohibited");          \
+                                                                        \
 	OpenSSL_add_all_ciphers();					\
 									\
 	__ciph = EVP_get_cipherbyname(					\
@@ -1114,6 +1140,8 @@ binary string data.
 	CHECK_SYMBOL(digest);
 	CHECK_NATNUM(count);
 
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
 
 	if (!XINT(count))
 		error ("count has to be a non-zero positive integer");
@@ -1213,6 +1241,9 @@ binary string data.
 	CHECK_STRING(string);
 	CHECK_STRING(key);
 	CHECK_STRING(iv);
+
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
 
 	TO_EXTERNAL_FORMAT(LISP_STRING, string,
 			   C_STRING_ALLOCA, string_ext, OSSL_CODING);
@@ -1343,6 +1374,9 @@ binary string data.
 	CHECK_STRING(file);
 	CHECK_STRING(key);
 	CHECK_STRING(iv);
+
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
 
 	if (!NILP(outfile)) {
 		CHECK_STRING(outfile);
@@ -1535,6 +1569,9 @@ non-nil, use this IV instead.
 	CHECK_STRING(key);
 	CHECK_STRING(iv);
 
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
+
 	TO_EXTERNAL_FORMAT(LISP_STRING, string,
 			   C_STRING_ALLOCA, string_ext, OSSL_CODING);
 	string_len = OSSL_STRING_LENGTH(string);
@@ -1657,6 +1694,9 @@ encrypted data redirected.
 	CHECK_STRING(file);
 	CHECK_STRING(key);
 	CHECK_STRING(iv);
+
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
 
 	if (!NILP(outfile)) {
 		CHECK_STRING(outfile);
@@ -2547,6 +2587,9 @@ returns binary string data.
 	CHECK_EVPPKEY(pkey);
 
 
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
+
 	pk[0] = (XEVPPKEY(pkey))->evp_pkey;
 	if (!ossl_pkey_has_public_data(pk[0])) {
 		error ("cannot seal, key has no public key data");
@@ -2655,6 +2698,9 @@ EIV is the encrypted iv
 	CHECK_EVPPKEY(pkey);
 	CHECK_STRING(ekey);
 
+
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
 
 	pk = (XEVPPKEY(pkey))->evp_pkey;
 	if (!ossl_pkey_has_private_data(pk))
@@ -3028,6 +3074,9 @@ PASSWORD is ignored in this case.
 
 	CHECK_SYMBOL(cipher);
 
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
+
 	OpenSSL_add_all_algorithms();
 
 	if (NILP(cipher)) {
@@ -3175,6 +3224,9 @@ PASSWORD is ignored in this case.
 	}
 
 	CHECK_SYMBOL(cipher);
+
+	if (ossl_check_cipher(cipher) != 0)
+		error("use of blacklisted cipher prohibited");
 
 	OpenSSL_add_all_algorithms();
 
@@ -4895,10 +4947,62 @@ void syms_of_openssl(void)
 	DEFSUBR(Fossl_x509_not_before);
 	DEFSUBR(Fossl_x509_not_after);
 	DEFSUBR(Fossl_x509_signature_type);
+
+/* Problem ciphers */
+	defsymbol(&QAES_256_XTS, "AES-256-XTS");
+	defsymbol(&QAES_128_XTS, "AES-128-XTS");
+	defsymbol(&Qid_aes256_CCM, "id-aes256-CCM");
+	defsymbol(&Qid_aes256_GCM, "id-aes256-GCM");
+	defsymbol(&Qid_aes192_CCM, "id-aes192-CCM");
+	defsymbol(&Qid_aes192_GCM, "id-aes192-GCM");
+	defsymbol(&Qid_aes128_CCM, "id-aes128-CCM");
+	defsymbol(&Qid_aes128_GCM, "id-aes128-GCM");
+	defsymbol(&Qid_aes256_wrap, "id-aes256-wrap");
+	defsymbol(&Qid_aes192_wrap, "id-aes192-wrap");
+	defsymbol(&Qid_aes128_wrap, "id-aes128-wrap");
+	defsymbol(&QCAMELLIA_256_CFB8, "CAMELLIA-256-CFB8");
+	defsymbol(&QCAMELLIA_192_CFB8, "CAMELLIA-192-CFB8");
+	defsymbol(&QCAMELLIA_128_CFB8, "CAMELLIA-128-CFB8");
+	defsymbol(&QCAMELLIA_256_CFB1, "CAMELLIA-256-CFB1");
+	defsymbol(&QCAMELLIA_192_CFB1, "CAMELLIA-192-CFB1");
+	defsymbol(&QCAMELLIA_128_CFB1, "CAMELLIA-128-CFB1");
+	defsymbol(&QDES_EDE3_CFB8, "DES-EDE3-CFB8");
+	defsymbol(&QDES_EDE3_CFB1, "DES-EDE3-CFB1");
+	defsymbol(&QDES_CFB8, "DES-CFB8");
+	defsymbol(&QDES_CFB1, "DES-CFB1");
+	defsymbol(&QAES_256_CFB8, "AES-256-CFB8");
+	defsymbol(&QAES_192_CFB8, "AES-192-CFB8");
+	defsymbol(&QAES_128_CFB8, "AES-128-CFB8");
+	defsymbol(&QAES_256_CFB1, "AES-256-CFB1");
+	defsymbol(&QAES_192_CFB1, "AES-192-CFB1");
+	defsymbol(&QAES_128_CFB1, "AES-128-CFB1");
+	defsymbol(&Qid_smime_alg_CMS3DESwrap, "id-smime-alg-CMS3DESwrap");
 }
 
 void vars_of_openssl(void)
 {
+	DEFVAR_LISP("ossl-cipher-blacklist", &Vossl_cipher_blacklist /*
+A list of ciphers that are blacklisted against use.
+
+These are ciphers that are known to cause problems with the SXEmacs
+OpenSSL code that can result in data corruption.  If you find that you
+need to use one or more of the ciphers on this list, you can do so by
+removing it from this list first.  Do we need to mention that this is 
+probably not a good idea and that you are well and truly on your own
+here?  But hey, it's your data...
+								     */);
+
+	Lisp_Object badCiphers[28] = {
+		QAES_256_XTS, QAES_128_XTS, Qid_aes256_CCM, Qid_aes256_GCM,
+		Qid_aes192_CCM, Qid_aes192_GCM, Qid_aes128_CCM, Qid_aes128_GCM,
+		Qid_aes256_wrap, Qid_aes192_wrap, Qid_aes128_wrap,
+		QCAMELLIA_256_CFB8, QCAMELLIA_192_CFB8, QCAMELLIA_128_CFB8,
+		QCAMELLIA_256_CFB1, QCAMELLIA_192_CFB1, QCAMELLIA_128_CFB1,
+		QDES_EDE3_CFB8, QDES_EDE3_CFB1, QDES_CFB8, QDES_CFB1,
+		QAES_256_CFB8, QAES_192_CFB8, QAES_128_CFB8, QAES_256_CFB1,
+		QAES_192_CFB1, QAES_128_CFB1, Qid_smime_alg_CMS3DESwrap };
+	Vossl_cipher_blacklist = Flist(28, badCiphers);
+
 	Fprovide(Qopenssl);
 
 #ifndef OPENSSL_NO_RSA
