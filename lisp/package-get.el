@@ -203,12 +203,13 @@ as a local directory."
 		      (list :tag "Remote" host-name directory url-scheme)))
   :group 'package-get)
 
-(defvar package-get-have-curl (featurep 'ffi-curl)
+;;;###autoload
+(defvar package-get-have-curl (ignore-errors (require 'ffi-curl))
   "Non-nil when FFI and curl is available.")
 
 ;;;###autoload
 (defcustom package-get-download-sites
-  `(,@(when package-get-have-curl 
+  `(,@(when package-get-have-curl
        '(("SXEmacs XE pkg mirror"
 	 "downloads.sxemacs.org" "xemacs-pkgs/packages" "http")))
     ("US (Main XEmacs Site)"
@@ -278,7 +279,7 @@ package download sites."
 
 ;;;###autoload
 (defcustom package-get-pre-release-download-sites
-  `(,@(when package-get-have-curl 
+  `(,@(when package-get-have-curl
        '(("SXEmacs XE pkg Pre-Releases" "downloads.sxemacs.org"
 	  "xemacs-pkgs/beta/experimental/packages" "http")))
     ("US Pre-Releases (Main XEmacs Site)" "ftp.xemacs.org"
@@ -1254,7 +1255,5 @@ lead to Emacs accessing remote sites."
 	     (fboundp 'loop))
   (require 'package-ui)
   (load "cl-macs"))
-
-;;;###autoload (condition-case nil (require 'ffi-curl) (error nil))
 
 ;;; package-get.el ends here
