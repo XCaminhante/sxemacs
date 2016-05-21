@@ -1,6 +1,6 @@
 @c This is part of the SXEmacs manual.
 @c Copyright (C) 1985, 86, 87, 93, 94, 95, 1997 Free Software Foundation, Inc.
-@c Copyright (C) 2005 Steve Youngs
+@c Copyright (C) 2005 - 2013 Steve Youngs
 @c See file sxemacs.texi for copying conditions.
 @node Packages, Basic, Startup Paths, Top
 @comment  node-name,  next,  previous,  up
@@ -18,14 +18,13 @@ for local needs with safe removal of unnecessary code.
 
 @menu
 * Package Terminology:: Understanding different kinds of packages.
-* Bootstrapping PUI::   Making SXEmacs Package Tools Usable.
 * Installing Packages:: How to install packages.
 * Building Packages::   Building packages from CVS sources.
 * Local.rules File::    This is an important file that you must create.
 * Available Packages::  A brief directory of packaged LISP.
 @end menu
 
-@node Package Terminology, Bootstrapping PUI, , Packages
+@node Package Terminology, Installing Packages, , Packages
 @comment  node-name,  next,  previous,  up
 @heading Package Terminology:
 @subsection Package Flavors
@@ -73,55 +72,7 @@ savings).
 Currently, source packages are only available via CVS.  See
 @url{http://cvs.xemacs.org/} for details.
 
-@node Bootstrapping PUI, Installing Packages, Package Terminology, Packages
-@comment  node-name,  next,  previous,  up
-@cindex pui, bootstrap
-@cindex pui, initialise
-@cindex pui, initialize
-@heading Making SXEmacs Package Tools Usable
-
-As you may be aware, SXEmacs uses the same packaging tools (@dfn{PUI})
-as XEmacs.  What you may not be aware of is that PUI is useless until
-you manually install a couple of packages.  Yep, that's right, you
-can't use PUI to install packages unless you install some packages
-first...
-
-Well @emph{that} was for XEmacs, @emph{this} is SXEmacs!  SXEmacs can
-@dfn{bootstrap} PUI @strong{without} needing @strong{any} packages to
-be pre-installed.  It does so via FFI (@dfn{Foreign Function Interface})
-and @file{libcurl}.
-
-Your SXEmacs needed to be configured with @code{--enable-ffi} when it
-was built, and you also need @file{libcurl} on your system.  Most
-Linux distributions have @file{libcurl} installed as part of their
-standard installation.  So you are more than likely good to go
-already.  But if you are not sure, try:
-
-@code{M-: (require 'ffi-curl) RET}
-
-@noindent
-It will not succeed if you don't have either FFI or @file{libcurl}.
-
-@subheading How To Bootstrap PUI (aka, achieving @dfn{PUI-nirvana})
-@enumerate I
-@item
-Set @var{package-get-remote}.
-
-Menu:  Tools -> Packages -> Set Download Site ->
-@item
-@code{M-x pui-bootstrap RET}
-@end enumerate
-
-@strong{That's it!}  What will happen is that SXEmacs will download
-and install the latest package-index file.  Then it will download and
-install the latest versions of the EFS and xemacs-base packages.
-Finally, SXEmacs will ask you if you want to install more packages.
-At this point, SXEmacs reverts back to @dfn{normal} PUI behaviour (using
-EFS to download the packages).
-
-That wasn't hard, was it?
-
-@node Installing Packages, Building Packages, Bootstrapping PUI, Packages
+@node Installing Packages, Building Packages, Package Terminology, Packages
 @comment  node-name,  next,  previous,  up
 @cindex installing packages
 @cindex install
@@ -144,9 +95,11 @@ The @ref{Available Packages} can currently be found at
 mirrors.  Look in the subdirectory @file{packages}.  Package file names
 follow the naming convention @file{<package-name>-<version>-pkg.tar.gz}.
 
-If you have EFS @ref{(EFS)}, packages can be installed over the network.
-Alternatively, if you have copies of the packages locally, you can
-install packages from a local disk or CDROM.
+If your SXEmacs has FFI enabled and you have libcurl available (for
+most people, this would be the case), or, if you have EFS @ref{(EFS)},
+packages can be installed over the network.  Alternatively, if you
+have copies of the packages locally, you can install packages from a
+local disk or CDROM.
 
 The file @file{etc/PACKAGES} in the core distribution contains a list of
 the @ref{Available Packages} at the time of the SXEmacs release.
@@ -202,15 +155,9 @@ been previously installed.
 @cindex package tools
 @heading Automatic Package Installation:
 SXEmacs comes with some tools to make the periodic updating and
-installing easier. It will notice if new packages or versions are
-available and will fetch them from the FTP site.
+installing easier.
 
-Unfortunately this requires that a few packages are already in place.
-You will have to install them by hand @pxref{Manually}, or use a SUMO
-tarball.  This requirement will hopefully go away in the future.  And,
-indeed it has, @xref{Bootstrapping PUI}.
-
-If you are unlucky enough to have a @dfn{FFI-enabled} SXEmacs, you
+If you are unlucky enough to not have a @dfn{FFI-enabled} SXEmacs, you
 will have to manually install the EFS and xemacs-base packages
 @pxref{Manually}.
 

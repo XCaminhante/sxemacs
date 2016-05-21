@@ -187,164 +187,180 @@ one version of a package available.")
   "A Host name."
   :tag "Host")
 
+(define-widget 'url-scheme 'string
+  "A URL protocol scheme."
+  :tag "URL-Scheme")
+
 (defcustom package-get-remote nil
   "*The remote site to contact for downloading packages.
-Format is '(site-name directory-on-site).  As a special case, `site-name'
-can be `nil', in which case `directory-on-site' is treated as a local
-directory."
+
+Format is '(site-name directory-on-site scheme).  As a special case,
+`site-name' can be `nil', in which case `directory-on-site' is treated
+as a local directory."
   :tag "Package repository"
   :type '(set (choice (const :tag "None" nil)
 		      (list :tag "Local" (const :tag "Local" nil) directory)
-		      (list :tag "Remote" host-name directory)))
+		      (list :tag "Remote" host-name directory url-scheme)))
   :group 'package-get)
 
 ;;;###autoload
+(defvar package-get-have-curl (ignore-errors (require 'ffi-curl))
+  "Non-nil when FFI and curl is available.")
+
+;;;###autoload
 (defcustom package-get-download-sites
-  '(
-    ;; Main XEmacs Site (ftp.xemacs.org)
+  `(,@(when package-get-have-curl
+       '(("SXEmacs XE pkg mirror"
+	 "downloads.sxemacs.org" "xemacs-pkgs/packages" "http")))
     ("US (Main XEmacs Site)"
-     "ftp.xemacs.org" "pub/xemacs/packages")
+     "ftp.xemacs.org" "pub/xemacs/packages" "ftp")
     ;; In alphabetical order of Country, our mirrors...
     ;; Timing out
-    ("Belgium (be.xemacs.org)" "ftp.be.xemacs.org" "xemacs/packages")
-    ("Canada (ca.xemacs.org)" "ftp.ca.xemacs.org" "pub/Mirror/xemacs/packages")
-    ("Denmark (dk.xemacs.org)" "ftp.dk.xemacs.org" "xemacs/packages")
-    ;; Very outdated, last sumo updated Feb 2009, 
-    ("Finland (fi.xemacs.org)" "ftp.fi.xemacs.org" "pub/mirrors/ftp.xemacs.org/pub/tux/xemacs/packages")
-    ("France (fr.xemacs.org)" "ftp.fr.xemacs.org" "pub/xemacs/packages")
+    ("Belgium (be.xemacs.org)"
+     "ftp.be.xemacs.org" "xemacs/packages" "ftp")
+    ("Canada (ca.xemacs.org)"
+     "ftp.ca.xemacs.org" "pub/Mirror/xemacs/packages" "ftp")
+    ("Denmark (dk.xemacs.org)"
+     "ftp.dk.xemacs.org" "xemacs/packages" "ftp")
+    ("France (fr.xemacs.org)"
+     "ftp.fr.xemacs.org" "pub/xemacs/packages" "ftp")
     ;; Temporary errors?
-    ("France (mirror.cict.fr)" "mirror.cict.fr" "xemacs/packages")
-    ("France (pasteur.fr)" "ftp.pasteur.fr" "pub/computing/xemacs/packages")
+    ("France (mirror.cict.fr)"
+     "mirror.cict.fr" "xemacs/packages" "ftp")
+    ("France (pasteur.fr)"
+     "ftp.pasteur.fr" "pub/computing/xemacs/packages" "ftp")
     ;; Very outdated, experimental not updated since 2013
-    ("Germany (de.xemacs.org)" "ftp.de.xemacs.org" "pub/ftp.xemacs.org/tux/xemacs/packages")
+    ("Germany (de.xemacs.org)"
+     "ftp.de.xemacs.org" "pub/ftp.xemacs.org/tux/xemacs/packages" "ftp")
     ;; Timing out
-    ("Greece (gr.xemacs.org)" "ftp.gr.xemacs.org" "mirrors/XEmacs/ftp/packages")
+    ("Greece (gr.xemacs.org)"
+     "ftp.gr.xemacs.org" "mirrors/XEmacs/ftp/packages" "ftp")
+    ("Ireland (heanet.ie)"
+     "ftp.heanet.ie" "mirrors/ftp.xemacs.org/packages" "ftp")
     ;; Timing out
-    ("Ireland (ie.xemacs.org)" "ftp.ie.xemacs.org" "mirrors/ftp.xemacs.org/pub/xemacs/packages")
-    ("Ireland (heanet.ie)" "ftp.heanet.ie" "mirrors/ftp.xemacs.org/packages")
+    ("Italy (it.xemacs.org)"
+     "ftp.it.xemacs.org" "unix/packages/XEMACS/packages" "ftp")
     ;; Timing out
-    ("Italy (it.xemacs.org)" "ftp.it.xemacs.org" "unix/packages/XEMACS/packages")
+    ("Japan (dti.ad.jp)"
+     "ftp.dti.ad.jp" "pub/unix/editor/xemacs/packages" "ftp")
+    ("Norway (no.xemacs.org)"
+     "ftp.no.xemacs.org" "pub/xemacs/packages" "ftp")
+    ("Portugal (pt.xemacs.org)"
+     "ftp.pt.xemacs.org" "pub/MIRRORS/ftp.xemacs.org/packages" "ftp")
     ;; Timing out
-    ("Japan (dti.ad.jp)" "ftp.dti.ad.jp" "pub/unix/editor/xemacs/packages")
-    ;; Timing out
-    ("Korea (kr.xemacs.org)" "ftp.kr.xemacs.org" "pub/tools/emacs/xemacs/packages")
-    ;; Timing out
-    ("Netherlands (nl.xemacs.org)" "ftp.nl.xemacs.org" "pub/xemacs/ftp/packages")
-    ;; no anonymous ftp available, uncomment when updating website
-    ;; with
-    ;; xemacs-builds/adrian/website/package-get-2-download-sites.el
-;     ("Netherlands (xemacsftp.digimirror.nl)" "xemacsftp.digimirror.nl" "packages")
-    ("Norway (no.xemacs.org)" "ftp.no.xemacs.org" "pub/xemacs/packages")
-    ("Portugal (pt.xemacs.org)" "ftp.pt.xemacs.org" "pub/MIRRORS/ftp.xemacs.org/packages")
-    ;; Timing out
-    ("Russia (ru.xemacs.org)" "ftp.ru.xemacs.org" "pub/emacs/xemacs/packages")
-    ("Sweden (se.xemacs.org)" "ftp.se.xemacs.org" "pub/gnu/xemacs/packages")
-    ("Taiwan (ftp.tw.xemacs.org)" "ftp.tw.xemacs.org" "Unix/Editors/XEmacs/packages")
-    ("UK (uk.xemacs.org)" "ftp.uk.xemacs.org" "sites/ftp.xemacs.org/pub/xemacs/packages")
-    ("US (ibiblio.org)" "mirrors.ibiblio.org" "pub/mirrors/xemacs/packages")
+    ("Russia (ru.xemacs.org)"
+     "ftp.ru.xemacs.org" "pub/emacs/xemacs/packages" "ftp")
+    ("Saudi Arabia (sa.xemacs.org)"
+     "ftp.sa.xemacs.org" "pub/xemacs.org/packages" "ftp")
+    ("Sweden (se.xemacs.org)"
+     "ftp.se.xemacs.org" "pub/gnu/xemacs/packages" "ftp")
+    ("Switzerland (ch.xemacs.org)"
+     "ftp.ch.xemacs.org" "mirror/xemacs/packages" "ftp")
+    ("Taiwan (ftp.tw.xemacs.org)"
+     "ftp.tw.xemacs.org" "Unix/Editors/XEmacs/packages" "ftp")
+    ("UK (uk.xemacs.org)"
+     "ftp.uk.xemacs.org" "sites/ftp.xemacs.org/pub/xemacs/packages" "ftp")
+    ("US (ibiblio.org)"
+     "mirrors.ibiblio.org" "pub/mirrors/xemacs/packages" "ftp")
     )
   "*List of remote sites available for downloading packages.
-List format is '(site-description site-name directory-on-site).
-SITE-DESCRIPTION is a textual description of the site.  SITE-NAME
-is the internet address of the download site.  DIRECTORY-ON-SITE
-is the directory on the site in which packages may be found.
-This variable is used to initialize `package-get-remote', the
-variable actually used to specify package download sites."
+
+List format is '(site-description site-name directory-on-site url-scheme).
+SITE-DESCRIPTION is a textual description of the site.  SITE-NAME is
+the internet address of the download site.  DIRECTORY-ON-SITE is the
+directory on the site in which packages may be found.  URL-SCHEME is
+the protocol such as `http', `ftp', etc.  This variable is used to
+initialize `package-get-remote', the variable actually used to specify
+package download sites."
   :tag "Package download sites"
-  :type '(repeat (list (string :tag "Name") host-name directory))
+  :type '(repeat (list (string :tag "Name")
+		       host-name directory url-scheme))
   :group 'package-get)
 
 ;;;###autoload
 (defcustom package-get-pre-release-download-sites
-  '(
-    ;; Main XEmacs Site (ftp.xemacs.org)
+  `(,@(when package-get-have-curl
+       '(("SXEmacs XE pkg Pre-Releases" "downloads.sxemacs.org"
+	  "xemacs-pkgs/beta/experimental/packages" "http")))
     ("US Pre-Releases (Main XEmacs Site)" "ftp.xemacs.org"
-     "pub/xemacs/beta/experimental/packages")
+     "pub/xemacs/beta/experimental/packages" "ftp")
     ;; In alphabetical order of Country, our mirrors...
     ;; Timing out
     ("Belgium Pre-Releases (be.xemacs.org)" "ftp.be.xemacs.org"
-     "xemacs/beta/experimental/packages")
+     "xemacs/beta/experimental/packages" "ftp")
     ("Canada Pre-Releases (ca.xemacs.org)" "ftp.ca.xemacs.org"
-     "pub/Mirror/xemacs/beta/experimental/packages")
+     "pub/Mirror/xemacs/beta/experimental/packages" "ftp")
     ("Denmark Pre-Releases (dk.xemacs.org)" "ftp.dk.xemacs.org"
-     "xemacs/beta/experimental/packages")
-    ;; Very outdated, last sumo updated Feb 2009, 
-    ("Finland Pre-Releases (fi.xemacs.org)" "ftp.fi.xemacs.org"
-     "pub/mirrors/ftp.xemacs.org/pub/tux/xemacs/beta/experimental/packages")
+     "xemacs/beta/experimental/packages" "ftp")
     ("France Pre-Releases (fr.xemacs.org)" "ftp.fr.xemacs.org"
-     "pub/xemacs/beta/experimental/packages")
-    ;; Temporary errors?
+     "pub/xemacs/beta/experimental/packages" "ftp")
+    ; Was a month out of date as of 2013-04-12, hopefully not a sign
+    ; it is no longer updating.
     ("France Pre-Releases (mirror.cict.fr)" "mirror.cict.fr"
-     "xemacs/beta/experimental/packages")
+     "xemacs/beta/experimental/packages" "ftp")
     ("France Pre-Releases (pasteur.fr)" "ftp.pasteur.fr"
-     "pub/computing/xemacs/beta/experimental/packages")
+     "pub/computing/xemacs/beta/experimental/packages" "ftp")
     ;; Very outdated, experimental not updated since 2013
     ("Germany Pre-Releases (de.xemacs.org)" "ftp.de.xemacs.org"
-     "pub/ftp.xemacs.org/tux/xemacs/beta/experimental/packages")
+     "pub/ftp.xemacs.org/tux/xemacs/beta/experimental/packages" "ftp")
     ;; Timing out
     ("Greece Pre-Releases (gr.xemacs.org)" "ftp.gr.xemacs.org"
-     "mirrors/XEmacs/ftp/beta/experimental/packages")
-    ;; Timing out
-    ("Ireland Pre-Releases (ie.xemacs.org)" "ftp.ie.xemacs.org"
-     "mirrors/ftp.xemacs.org/pub/xemacs/beta/experimental/packages")
+     "mirrors/XEmacs/ftp/beta/experimental/packages" "ftp")
     ("Ireland Pre-Releases (heanet.ie)" "ftp.heanet.ie"
-     "mirrors/ftp.xemacs.org/beta/experimental/packages")
+     "mirrors/ftp.xemacs.org/beta/experimental/packages" "ftp")
     ;; Timing out
     ("Italy Pre-Releases (it.xemacs.org)" "ftp.it.xemacs.org"
-     "unix/packages/XEMACS/beta/experimental/packages")
+     "unix/packages/XEMACS/beta/experimental/packages" "ftp")
+    ; Was out of date as at 2013-04-12.  Hopefully not a sign they are
+    ; no longer updating.
     ;; Timing out
     ("Japan Pre-Releases (dti.ad.jp)" "ftp.dti.ad.jp"
-     "pub/unix/editor/xemacs/beta/experimental/packages")
-    ;; Timing out
-    ("Korea Pre-Releases (kr.xemacs.org)" "ftp.kr.xemacs.org"
-     "pub/tools/emacs/xemacs/beta/experimental/packages")
-    ;; Timing out
-    ("Netherlands Pre-Releases (nl.xemacs.org)" "ftp.nl.xemacs.org"
-     "pub/xemacs/ftp/beta/experimental/packages")
-    ;; no anonymous ftp available, uncomment when updating website
-    ;; with
-    ;; xemacs-builds/adrian/website/package-get-2-download-sites.el
-    ;; ("Netherlands Pre-Releases (xemacsftp.digimirror.nl)" "xemacsftp.digimirror.nl"
-    ;;  "beta/experimental/packages")
+     "pub/unix/editor/xemacs/beta/experimental/packages" "ftp")
     ("Norway Pre-Releases (no.xemacs.org)" "ftp.no.xemacs.org"
-     "pub/xemacs/beta/experimental/packages")
+     "pub/xemacs/beta/experimental/packages" "ftp")
     ("Portugal Pre-Releases (pt.xemacs.org)" "ftp.pt.xemacs.org"
-     "pub/MIRRORS/ftp.xemacs.org/beta/experimental/packages")
-    ;; Timing out
-    ("Russia Pre-Releases (ru.xemacs.org)" "ftp.ru.xemacs.org"
-     "pub/emacs/xemacs/beta/experimental/packages")
+     "pub/MIRRORS/ftp.xemacs.org/beta/experimental/packages" "ftp")
+    ("Saudi Arabia Pre-Releases (sa.xemacs.org)" "ftp.sa.xemacs.org"
+     "pub/xemacs.org/beta/experimental/packages" "ftp")
     ("Sweden Pre-Releases (se.xemacs.org)" "ftp.se.xemacs.org"
-     "pub/gnu/xemacs/beta/experimental/packages")
+     "pub/gnu/xemacs/beta/experimental/packages" "ftp")
+    ("Switzerland Pre-Releases (ch.xemacs.org)" "ftp.ch.xemacs.org"
+     "mirror/xemacs/beta/experimental/packages" "ftp")
     ("Taiwan Pre-Releases (ftp.tw.xemacs.org)" "ftp.tw.xemacs.org"
-     "Unix/Editors/XEmacs/beta/experimental/packages")
+     "Unix/Editors/XEmacs/beta/experimental/packages" "ftp")
     ("UK Pre-Releases (uk.xemacs.org)" "ftp.uk.xemacs.org"
-     "sites/ftp.xemacs.org/pub/xemacs/beta/experimental/packages")
+     "sites/ftp.xemacs.org/pub/xemacs/beta/experimental/packages" "ftp")
     ("US Pre-Releases (ibiblio.org)" "mirrors.ibiblio.org"
-     "pub/mirrors/xemacs/beta/experimental/packages")
+     "pub/mirrors/xemacs/beta/experimental/packages" "ftp")
     )
   "*List of remote sites available for downloading \"Pre-Release\" packages.
-List format is '(site-description site-name directory-on-site).
-SITE-DESCRIPTION is a textual description of the site.  SITE-NAME
-is the internet address of the download site.  DIRECTORY-ON-SITE
-is the directory on the site in which packages may be found.
-This variable is used to initialize `package-get-remote', the
-variable actually used to specify package download sites."
+
+List format is '(site-description site-name directory-on-site url-scheme).
+SITE-DESCRIPTION is a textual description of the site.  SITE-NAME is
+the internet address of the download site.  DIRECTORY-ON-SITE is the
+directory on the site in which packages may be found.  URL-SCHEME is
+the protocol such as `http', `ftp', etc.  This variable is used to
+initialize `package-get-remote', the variable actually used to specify
+package download sites."
   :tag "Pre-Release Package download sites"
-  :type '(repeat (list (string :tag "Name") host-name directory))
+  :type '(repeat (list (string :tag "Name")
+		       host-name directory url-scheme))
   :group 'package-get)
 
 ;;;###autoload
-(defcustom package-get-site-release-download-sites
-  nil
+(defcustom package-get-site-release-download-sites nil
   "*List of remote sites available for downloading \"Site Release\" packages.
-List format is '(site-description site-name directory-on-site).
-SITE-DESCRIPTION is a textual description of the site.  SITE-NAME
-is the internet address of the download site.  DIRECTORY-ON-SITE
-is the directory on the site in which packages may be found.
-This variable is used to initialize `package-get-remote', the
-variable actually used to specify package download sites."
+
+List format is '(site-description site-name directory-on-site url-scheme).
+SITE-DESCRIPTION is a textual description of the site.  SITE-NAME is
+the internet address of the download site.  DIRECTORY-ON-SITE is the
+directory on the site in which packages may be found.  URL-SCHEME is
+the protocol such as `http', `ftp', etc.  This variable is used to
+initialize `package-get-remote', the variable actually used to specify
+package download sites."
   :tag "Site Release Package download sites"
-  :type '(repeat (list (string :tag "Name") host-name directory))
+  :type '(repeat (list (string :tag "Name")
+		       host-name directory url-scheme))
   :group 'package-get)
 
 (defcustom package-get-remove-copy t
@@ -987,9 +1003,11 @@ successfully installed but errors occurred during initialization, or
 			 (package-get-info package 'size)))
 		 (setq full-package-filename dest-filename))
 
+	       ;; Using EFS
 	       ;; If the file exists on the remote system ...
-	       ((file-exists-p (package-get-remote-filename
-				search-dir current-filename))
+	       ((and (not package-get-have-curl)
+		     (file-exists-p (package-get-remote-filename
+				     search-dir current-filename)))
 		;; Get it
 		(setq full-package-filename dest-filename)
 		(message "Retrieving package `%s' ..."
@@ -997,7 +1015,16 @@ successfully installed but errors occurred during initialization, or
 		(sit-for 0)
 		(copy-file (package-get-remote-filename search-dir
 							current-filename)
-			   full-package-filename t)))
+			   full-package-filename t))
+
+	       ;; Using ffi-curl
+	       (package-get-have-curl
+		(setq full-package-filename dest-filename)
+		(message "Retrieving package `%s' ..." current-filename)
+		(declare-fboundp
+		 (curl:download (package-get-remote-filename search-dir
+							     current-filename)
+				full-package-filename))))
 
 	      ;; If we found it, we're done.
 	      (if (and full-package-filename
@@ -1133,24 +1160,36 @@ Creates `package-get-dir'  if it doesn't exist."
 It first checks if FILENAME already is a remote filename.  If it is
 not, then it uses the (car search) as the remote site-name and the (cadr
 search) as the remote-directory and concatenates filename.  In other
-words
+words:
+
 	site-name:remote-directory/filename.
 
-If (car search) is nil, (cadr search is interpreted as  a local directory).
-"
+If ffi-curl has been loaded then this will return a URL style name,
+for example:
+
+        http://site-name/remote-directory/filename
+
+The url scheme to use in this case is from (third search).
+
+If (car search) is nil, (cadr search is interpreted as a local
+directory)."
   (if (file-remote-p filename)
       filename
-    (let ((dir (cadr search)))
-      (concat (when (car search)
-		(concat
-		 (if (string-match "@" (car search))
-		     "/"
-		   "/anonymous@")
-		 (car search) ":"))
-	      (if (string-match "/$" dir)
-		  dir
-		(concat dir "/"))
-	      filename))))
+    (let ((site (car search))
+	  (dir (cadr search))
+	  (scheme (third search)))
+      (if (and site package-get-have-curl)
+	  (concat scheme "://" site "/" dir "/" filename)
+	(concat (when site
+		  (concat
+		   (if (string-match "@" site)
+		       "/"
+		     "/anonymous@")
+		   site ":"))
+		(if (string-match "/$" dir)
+		    dir
+		  (concat dir "/"))
+		filename)))))
 
 (defun package-get-installedp (package version)
   "Determine if PACKAGE with VERSION has already been installed.
@@ -1208,110 +1247,6 @@ lead to Emacs accessing remote sites."
 	packages-package-list
 	(intern (substring (symbol-name pkg) 0 (match-beginning 0))))
        t)))
-
-;;; FIXME: see comment at end of `pui-bootstrap'
-
-;;;###autoload
-(defun pui-bootstrap ()
-  "Bootstrap the SXEmacs Package Tools.
-
-The Package Tools, under normal circumstances, cannot work until a
-couple of packages are pre-installed by hand.  This function eliminates
-the need to do that.  It uses FFI and libcurl to download and install
-the lastest package index file, the EFS and xemacs-base packages.
-
-Obviously you can't use this if you didn't enable FFI support in your
-SXEmacs or if you don't have libffi on your system.
-
-This isn't designed to replace the existing Package Tools so after
-you have run `pui-bootstrap' once you should then use the normal PUI
-tools, `pui-list-packages' etc."
-  (interactive)
-  ;; A little sanity checking never hurt anybody
-  (when (featurep '(and efs-autoloads xemacs-base-autoloads))
-    (error 'invalid-operation "PUI doesn't need bootstrapping"))
-  (when (and (fboundp 'ffi-defun)
-	     (not (featurep '(and ffi ffi-curl))))
-    (require 'ffi-curl))
-  (unless (featurep 'ffi)
-    (error 'unimplemented "FFI"))
-  ;; One last check... has `package-get-remote' been set?
-  (if (not (cdr package-get-remote))
-      (when (y-or-n-p "You haven't set a download site, do you need help ")
-	(declare-fboundp (Info-goto-node "(sxemacs)Bootstrapping PUI")))
-    ;; We should be good to go
-    (let* ((site (car package-get-remote))
-	   (dir (cadr package-get-remote))
-	   (url (concat "ftp://" site "/" dir "/"))
-	   (dldir (temp-directory))
-	   (index (expand-file-name package-get-base-filename
-				    package-get-package-index-file-location))
-	   xemacs-base-pkg
-	   efs-pkg
-					;status)
-	   )
-      ;; Grab the index
-      (message "Retrieving index, please be patient")
-      (declare-fboundp (curl:download (concat url package-get-base-filename) index))
-      (message "Retrieving index, done!")
-      ;; Update the db
-      (set-buffer (find-file-noselect index))
-      (package-get-update-base-from-buffer)
-      (kill-buffer (current-buffer))
-      ;; Get xemacs-base, EFS
-      (setq xemacs-base-pkg (package-get-info 'xemacs-base 'filename))
-      (setq efs-pkg (package-get-info 'efs 'filename))
-      (message "Retrieving %s, please be patient" xemacs-base-pkg)
-      (declare-fboundp (curl:download (concat url xemacs-base-pkg)
-				      (expand-file-name xemacs-base-pkg dldir)))
-      (message "Retrieving %s, please be patient" efs-pkg)
-      (declare-fboundp (curl:download (concat url efs-pkg)
-				      (expand-file-name efs-pkg dldir)))
-      (message "Download complete.")
-      ;; Install xemacs-base
-      (if (equal (package-get-info 'xemacs-base 'md5sum)
-		 (with-temp-buffer
-		   (insert-file-contents-literally
-		    (expand-file-name xemacs-base-pkg dldir))
-		   (md5 (current-buffer))))
-	  (progn
-	    (package-admin-add-binary-package
-	     (expand-file-name xemacs-base-pkg dldir)
-	     (package-admin-get-install-dir 'xemacs-base))
-	    (push (file-name-as-directory
-		   (expand-file-name "lisp/xemacs-base"
-				     (package-admin-get-install-dir 'xemacs-base)))
-		  load-path)
-	    (load-file (expand-file-name "lisp/xemacs-base/_pkg.el"
-					 (package-admin-get-install-dir 'xemacs-base)))
-	    (load-file (expand-file-name "lisp/xemacs-base/auto-autoloads.el"
-					 (package-admin-get-install-dir 'xemacs-base)))
-	    (message "xemacs-base package installed"))
-	(delete-file (expand-file-name xemacs-base-pkg dldir))
-	(error "MD5 mismatch, %s deleted" (expand-file-name xemacs-base-pkg dldir)))
-      ;; Install EFS
-      (if (equal (package-get-info 'efs 'md5sum)
-		 (with-temp-buffer
-		   (insert-file-contents-literally
-		    (expand-file-name efs-pkg dldir))
-		   (md5 (current-buffer))))
-	  (progn
-	    (package-admin-add-binary-package
-	     (expand-file-name efs-pkg dldir)
-	     (package-admin-get-install-dir 'efs))
-	    (push (file-name-as-directory
-		   (expand-file-name "lisp/efs"
-				     (package-admin-get-install-dir 'efs)))
-		  load-path)
-	    (load-file (expand-file-name "lisp/efs/_pkg.el"
-					 (package-admin-get-install-dir 'efs)))
-	    (load-file (expand-file-name "lisp/efs/auto-autoloads.el"
-					 (package-admin-get-install-dir 'efs)))
-	    (message "efs package installed"))
-	(delete-file (expand-file-name efs-pkg dldir))
-	(error "MD5 mismatch, %s deleted" (expand-file-name efs-pkg dldir)))
-      (when (y-or-n-p "Install more packages? ")
-	(declare-fboundp (pui-list-packages))))))
 
 (provide 'package-get)
 
