@@ -495,11 +495,12 @@ if different."
   "Update the package-get database file with entries from DB-FILE.
 Unless FORCE-CURRENT is non-nil never try to update the database."
   (interactive
-   (let ((dflt (package-get-locate-index-file nil)))
+   (let* ((dflt (package-get-locate-index-file nil))
+	  (match (not (string-match #r"^\(https?\|s?ftp\)://" dflt))))
      (list (read-file-name "Load package-get database: "
 			   (file-name-directory dflt)
 			   dflt
-			   t
+			   match
 			   (file-name-nondirectory dflt)))))
   (setq db-file (expand-file-name (or db-file
 				      (package-get-locate-index-file
@@ -509,7 +510,7 @@ Unless FORCE-CURRENT is non-nil never try to update the database."
 	     (format "Package-get database file `%s' does not exist" db-file)))
   (if (not (file-readable-p db-file))
       (error 'file-error
-	     (format "Package-get database file `%s' not readable" db-file)))
+             (format "Package-get database file `%s' not readable" db-file)))
   (let ((buf (get-buffer-create "*package database*")))
     (unwind-protect
 	(save-excursion
@@ -517,7 +518,9 @@ Unless FORCE-CURRENT is non-nil never try to update the database."
 	  (erase-buffer buf)
 	  (insert-file-contents-literally db-file)
 	  (package-get-update-base-from-buffer buf)
-	  (if (file-remote-p db-file)
+	  (if (or (file-remote-p db-file)
+		  (and (string-match #r"^\(https?\|s?ftp\)://" db-file)
+		       package-get-have-curl))
 	      (package-get-maybe-save-index db-file)))
       (kill-buffer buf))))
 
@@ -1003,11 +1006,9 @@ successfully installed but errors occurred during initialization, or
 			 (package-get-info package 'size)))
 		 (setq full-package-filename dest-filename))
 
-	       ;; Using EFS
 	       ;; If the file exists on the remote system ...
-	       ((and (not package-get-have-curl)
-		     (file-exists-p (package-get-remote-filename
-				     search-dir current-filename)))
+	       ((file-exists-p (package-get-remote-filename
+				search-dir current-filename))
 		;; Get it
 		(setq full-package-filename dest-filename)
 		(message "Retrieving package `%s' ..."
@@ -1015,16 +1016,7 @@ successfully installed but errors occurred during initialization, or
 		(sit-for 0)
 		(copy-file (package-get-remote-filename search-dir
 							current-filename)
-			   full-package-filename t))
-
-	       ;; Using ffi-curl
-	       (package-get-have-curl
-		(setq full-package-filename dest-filename)
-		(message "Retrieving package `%s' ..." current-filename)
-		(declare-fboundp
-		 (curl:download (package-get-remote-filename search-dir
-							     current-filename)
-				full-package-filename))))
+			   full-package-filename t)))
 
 	      ;; If we found it, we're done.
 	      (if (and full-package-filename
@@ -1173,7 +1165,9 @@ The url scheme to use in this case is from (third search).
 
 If (car search) is nil, (cadr search is interpreted as a local
 directory)."
-  (if (file-remote-p filename)
+  (if (or (file-remote-p filename)
+	  (and (string-match #r"^\(https?\|s?ftp\)://" filename)
+	       package-get-have-curl))
       filename
     (let ((site (car search))
 	  (dir (cadr search))

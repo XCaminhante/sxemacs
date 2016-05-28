@@ -349,6 +349,183 @@ Functions in here are called with one argument JOB containing
 the job which just finished.")
 
 ;;}}}
+
+;;{{{ file handlers
+;; There's probably more that could be added here, but for now, just
+;; enough to get PUI working seemlessly with ffi-curl (HTTP/FTP) or
+;; EFS (FTP). --SY.
+
+;; file-exists-p
+(defun curl:file-exists-p (uri)
+  "Curl implementation of `file-exists-p'.
+
+Don't call this directly, use `file-exists-p' and give it a URI for
+the FILENAME arg.  The underlying file name handlers will take care of
+calling this function.
+
+Currently only HTTP and FTP are supported, and then only if the URL ends
+in a filename. IOW you can't do \(file-exists-p \"http://example.com/\"\)"
+  (let ((lfile (expand-file-name
+		(make-temp-file "curl:") (temp-directory)))
+	(resp nil))
+    (curl:download uri lfile :header t :nobody t)
+    (with-temp-buffer
+      (insert-file-contents-literally lfile)
+      (and (re-search-forward #r"^\(HTTP/1\.1 200 OK\|Content-Length\)" nil t)
+	   (setq resp t)))
+    (delete-file lfile)
+    resp))
+(put 'file-exists-p 'curl 'curl:file-exists-p)
+
+;; file-readable-p
+;; doesn't make much sense for HTTP, so just alias to file-exists-p
+(defalias 'curl:file-readable-p 'curl:file-exists-p)
+(put 'file-readable-p 'curl 'curl:file-readable-p)
+
+;; insert-file-contents-literally
+(defun curl:insert-file-contents-literally (uri &optional visit
+						start end replace)
+  "Curl implementation of `insert-file-contents-literally'.
+
+Don't call this directly, use `insert-file-contents-literally' and
+give it a URI for the FILENAME arg.  The underlying file name handlers
+will take care of calling this function.
+
+Currently only HTTP and FTP are supported, and then only if the URL
+ends in a filename."
+  (let ((file-name-handler-alist nil)
+	(format-alist nil)
+	(after-insert-file-functions nil)
+	(coding-system-for-read 'binary)
+	(coding-system-for-write 'binary)
+	(find-buffer-file-type-function
+	 (if (fboundp 'find-buffer-file-type)
+	     (symbol-function 'find-buffer-file-type)
+	   nil))
+	(lfile (expand-file-name 
+		(make-temp-file "curl:") (temp-directory))))
+    (unwind-protect
+	(progn
+	  (curl:download uri lfile)
+	  (fset 'find-buffer-file-type (lambda (lfile) t))
+	  (insert-file-contents lfile visit start end replace))
+      (if find-buffer-file-type-function
+	  (fset 'find-buffer-file-type find-buffer-file-type-function)
+	(fmakunbound 'find-buffer-file-type))
+      (delete-file lfile))))
+(put 'insert-file-contents-literally
+     'curl 'curl:insert-file-contents-literally)
+
+;;; FIXME: calling `copy-file' interactively on a URI doesn't work. The
+;;; minibuffer tries to do expansion or completion or something on the
+;;; URI before the file name handlers kick in. --SY.
+;; copy-file
+(defun curl:copy-file (uri newname &optional ok-if-already-exists
+			   &rest args)
+  "Curl implementation of `copy-file'.
+
+Copy remote file, URI to local file, NEWNAME.  Copying in the
+other direction, local to remote, is not supported and will result in
+an error.
+
+Signals a `file-already-exists' error if file NEWNAME already exists,
+unless a third argument OK-IF-ALREADY-EXISTS is supplied and non-nil.
+A number as third arg means request confirmation if NEWNAME already
+exists.  This is the default for interactive use.
+
+Don't call this directly, use `copy-file' and give it a URI for
+the FILENAME arg.  The underlying file name handlers will take care of
+calling this function.
+
+Currently only HTTP and FTP are supported, and then only if the URL
+ends in a filename."
+  (when (string-match #r"^\(https?\|s?ftp\)://" newname)
+    (error 'invalid-argument newname "Destination cannot be a URI"))
+  (let ((newname (expand-file-name newname))
+	doit)
+    (if (file-exists-p newname)
+	(if (or (interactive-p) (numberp ok-if-already-exists))
+	    (and (y-or-n-p
+		  (format "Existing file: %s Overwrite? " newname))
+		 (setq doit t))
+	  (if ok-if-already-exists
+	      (setq doit t)
+	    (error 'file-already-exists "Existing file" newname)))
+      (setq doit t))
+    (and doit (curl:download uri newname))))
+(put 'copy-file 'curl 'curl:copy-file)
+
+;; expand-file-name
+(defun curl:expand-file-name (&rest args)
+  "Return the 1st argument unchanged.
+
+Don't use this.  In fact, forget that you even saw it.  There is no
+way you're ever going to need to use this.  It's sole purpose is to
+keep `file-exists-p' happy when that is given a URI to check. "
+  (car args))
+(put 'expand-file-name 'curl 'curl:expand-file-name)
+
+;; file-name-directory
+(defun curl:file-name-directory (uri)
+  "A curl implementation of `file-name-directory'.
+
+Returns URI without the filename.
+
+Don't call this directly, use `file-name-directory' with URI for the
+FILENAME arg.  The underlying file name handlers will take care of
+calling this function.
+
+Currently only HTTP and FTP are supported, and then only if the URL
+ends in a filename."
+  (progn
+    (string-match curl:file-handler-regexp uri)
+    (substring uri (match-beginning 1) (match-end 2))))
+(put 'file-name-directory 'curl 'curl:file-name-directory)
+
+;; file-name-nondirectory
+(defun curl:file-name-nondirectory (uri)
+  "A curl implementation of `file-name-nondirectory'.
+
+Returns the filename portion of URI.
+
+Don't call this directly, use `file-name-nondirectory' with URI for the
+FILENAME arg.  The underlying file name handlers will take care of
+calling this function.
+
+Currently only HTTP and FTP are supported, and then only if the URL
+ends in a filename."
+  (progn
+    (string-match curl:file-handler-regexp uri)
+    (substring uri (match-end 2))))
+(put 'file-name-nondirectory 'curl 'curl:file-name-nondirectory)
+
+;; This regexp contains trailing whitespace DO NOT REMOVE OR MANGLE
+(defregexp curl:file-handler-regexp
+  #r"\(https?://\|s?ftp://\)[^]	
+ \"'()<>[^`{}]*[^]	
+ \"'()<>[^`{}.,;]+\(/\)\([^/].*[^/]$\)"
+"Regexp used in `file-name-handler-alist'.
+
+It matches HTTP/FTP URLs but only if they end with a filename.
+So, for example, \"http://example.com/file.ext\" would match, but
+\"http://example.com/\" would not.")
+
+;; handler function
+(defun curl:file-handler (operation &rest args)
+  (let ((op (get operation 'curl)))
+    (if op
+	(apply op args)
+      (error 'unimplemented
+	     (concat "curl:" (symbol-name operation))))))
+
+(defvar curl:file-handler
+  (cons curl:file-handler-regexp 'curl:file-handler))
+
+(unless (memq curl:file-handler file-name-handler-alist)
+  (setq file-name-handler-alist
+	(cons curl:file-handler file-name-handler-alist)))
+
+;;}}}
 
 
 (provide 'ffi-curl)
