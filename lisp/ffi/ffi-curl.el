@@ -263,7 +263,7 @@ works with HTTP URLs."
 	 (read-file-name "Local file: " default-directory
 			 (make-temp-name
 			  (expand-file-name "curl:downloaded:"
-					    (temp-directory)))))
+					    (temp-directory))))))
   (when current-prefix-arg
     ;; In case of C-u
     (and (y-or-n-p (format "Only download %s's HTTP header? "
