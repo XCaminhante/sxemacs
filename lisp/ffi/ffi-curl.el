@@ -261,8 +261,9 @@ works with HTTP URLs."
 				(ffap-url-at-point))
 		      curl:download-history)
 	 (read-file-name "Local file: " default-directory
-			 (expand-file-name (make-temp-name "curl:downloaded:")
-					   (temp-directory)))))
+			 (make-temp-name
+			  (expand-file-name "curl:downloaded:"
+					    (temp-directory)))))
   (when current-prefix-arg
     ;; In case of C-u
     (and (y-or-n-p (format "Only download %s's HTTP header? "
@@ -308,8 +309,9 @@ is run.  Functions in there will be called with an argument JOB."
 				(ffap-url-at-point))
 		      curl:download-history)
 	 (read-file-name "Local file: " default-directory
-			 (expand-file-name (make-temp-name "curl:downloaded:")
-					   (temp-directory)))))
+			 (make-temp-name
+			  (expand-file-name "curl:downloaded:"
+					    (temp-directory))))))
   (when current-prefix-arg
     (and (y-or-n-p (format "Only download %s's HTTP header? "
 			   (file-basename file-or-buffer)))
@@ -365,8 +367,8 @@ calling this function.
 
 Currently only HTTP and FTP are supported, and then only if the URL ends
 in a filename. IOW you can't do \(file-exists-p \"http://example.com/\"\)"
-  (let ((lfile (expand-file-name
-		(make-temp-file "curl:") (temp-directory)))
+  (let ((lfile (make-temp-name
+		(expand-file-name "curl:" (temp-directory))))
 	(resp nil))
     (curl:download uri lfile :header t :nobody t)
     (with-temp-buffer
@@ -402,8 +404,8 @@ ends in a filename."
 	 (if (fboundp 'find-buffer-file-type)
 	     (symbol-function 'find-buffer-file-type)
 	   nil))
-	(lfile (expand-file-name 
-		(make-temp-file "curl:") (temp-directory))))
+	(lfile (make-temp-name 
+		(expand-file-name "curl:" (temp-directory)))))
     (unwind-protect
 	(progn
 	  (curl:download uri lfile)
