@@ -94,6 +94,8 @@ fi
 echo "
     - Package search path:"
   echo ${PACKAGE_PATH} | ${AWK-awk} 'BEGIN {RS=":"} { print "       ",[$]1[] }'
+echo "
+      (defaults shown, runtime paths may differ)"
 
 echo "
 Debugging options:"
