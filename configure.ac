@@ -823,9 +823,9 @@ AM_INIT_AUTOMAKE(m4_esyscmd([
    automake_minor=`echo "$automake_ver" | sed -e 's/^.* [0-9]*\.\([0-9]*\).*/\1/'`
    if test "$automake_major" = "1" -a "$automake_minor" -lt "14"
    then
-      echo "foreign -Wall"
+      echo "foreign -Wall -Wno-override -Wno-portability"
    else
-      echo "info-in-builddir foreign -Wall"
+      echo "info-in-builddir foreign -Wall -Wno-override -Wno-portability"
    fi]))
 
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])

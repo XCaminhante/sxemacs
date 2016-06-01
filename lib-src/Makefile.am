@@ -50,9 +50,9 @@ AM_CFLAGS =
 AM_CPPFLAGS = -I$(sxesrcdir) $(c_switch_all)
 AM_LDFLAGS = $(ld_switch_general) $(ld_libs_general)
 
-REGEX_C = $(sxesrcdir)/regex.c $(sxesrcdir)/regex.h
+REGEX_C = regex.c regex.h
 REGEX_CF = -DINHIBIT_STRING_HEADER
-ALLOCA_C = $(sxesrcdir)/alloca.c
+ALLOCA_C = alloca.c
 
 ## stuff we create here
 bin_PROGRAMS = gnuclient etags ctags2 ootags
