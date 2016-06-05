@@ -165,21 +165,6 @@ Set this to `nil' to use the `default' face."
 	  package-get-download-sites))
 
 ;;;###autoload
-(defun package-ui-pre-release-download-menu ()
-  "Build the 'Pre-Release Download Sites' menu."
-  (mapcar (lambda (site)
-	    (vector (car site)
-		    `(if (equal package-get-remote (quote ,(cdr site)))
-		      (setq package-get-remote nil)
-		      (package-ui-add-site (quote ,(cdr site))))
-		    ;; I've used radio buttons so that only a single
-		    ;; site can be selected, but they are in fact
-		    ;; toggles.  SY.
-		    :style 'radio
-		    :selected `(equal package-get-remote (quote ,(cdr site)))))
-	  package-get-pre-release-download-sites))
-
-;;;###autoload
 (defun package-ui-site-release-download-menu ()
   "Build the 'Site Release Download Sites' menu."
   (mapcar (lambda (site)

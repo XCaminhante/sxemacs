@@ -210,59 +210,14 @@ as a local directory."
 ;;;###autoload
 (defcustom package-get-download-sites
   `(,@(when package-get-have-curl
-       '(("SXEmacs XE pkg mirror"
-	 "downloads.sxemacs.org" "xemacs-pkgs/packages" "http")))
-    ("US (Main XEmacs Site)"
-     "ftp.xemacs.org" "pub/xemacs/packages" "ftp")
-    ;; In alphabetical order of Country, our mirrors...
-    ;; Timing out
-    ("Belgium (be.xemacs.org)"
-     "ftp.be.xemacs.org" "xemacs/packages" "ftp")
-    ("Canada (ca.xemacs.org)"
-     "ftp.ca.xemacs.org" "pub/Mirror/xemacs/packages" "ftp")
-    ("Denmark (dk.xemacs.org)"
-     "ftp.dk.xemacs.org" "xemacs/packages" "ftp")
-    ("France (fr.xemacs.org)"
-     "ftp.fr.xemacs.org" "pub/xemacs/packages" "ftp")
-    ;; Temporary errors?
-    ("France (mirror.cict.fr)"
-     "mirror.cict.fr" "xemacs/packages" "ftp")
-    ("France (pasteur.fr)"
-     "ftp.pasteur.fr" "pub/computing/xemacs/packages" "ftp")
-    ;; Very outdated, experimental not updated since 2013
-    ("Germany (de.xemacs.org)"
-     "ftp.de.xemacs.org" "pub/ftp.xemacs.org/tux/xemacs/packages" "ftp")
-    ;; Timing out
-    ("Greece (gr.xemacs.org)"
-     "ftp.gr.xemacs.org" "mirrors/XEmacs/ftp/packages" "ftp")
-    ("Ireland (heanet.ie)"
-     "ftp.heanet.ie" "mirrors/ftp.xemacs.org/packages" "ftp")
-    ;; Timing out
-    ("Italy (it.xemacs.org)"
-     "ftp.it.xemacs.org" "unix/packages/XEMACS/packages" "ftp")
-    ;; Timing out
-    ("Japan (dti.ad.jp)"
-     "ftp.dti.ad.jp" "pub/unix/editor/xemacs/packages" "ftp")
-    ("Norway (no.xemacs.org)"
-     "ftp.no.xemacs.org" "pub/xemacs/packages" "ftp")
-    ("Portugal (pt.xemacs.org)"
-     "ftp.pt.xemacs.org" "pub/MIRRORS/ftp.xemacs.org/packages" "ftp")
-    ;; Timing out
-    ("Russia (ru.xemacs.org)"
-     "ftp.ru.xemacs.org" "pub/emacs/xemacs/packages" "ftp")
-    ("Saudi Arabia (sa.xemacs.org)"
-     "ftp.sa.xemacs.org" "pub/xemacs.org/packages" "ftp")
-    ("Sweden (se.xemacs.org)"
-     "ftp.se.xemacs.org" "pub/gnu/xemacs/packages" "ftp")
-    ("Switzerland (ch.xemacs.org)"
-     "ftp.ch.xemacs.org" "mirror/xemacs/packages" "ftp")
-    ("Taiwan (ftp.tw.xemacs.org)"
-     "ftp.tw.xemacs.org" "Unix/Editors/XEmacs/packages" "ftp")
-    ("UK (uk.xemacs.org)"
-     "ftp.uk.xemacs.org" "sites/ftp.xemacs.org/pub/xemacs/packages" "ftp")
-    ("US (ibiblio.org)"
-     "mirrors.ibiblio.org" "pub/mirrors/xemacs/packages" "ftp")
-    )
+	;; HTTP Sites
+	'(("SXEmacs Main Site (HTTP)"
+	   "downloads.sxemacs.org" "xemacs-pkgs/packages" "http")
+	  ))
+      ;; FTP Sites
+      ("SXEmacs Main Site (FTP)"
+       "ftp.sxemacs.org" "pub/packages" "ftp")
+      )
   "*List of remote sites available for downloading packages.
 
 List format is '(site-description site-name directory-on-site url-scheme).
@@ -273,76 +228,6 @@ the protocol such as `http', `ftp', etc.  This variable is used to
 initialize `package-get-remote', the variable actually used to specify
 package download sites."
   :tag "Package download sites"
-  :type '(repeat (list (string :tag "Name")
-		       host-name directory url-scheme))
-  :group 'package-get)
-
-;;;###autoload
-(defcustom package-get-pre-release-download-sites
-  `(,@(when package-get-have-curl
-       '(("SXEmacs XE pkg Pre-Releases" "downloads.sxemacs.org"
-	  "xemacs-pkgs/beta/experimental/packages" "http")))
-    ("US Pre-Releases (Main XEmacs Site)" "ftp.xemacs.org"
-     "pub/xemacs/beta/experimental/packages" "ftp")
-    ;; In alphabetical order of Country, our mirrors...
-    ;; Timing out
-    ("Belgium Pre-Releases (be.xemacs.org)" "ftp.be.xemacs.org"
-     "xemacs/beta/experimental/packages" "ftp")
-    ("Canada Pre-Releases (ca.xemacs.org)" "ftp.ca.xemacs.org"
-     "pub/Mirror/xemacs/beta/experimental/packages" "ftp")
-    ("Denmark Pre-Releases (dk.xemacs.org)" "ftp.dk.xemacs.org"
-     "xemacs/beta/experimental/packages" "ftp")
-    ("France Pre-Releases (fr.xemacs.org)" "ftp.fr.xemacs.org"
-     "pub/xemacs/beta/experimental/packages" "ftp")
-    ; Was a month out of date as of 2013-04-12, hopefully not a sign
-    ; it is no longer updating.
-    ("France Pre-Releases (mirror.cict.fr)" "mirror.cict.fr"
-     "xemacs/beta/experimental/packages" "ftp")
-    ("France Pre-Releases (pasteur.fr)" "ftp.pasteur.fr"
-     "pub/computing/xemacs/beta/experimental/packages" "ftp")
-    ;; Very outdated, experimental not updated since 2013
-    ("Germany Pre-Releases (de.xemacs.org)" "ftp.de.xemacs.org"
-     "pub/ftp.xemacs.org/tux/xemacs/beta/experimental/packages" "ftp")
-    ;; Timing out
-    ("Greece Pre-Releases (gr.xemacs.org)" "ftp.gr.xemacs.org"
-     "mirrors/XEmacs/ftp/beta/experimental/packages" "ftp")
-    ("Ireland Pre-Releases (heanet.ie)" "ftp.heanet.ie"
-     "mirrors/ftp.xemacs.org/beta/experimental/packages" "ftp")
-    ;; Timing out
-    ("Italy Pre-Releases (it.xemacs.org)" "ftp.it.xemacs.org"
-     "unix/packages/XEMACS/beta/experimental/packages" "ftp")
-    ; Was out of date as at 2013-04-12.  Hopefully not a sign they are
-    ; no longer updating.
-    ;; Timing out
-    ("Japan Pre-Releases (dti.ad.jp)" "ftp.dti.ad.jp"
-     "pub/unix/editor/xemacs/beta/experimental/packages" "ftp")
-    ("Norway Pre-Releases (no.xemacs.org)" "ftp.no.xemacs.org"
-     "pub/xemacs/beta/experimental/packages" "ftp")
-    ("Portugal Pre-Releases (pt.xemacs.org)" "ftp.pt.xemacs.org"
-     "pub/MIRRORS/ftp.xemacs.org/beta/experimental/packages" "ftp")
-    ("Saudi Arabia Pre-Releases (sa.xemacs.org)" "ftp.sa.xemacs.org"
-     "pub/xemacs.org/beta/experimental/packages" "ftp")
-    ("Sweden Pre-Releases (se.xemacs.org)" "ftp.se.xemacs.org"
-     "pub/gnu/xemacs/beta/experimental/packages" "ftp")
-    ("Switzerland Pre-Releases (ch.xemacs.org)" "ftp.ch.xemacs.org"
-     "mirror/xemacs/beta/experimental/packages" "ftp")
-    ("Taiwan Pre-Releases (ftp.tw.xemacs.org)" "ftp.tw.xemacs.org"
-     "Unix/Editors/XEmacs/beta/experimental/packages" "ftp")
-    ("UK Pre-Releases (uk.xemacs.org)" "ftp.uk.xemacs.org"
-     "sites/ftp.xemacs.org/pub/xemacs/beta/experimental/packages" "ftp")
-    ("US Pre-Releases (ibiblio.org)" "mirrors.ibiblio.org"
-     "pub/mirrors/xemacs/beta/experimental/packages" "ftp")
-    )
-  "*List of remote sites available for downloading \"Pre-Release\" packages.
-
-List format is '(site-description site-name directory-on-site url-scheme).
-SITE-DESCRIPTION is a textual description of the site.  SITE-NAME is
-the internet address of the download site.  DIRECTORY-ON-SITE is the
-directory on the site in which packages may be found.  URL-SCHEME is
-the protocol such as `http', `ftp', etc.  This variable is used to
-initialize `package-get-remote', the variable actually used to specify
-package download sites."
-  :tag "Pre-Release Package download sites"
   :type '(repeat (list (string :tag "Name")
 		       host-name directory url-scheme))
   :group 'package-get)

@@ -497,11 +497,6 @@ See also `menu-split-long-menu'."
 		   (menu-split-long-menu
 		    (submenu-generate-accelerator-spec
 		     (package-ui-download-menu)))))
-	("%_Pre-Releases"
-	 :filter (lambda (&rest junk)
-		   (menu-split-long-menu
-		    (submenu-generate-accelerator-spec
-		     (package-ui-pre-release-download-menu)))))
 	("%_Site Releases"
 	 :filter (lambda (&rest junk)
 		   (menu-split-long-menu
