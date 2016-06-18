@@ -336,6 +336,12 @@
   :type 'boolean
   :group 'info)
 
+;; Presently, the only reason this exists is to keep a few FSF-originated
+;; packages happy. We don't use it. --SY
+(defvar Info-file-list-for-emacs nil)
+(make-compatible-variable 'Info-file-list-for-emacs
+			  "SXEmacs does NOT use this")
+
 (defvar Info-history nil
   "List of info nodes user has visited.
 Each element of list is a list (\"(FILENAME)NODENAME\" BUFPOS WINSTART).")
