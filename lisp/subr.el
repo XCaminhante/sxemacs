@@ -1700,7 +1700,8 @@ is normally called."
 	(progn
 	  (nconc elt (list form))
 	  ;; If the file has been loaded already, run FORM right away.
-	  (and (assoc file load-history)
+	  (and (or (assoc file load-history)
+		   (member file preloaded-file-list))
 	       (eval form)))))
   form)
 (make-compatible 'eval-after-load "")
