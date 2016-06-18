@@ -1686,11 +1686,22 @@ If FILE is already loaded, evaluate FORM right now.
 It does nothing if FORM is already on the list for FILE.
 FILE must match exactly.  Normally FILE is the name of a library,
 with no directory or extension specified, since that is how `load'
-is normally called."
-  ;; Make sure `load-history' contains the files dumped with Emacs
-  ;; for the case that FILE is one of the files dumped with Emacs.
-  (if-fboundp 'load-symbol-file-load-history
-      (load-symbol-file-load-history))
+is normally called.
+For compatibility with FSF, FILE can also be a feature, i.e, a symbol.
+
+Please be aware that if FILE is a lib that is dumped then you are not
+gaining anything by using this, you may as well simply call FORM directly
+without `eval-after-load'."
+  ;; FSFmacs allows FILE to be a symbol (provided feature). I can't
+  ;; decide if that's a good thing or not, or even how to go about it
+  ;; in a smart way.  So, for now, look it up from #'feature-file or
+  ;; use #'symbol-name failing that. --SY.
+  (when (symbolp file)
+    ;; Lets at least try to get a real filename
+    (setq file (or (ignore-errors
+		     (file-name-sans-extension
+		      (file-basename (feature-file file))))
+		   (symbol-name file))))
   ;; Make sure there is an element for FILE.
   (or (assoc file after-load-alist)
       (setq after-load-alist (cons (list file) after-load-alist)))
