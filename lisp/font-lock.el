@@ -988,7 +988,7 @@ see the variables `c-font-lock-extra-types', `c++-font-lock-extra-types',
 	 (let ((was-compiled (eq (car font-lock-keywords) t)))
 	   ;; Bring back the user-level (uncompiled) keywords.
 	   (if was-compiled
-	       (setq font-lock-keywords (cadr font-lock-keywords)))
+	       (setq font-lock-keywords (cdr font-lock-keywords)))
 	   ;; Now modify or replace them.
 	   (if (eq how 'set)
 	       (setq font-lock-keywords keywords)
