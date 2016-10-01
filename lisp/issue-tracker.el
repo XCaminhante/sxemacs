@@ -5,7 +5,7 @@
 ;; Author:        Steve Youngs <steve@sxemacs.org>
 ;; Maintainer:    Steve Youngs <steve@sxemacs.org>
 ;; Created:       <2005-01-10>
-;; Homepage:      http://www.sxemacs.org/
+;; Homepage:      https://www.sxemacs.org/
 ;; Keywords:      bugs issues
 
 ;; This file is part of SXEmacs.
@@ -361,7 +361,7 @@ and send the mail again.") nil) "*Bug Help*")))
   "Save C and lisp backtrace buffers to files.
 
 This is a convenience for reporting SXEmacs issues at
-http://issues.sxemacs.org/.  Returns t if any backtrace buffers are
+https://issues.sxemacs.org/.  Returns t if any backtrace buffers are
 found and saved, nil otherwise."
   (let ((ctrace (or (get-buffer (concat "*gdb-sxemacs-"
 					emacs-program-version
@@ -386,7 +386,7 @@ found and saved, nil otherwise."
   "Save `Installation-string' to file.
 
 This is a convenience for reporting SXEmacs issues at
-http://issues.sxemacs.org/.  Returns t on success, nil otherwise."
+https://issues.sxemacs.org/.  Returns t on success, nil otherwise."
   (let ((file (expand-file-name "Installation" (temp-directory)))
 	(str (and (boundp 'Installation-string)
 		  (stringp Installation-string)
@@ -412,7 +412,7 @@ If you are not familar with SXEmacs debugging and/or gdb, you can simply
 you just reproduce the bug/problem and a *Backtrace* buffer should pop
 up.  Once you have a backtrace, run `M-x report-sxemacs-bug' again and
 it will be automatically saved to a file so you can attach it to your
-bug at http://issues.sxemacs.org/.
+bug at https://issues.sxemacs.org/.
 
 OK, that was for a lisp backtrace, but don't forget a C trace as well.
 Sometimes they are just as useful, if not more so, as the lisp trace.
@@ -432,7 +432,7 @@ Q2.1.15 of the FAQ \(`C-h F'\).
 ========================================================
 
 SXEmacs bug and issue tracking is handled by our BugZilla installation
-at http://issues.sxemacs.org/.  To complete your report, you will have
+at https://issues.sxemacs.org/.  To complete your report, you will have
 to submit the bug/issue there.
 
 Look in: `%s'

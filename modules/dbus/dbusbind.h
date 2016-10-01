@@ -9,7 +9,7 @@
  * Created:    <2012-01-22>
  * Author:     Steve Youngs <steve@sxemacs.org>
  * Maintainer: Steve Youngs <steve@sxemacs.org>
- * Homepage:   http://www.sxemacs.org/
+ * Homepage:   https://www.sxemacs.org/
  */
 
 /*

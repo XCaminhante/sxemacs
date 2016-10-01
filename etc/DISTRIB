@@ -5,12 +5,12 @@
 SXEmacs is available primarily via the GIT repositories.  The
 main repository is:
 
-      http://git.sxemacs.org/sxemacs
+      https://git.sxemacs.org/sxemacs
 
 The following git commands will "check out" the latest SXEmacs sources
 from the above repository:
 
-	$ git clone http://git.sxemacs.org/sxemacs
+	$ git clone https://git.sxemacs.org/sxemacs
 
 That will "check out" the latest SXEmacs sources and place them into
 $PWD/sxemacs
@@ -21,10 +21,10 @@ to determine what is the most recent version
 
 Source tarballs are available for download at:
 
-     http://downloads.sxemacs.org/releases/
+     https://downloads.sxemacs.org/releases/
 
 
 Occasional "snapshot" tarballs are made available between releases and
 they can be found at:
 
-     http://downloads.sxemacs.org/snapshots/
+     https://downloads.sxemacs.org/snapshots/

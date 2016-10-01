@@ -1069,7 +1069,7 @@ code base we would fork from.
 And then, on December 6th, 2004 at 03:24 (GMT) the XEmacs 21.4.16 source
 code was imported into SXEmacs' main source repository.  Three weeks
 later, SXEmacs was announced to the world
-@uref{http://www.sxemacs.org/pipermail/sxemacs-devel/2004-December/000224.html,
+@uref{https://www.sxemacs.org/pipermail/sxemacs-devel/2004-December/000224.html,
 in this post}.
 
 It should be noted that even though some feathers were ruffled by the

@@ -636,7 +636,7 @@ yourself, or want to feed the result to further processing.
 
 For compatibility with XEmacs' NOSORT argument to this function,
 RESULT-TYPE can also be any non-nil value.  In that case it will
-return an unsorted list. (http://issues.sxemacs.org/show_bug.cgi?id=163)
+return an unsorted list. (https://issues.sxemacs.org/show_bug.cgi?id=163)
 
 Optional argument FILES-ONLY can be one of:
 - t  to return only files and symlinks in DIRECTORY

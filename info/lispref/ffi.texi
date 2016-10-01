@@ -938,7 +938,7 @@ The options are keyword-value-pairs and are set via
 @end defun
 
 @example
-(curl:download "http://www.sxemacs.org"
+(curl:download "https://www.sxemacs.org"
   (expand-file-name (make-temp-name "curl") (temp-directory)))
      @result{} 0
 @end example

@@ -687,7 +687,7 @@ You need not ask for permission to do so, or tell any one else; just copy
 it.
 
 If you have access to the Internet, you can get the latest version of
-SXEmacs from our download site at @uref{http://downloads.sxemacs.org}.
+SXEmacs from our download site at @uref{https://downloads.sxemacs.org}.
 
 
 @unnumberedsec Getting Other Versions of Emacs

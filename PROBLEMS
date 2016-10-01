@@ -413,7 +413,7 @@ have a ImageMagick that is using OpenMP (currently only svn HEAD).  To
 fix this you will need to rebuild ImageMagick, making sure that you
 configure it using --disable-openmp.
 
-See: <http://issues.sxemacs.org/show_bug.cgi?id=104>
+See: <https://issues.sxemacs.org/show_bug.cgi?id=104>
 
 ** Multimedia Goodness
 
@@ -457,7 +457,7 @@ effectively circumvent this issue.
 
 This is a known bug (#13 in our bug database).  At the moment the only
 advise we can give is: do not use sentinels before 22.1.7.
-Also see our bug database at http://issues.sxemacs.org
+Also see our bug database at https://issues.sxemacs.org
 
 *** make-media-stream seems to recognise any file as valid audio
 

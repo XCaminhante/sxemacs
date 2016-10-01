@@ -4,7 +4,7 @@
  * Time-stamp: <Sunday Jan 29, 2012 17:41:26 steve>
  * Created:    <2012-01-03>
  * Maintainer: Steve Youngs <steve@sxemacs.org>
- * Homepage:   http://www.sxemacs.org/
+ * Homepage:   https://www.sxemacs.org/
  */
 
 /*

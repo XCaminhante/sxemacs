@@ -519,14 +519,14 @@ The current development line will become 22.1.16.
 The canonical source can be found on the web at:
 
 @example
-@uref{http://downloads.sxemacs.org/}
+@uref{https://downloads.sxemacs.org/}
 @end example
 
 Occasionally there are also snapshots of the current development line
 available.  These can be found at:
 
 @example
-@uref{http://downloads.sxemacs.org/snapshots/}
+@uref{https://downloads.sxemacs.org/snapshots/}
 @end example
 
 
@@ -705,10 +705,10 @@ and developing issues.
 @unnumberedsec Q1.0.7: Where are the mailing lists archived?
 
 The archives can be found at
-@uref{http://www.sxemacs.org/list-archives/html/sxemacs-devel/}.
+@uref{https://www.sxemacs.org/list-archives/html/sxemacs-devel/}.
 
 Subscription can be done via
-@uref{http://www.sxemacs.org/mailman/listinfo}
+@uref{https://www.sxemacs.org/mailman/listinfo}
 
 
 @node Q1.0.8, Q1.0.9, Q1.0.7, Introduction
@@ -720,7 +720,7 @@ The most common pronounciation is @samp{sexy macs}.
 @node Q1.0.9, Q1.0.10, Q1.0.8, Introduction
 @unnumberedsec Q1.0.9: What does SXEmacs look like?
 
-Look at the screenshot section at @uref{http://www.sxemacs.org}.
+Look at the screenshot section at @uref{https://www.sxemacs.org}.
 
 
 @node Q1.0.10, Q1.0.11, Q1.0.9, Introduction
@@ -762,7 +762,7 @@ Pre-printed manuals are not available.  If you are familiar with
 TeX, you can generate your own manual from the SXEmacs sources.
 
 HTML and Postscript versions of SXEmacs manuals are available from the
-SXEmacs web site at @uref{http://www.sxemacs.org}.
+SXEmacs web site at @uref{https://www.sxemacs.org}.
 @c are they?
 @c HTML are, but they may be a little out of date. --SY
 
@@ -6639,7 +6639,7 @@ Compiler fixes (gcc 2.95) -- Freundt.
 bug-reporter update -- Youngs.
 
 `report-sxemacs-bug' now directs people to our BugZilla installation
-at @url{http://issues.sxemacs.org/}
+at @url{https://issues.sxemacs.org/}
 
 @item
 Documentation updates/fixes/improvements -- Youngs, Ferreira, Freundt.

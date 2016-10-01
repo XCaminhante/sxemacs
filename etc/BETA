@@ -52,7 +52,7 @@ with the list itself, they should be brought to the attention of the
 SXEmacs Mailing List Owner <sxemacs-LIST-owner@sxemacs.org>.  All
 public mailing lists are archived.  The URL is
 
-	     http://www.sxemacs.org/list-archives/html/sxemacs-LIST
+	     https://www.sxemacs.org/list-archives/html/sxemacs-LIST
 
 Note that the sxemacs-LIST-admin address is used internally by the
 Mailman software; it is NOT a synonym for sxemacs-LIST-request.
@@ -62,7 +62,7 @@ Mailman software; it is NOT a synonym for sxemacs-LIST-request.
 
 Subscription, unsubscription, and options (such as digests and
 temporarily suspending delivery) can be accomplished via the web
-interface at <http://www.sxemacs.org/mailman/listinfo/sxemacs-LIST>.
+interface at <https://www.sxemacs.org/mailman/listinfo/sxemacs-LIST>.
 
 *** Subscribing by e-mail
 -------------------------

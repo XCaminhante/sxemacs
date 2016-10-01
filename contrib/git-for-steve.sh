@@ -55,7 +55,7 @@
 ##      format.headers, sendmail.to, sendmail.from
 ##
 ##    It also ensures that origin points to the right place
-##    (http://git.sxemacs.org/sxemacs), optionally makes sure your
+##    (https://git.sxemacs.org/sxemacs), optionally makes sure your
 ##    remote is set up correctly, that you have a "for-steve" tracking
 ##    branch, and adds a devkey.$INITIALS tag containing your public
 ##    GnuPG key if available, which can be pushed to your remote.
@@ -163,18 +163,18 @@ set_email()
 [ -n "$(git config user.email)" ] || set_email
 
 ## Tracking branch "for-steve"
-# Make sure origin points to http://git.sxemacs.org/sxemacs
+# Make sure origin points to https://git.sxemacs.org/sxemacs
 CHECK_ORIGIN=${CHECK_ORIGIN:-true}
 if [ "${CHECK_ORIGIN}" != "false" ]; then
     ORIGIN_URL=$(git config remote.origin.url)
-    if [ "${ORIGIN_URL}" != "http://git.sxemacs.org/sxemacs" ]; then
+    if [ "${ORIGIN_URL}" != "https://git.sxemacs.org/sxemacs" ]; then
 	cat<<EOF
 
 **[Bad origin]********************************************************
 WARNING: origin URL is WRONG.
 
  It is currently set to: ${ORIGIN_URL}
-But it SHOULD be set to: http://git.sxemacs.org/sxemacs
+But it SHOULD be set to: https://git.sxemacs.org/sxemacs
 
 It you are absolutely 110% sure that your origin is correct, abort now
 with C-c, and re-run this script with the environment variable, 
@@ -184,7 +184,7 @@ are going to reset it for you.
                             Hit [RETURN] to continue, or C-c to abort.
 EOF
 	read junk
-	git remote set-url origin http://git.sxemacs.org/sxemacs
+	git remote set-url origin https://git.sxemacs.org/sxemacs
     fi
 fi
 
@@ -677,7 +677,7 @@ cat<<EOF
 | or from the command line via 'info sppm'.                          |
 |                                                                    |
 | Also, now would be a good time for you to head over to             |
-| http://www.sxemacs.org/lists.html and subscribe to our mailing     |
+| https://www.sxemacs.org/lists.html and subscribe to our mailing     |
 | lists.                                                             |
 |--------------------------------------------------------------------|
 | Thank you, and do drop into #sxemacs on freenode IRC for a chat    |

@@ -226,7 +226,7 @@
     (steve-inits . "http://bastard.steveyoungs.com/~steve/SXEmacs/htmlinits/")
     (steve-twit . "https://twitter.com/SteveYoungs")
     (stigb      . "http://www.tihlde.hist.no/~stigb/")
-    (sxemacs    . "http://www.sxemacs.org/")
+    (sxemacs    . "https://www.sxemacs.org/")
     (sxemacs-shop . "http://store.sxemacs.org/")
     (vin        . "http://www.upa.org/")
     (vladimir   . "http://www.leonora.org/~vladimir/")

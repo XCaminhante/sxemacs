@@ -365,7 +365,7 @@ There is a script under contrib called tar-build-failure.sh that
 will attempt to gather this information and create a tar file with
 helpful logs.
 
-Before submitting a report at http://issues.sxemacs.org/, please show
+Before submitting a report at https://issues.sxemacs.org/, please show
 up either on the mailing list or the IRC channel.  The developers can
 tell you in much greater detail what they need and how you can get the
 files and information you need.

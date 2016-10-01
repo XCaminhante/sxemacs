@@ -5,7 +5,7 @@
 ;; Author:     Steve Youngs <steve@sxemacs.org>
 ;; Maintainer: SXEmacs Development Team <sxemacs-devel@sxemacs.org>
 ;; Created:    <2008-05-01>
-;; Homepage:   http://www.sxemacs.org/
+;; Homepage:   https://www.sxemacs.org/
 ;; Keywords:   util, module, emodule, dumped
 
 ;; This file is part of SXEmacs.

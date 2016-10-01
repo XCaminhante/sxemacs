@@ -160,7 +160,7 @@ git-isms.
 
 You can now grab the SXEmacs sources via git with...
 
-   git clone http://git.sxemacs.org/sxemacs
+   git clone https://git.sxemacs.org/sxemacs
 
 
 * Changes in SXEmacs 22.1.12 (Fiat)
@@ -301,7 +301,7 @@ It can now take a 2nd arg for extension stripping.
 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 45, 46, 47, 48, 49, 50, 51,
 53, 54, 55, 56, 57, 58, 59, 60, 61, 62
 
-See http://issues.sxemacs.org/ for the details.
+See https://issues.sxemacs.org/ for the details.
 
 ** Build chain fixes and improvements -- Freundt, Ferreira.
 
@@ -705,7 +705,7 @@ Lots of changes to the autoconf configure script
 		dialogs  -- no lucid
 		widgets  -- no lucid
 	- Set configure's "bugreport address" to
-	  http://issues.sxemacs.org. 
+	  https://issues.sxemacs.org. 
 	- Fix gdbm/berkdb detection
 	- Improve libc version detection
 
@@ -810,7 +810,7 @@ SXEmacs now has server sockets (Yay!).  See
 ** bug-reporter update -- Youngs.
 
 `report-sxemacs-bug' now directs people to our BugZilla installation
-at http://issues.sxemacs.org/
+at https://issues.sxemacs.org/
 
 ** Documentation updates/fixes/improvements -- Youngs, Ferreira, Freundt.
 

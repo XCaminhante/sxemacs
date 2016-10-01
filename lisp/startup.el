@@ -1033,7 +1033,7 @@ a new format, when variables have changed, etc."
 (defun splash-frame-body ()
   `[((face (blue bold underline)
 	   "\nDistribution, copying license, warranty:\n\n")
-     "Please visit the SXEmacs website at http://www.sxemacs.org !\n\n"
+     "Please visit the SXEmacs website at https://www.sxemacs.org !\n\n"
      ((key describe-no-warranty)
       ": "(face (red bold) "SXEmacs comes with ABSOLUTELY NO WARRANTY\n"))
      ((key describe-copying)

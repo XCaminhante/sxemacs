@@ -115,7 +115,7 @@ This is the @value{EDITION} edition of the @cite{SXEmacs Policies & Procedures M
 
 This document, as its name implies, is directed towards anyone who is
 actively involved (or thinking of becoming actively involved) in the
-development of @uref{http://www.sxemacs.org/, SXEmacs}.
+development of @uref{https://www.sxemacs.org/, SXEmacs}.
 
 @menu
 * Mission Statement::           Why we do what we do
@@ -170,13 +170,13 @@ Including@dots{}
 
 @itemize @bullet
 @item
-@uref{http://www.sxemacs.org/, The SXEmacs Web Site}
+@uref{https://www.sxemacs.org/, The SXEmacs Web Site}
 @item
-@uref{http://downloads.sxemacs.org/, Release and Snapshot Tarballs}
+@uref{https://downloads.sxemacs.org/, Release and Snapshot Tarballs}
 @item
 @uref{irc://irc.freenode.net/#sxemacs, The SXEmacs IRC channel}
 @item
-@uref{http://issues.sxemacs.org/, The SXEmacs Issue Tracker} @ref{Bug Reports}
+@uref{https://issues.sxemacs.org/, The SXEmacs Issue Tracker} @ref{Bug Reports}
 @ref{Feature Requests} @ref{Support Requests}.
 @item
 @uref{http://store.sxemacs.org/, SXEmacs Merchandise}
@@ -218,11 +218,11 @@ mailing list.
 @cindex source
 @cindex tarball
 
-@uref{http://downloads.sxemacs.org/releases/, SXEmacs release downloads} is
+@uref{https://downloads.sxemacs.org/releases/, SXEmacs release downloads} is
 where you'll find release tarballs and release to release patches
 available for download.
 
-@uref{http://downloads.sxemacs.org/snapshots/, SXEmacs snapshot downloads}
+@uref{https://downloads.sxemacs.org/snapshots/, SXEmacs snapshot downloads}
 is where you can find snapshot tarballs which are uploaded from time
 to time.  Please note that these snapshots can sometimes be very
 unstable.
@@ -302,7 +302,7 @@ No IRC client
 
 You don't have an IRC client but still want to shoot the breeze with
 us on IRC?  Then we have an answer for you@dots{}
-@uref{http://www.sxemacs.org/irc.html, Chat from the web}.
+@uref{https://www.sxemacs.org/irc.html, Chat from the web}.
 @end itemize
 
 @node Merchandise,, IRC, Online Presence
@@ -942,7 +942,7 @@ correct, and set up your ``for-steve'' tracking branch.
 @subheading Preparing a patch from a git repo
 
 Are you in the right place?  You cloned the SXEmacs sources with
-@code{git clone http://git.sxemacs.org/sxemacs}.
+@code{git clone https://git.sxemacs.org/sxemacs}.
 
 Yes?  OK, great, read on.
 
@@ -1117,7 +1117,7 @@ acknowledge it quickly.
 So how quick is quickly?  Anything greater than 48 hours is @emph{slow}.
 We should try to get an initial ack out within 24 hours of the feature
 request hitting the mailing list@footnote{All legitimate feature requests
-should eventually end up on the @uref{http://issues.sxemacs.org/, SXEmacs
+should eventually end up on the @uref{https://issues.sxemacs.org/, SXEmacs
 Issue Tracker}.}.  I totally understand that the 24 hour turn-around
 won't always be possible.  Often there'll be extenuating circumstances
 (I'm writing this right now in the middle of a 2 week period with no
@@ -1145,7 +1145,7 @@ feature request that is more than 48 hours old and hasn't been
 acknowledged, it is @strong{YOUR} responsibility to do something about
 it.
 
-A feature request on our @uref{http://issues.sxemacs.org/, Issue
+A feature request on our @uref{https://issues.sxemacs.org/, Issue
 Tracker} is a issue that has the @dfn{FeatReq} flag set and the
 severity set to @dfn{enhancement}.
 
@@ -1175,7 +1175,7 @@ As a matter of fact, worry if you don't see any bug reports.  That
 would mean we aren't working hard enough. :-)
 
 All bug reports have to be submitted to our
-@uref{http://issues.sxemacs.org/, Issue Tracker}.  So it goes without
+@uref{https://issues.sxemacs.org/, Issue Tracker}.  So it goes without
 saying that you already have an account on our Issue Tracker, and if
 you don't, go get one @emph{now}.
 
@@ -1185,7 +1185,7 @@ the issue tracker itself.  @emph{DO NOT} follow up to a bug report on
 the mailing list.  If a bug report is submitted to the mailing list
 initially (because the submitter wasn't aware of our Issue Tracker),
 the person submitting the report should be directed to our
-@uref{http://issues.sxemacs.org/, Issue Tracker}.  If they are
+@uref{https://issues.sxemacs.org/, Issue Tracker}.  If they are
 unwilling or unable to do so, one of us will do so.
 
 If a bug report results in a patch and merge request, the summary of
@@ -1204,7 +1204,7 @@ lead, or whoever is responsible for making releases.
 
 From time to time, at the project lead's discretion, a release
 will be made and tarballs created and made available on
-@uref{http://downloads.sxemacs.org/releases/, the SXEmacs download site}.
+@uref{https://downloads.sxemacs.org/releases/, the SXEmacs download site}.
 
 The decision as to @emph{when} to cut a release is generally
 influenced by two factors:
@@ -1327,7 +1327,7 @@ done
 @end smallexample
 @item
 Move the tarballs, diffs, GnuPG sigs, and md5sums to
-@uref{http://downloads.sxemacs.org/releases/, SXEmacs Download Site}.
+@uref{https://downloads.sxemacs.org/releases/, SXEmacs Download Site}.
 
 @smallexample
 for file in *.@{bz2,gz,lzma,xz,md5,asc@}; do
@@ -1473,10 +1473,10 @@ We don't actively try to recruit new developers in any kind of formal
 way.  What we do is use SXEmacs for everything everyday and not hide
 the fact that we do. :-)  That in itself makes people curious and some
 ask about this thing called @dfn{SXEmacs}.  Show them what it is,
-point them to the @uref{http://www.sxemacs.org/, web site}, encourage
+point them to the @uref{https://www.sxemacs.org/, web site}, encourage
 them to subscribe to @email{sxemacs-devel@@sxemacs.org, SXEmacs
 Devel}, and even help them get an account on
-@uref{http://issues.sxemacs.org/, Our Issue Tracker}.  And low and
+@uref{https://issues.sxemacs.org/, Our Issue Tracker}.  And low and
 behold!  We have a new developer.
 
 One recruitment tool that we do have is @dfn{sxemacs.org} email
@@ -1514,13 +1514,13 @@ The main repository is that of the Project Lead (@sy{}).  It is
 located at:
 
 @smallexample
-  http://git.sxemacs.org/sxemacs
+  https://git.sxemacs.org/sxemacs
 @end smallexample
 
 Checking out a copy of SXEmacs is as easy as:
 
 @smallexample
-  git clone http://git.sxemacs.org/sxemacs
+  git clone https://git.sxemacs.org/sxemacs
 @end smallexample
 
 The chapter on patches @pxref{Patches} will show you how to prepare
@@ -1559,7 +1559,7 @@ user@@host ~ $ cd !$
 user@@host ~/sxemacs $ git init --bare
 user@@host ~/sxemacs $ echo @dfn{Your Name's SXEmacs Repo} > description
 user@@host ~/sxemacs $ exit
-user@@localhost ~ $ git clone http://git.sxemacs.org/sxemacs
+user@@localhost ~ $ git clone https://git.sxemacs.org/sxemacs
 user@@localhost ~ $ cd sxemacs
 user@@localhost ~/sxemacs $ contrib/git-for-steve.sh
 @end smallexample
@@ -1694,7 +1694,7 @@ Git makes it as easy to create a private repo as getting a checkout
 of the source code. In fact, that is all you have to do.
 
 @smallexample
-  git clone http://git.sxemacs.org/sxemacs
+  git clone https://git.sxemacs.org/sxemacs
 @end smallexample
 
 You may want to follow some of the steps in @xref{Automating with
@@ -1717,7 +1717,7 @@ More details at @xref{Setting up a publicly accessible repo}.
 
 As previously mentioned, the master SXEmacs repo is at:
 @smallexample
-  http://git.sxemacs.org/sxemacs
+  https://git.sxemacs.org/sxemacs
 @end smallexample
 
 Some of these repos may not be publicly accessible or may not be
@@ -1746,8 +1746,8 @@ git://github.com/hroptatyr/sxemacs.git
 
 And of course the main repo (Steve's) is at:
 
-http://git.sxemacs.org/sxemacs
-http://git.sxemacs.org/website  (our website is under git too)
+https://git.sxemacs.org/sxemacs
+https://git.sxemacs.org/website  (our website is under git too)
 
 @subheading The tla repository for versions upto 22.1.12
 

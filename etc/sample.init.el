@@ -125,7 +125,7 @@
 ;;;       "member-only" posts because of SPAM issues, but subscribing
 ;;;       isn't all that painful (normal mailman procedure) and the
 ;;;       archives are publically accessible at
-;;;       http://www.sxemacs.org/list-archives/html/
+;;;       https://www.sxemacs.org/list-archives/html/
 
 ;;; -- the XEmacs newsgroup, comp.emacs.xemacs.  The SXEmacs developers
 ;;;       don't normally watch this newsgroup very closely.

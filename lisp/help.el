@@ -749,7 +749,7 @@ of the key sequence that ran this command."
   "Go to the SXEmacs World Wide Web page."
   (interactive)
   (if-fboundp 'browse-url
-      (browse-url "http://www.sxemacs.org/")
+      (browse-url "https://www.sxemacs.org/")
     (error "sxemacs-www-page requires browse-url")))
 
 (defalias 'xemacs-www-page 'sxemacs-www-page)
@@ -758,7 +758,7 @@ of the key sequence that ran this command."
   "View the latest and greatest SXEmacs FAQ using the World Wide Web."
   (interactive)
   (if-fboundp 'browse-url
-      (browse-url "http://www.sxemacs.org/faq/index.html")
+      (browse-url "https://www.sxemacs.org/faq/index.html")
     (error "sxemacs-www-faq requires browse-url")))
 
 (defalias 'xemacs-www-faq 'sxemacs-www-faq)

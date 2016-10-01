@@ -5,7 +5,7 @@
 ;; Author:     Steve Youngs <steve@sxemacs.org>
 ;; Maintainer: Steve Youngs <steve@sxemacs.org>
 ;; Created:    <2008-04-02>
-;; Homepage:   http://www.sxemacs.org
+;; Homepage:   https://www.sxemacs.org
 ;; Keywords:   ffi, file, magic, extension
 
 ;; This file is part of SXEmacs.

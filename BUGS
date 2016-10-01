@@ -13,7 +13,7 @@ it.  But before you do, make sure...
 
 	o You have checked the PROBLEMS file and the FAQ (section 2)
 	  that came with your version of SXEmacs (read the FAQ with:
-	  `C-h F'), and also search http://issues.sxemacs.org/ to see
+	  `C-h F'), and also search https://issues.sxemacs.org/ to see
 	  if your bug has already been reported and/or fixed.
 
 If you discover that your bug is already known to us but still hasn't
@@ -21,6 +21,6 @@ been fixed, you should still let us know about it.  Some bugs need a
 little motivating to get fixed. :-)  Unless you have new or different
 information about the bug to add, the simplest way of letting us know
 you are seeing it too is to "vote" for the bug at
-http://issues.sxemacs.org/.
+https://issues.sxemacs.org/.
 
 
