@@ -219,7 +219,7 @@
     (piper      . "http://www.andypiper.com/")
     (rossini    . "http://faculty.washington.edu/rossini/")
     (steve      . "http://www.steveyoungs.com/")
-    (steve-emchat . "http://www.emchat.org/")
+    (steve-emchat . "https://www.emchat.org/")
     (steve-g+   . "https://plus.google.com/u/0/+SteveYoungs")
     (steve-fb   . "https://facebook.com/steve.r.youngs/")
     (steve-li   . "http://www.linkedin.com/in/steveyoungs")
