@@ -3166,13 +3166,29 @@ This function updates the value of the variable `features'.
 	return feature;
 }
 
-DEFUN("require", Frequire, 1, 2, 0,	/*
-If feature FEATURE is not loaded, load it from FILENAME.
-If FEATURE is not a member of the list `features', then the feature
-is not loaded; so load the file FILENAME.
-If FILENAME is omitted, the printname of FEATURE is used as the file name.
-*/
-      (feature, filename))
+DEFUN("require", Frequire, 1, 3, 0, /*
+Ensure that FEATURE is present in the Lisp environment.
+FEATURE is a symbol naming a collection of resources (functions, etc).
+Optional FILENAME is a library from which to load resources; it defaults to
+the print name of FEATURE.
+Optional NOERROR, if non-nil, causes require to return nil rather than signal
+`file-error' if loading the library fails.
+
+If feature FEATURE is present in `features', update `load-history' to reflect
+the require and return FEATURE.  Otherwise, try to load it from a library.
+The normal messages at start and end of loading are suppressed.
+If the library is successfully loaded and it calls `(provide FEATURE)', add
+FEATURE to `features', update `load-history' and return FEATURE.
+If the load succeeds but FEATURE is not provided by the library, signal
+`invalid-state'.
+
+The byte-compiler treats top-level calls to `require' specially, by evaluating
+them at compile time (and then compiling them normally).  Thus a library may
+request that definitions that should be inlined such as macros and defsubsts
+be loaded into its compilation environment.  Achieving this in other contexts
+requires an explicit \(eval-and-compile ...\) block.
+				     */
+       (feature, filename, noerror))
 {
 	Lisp_Object tem;
 
@@ -3189,14 +3205,17 @@ If FILENAME is omitted, the printname of FEATURE is used as the file name.
 		record_unwind_protect(un_autoload, Vautoload_queue);
 		Vautoload_queue = Qt;
 
-		/* defined in code-files.el */
-		call4(Qload, NILP(filename) ? Fsymbol_name(feature) : filename,
-		      Qnil, Qt, Qnil);
+		tem = call4(Qload, NILP(filename) ? Fsymbol_name(feature) : filename,
+			     noerror, Qrequire, Qnil);
+		/* If load failed entirely, return nil.  */
+		if (NILP(tem))
+			return unbind_to(speccount, Qnil);
 
 		tem = Fmemq(feature, Vfeatures);
 		if (NILP(tem))
-			error("Required feature %s was not provided",
-			      string_data(XSYMBOL(feature)->name));
+			signal_type_error(Qinvalid_state,
+					  "Required feature was not provided",
+					  feature);
 
 		/* Once loading finishes, don't undo it.  */
 		Vautoload_queue = Qt;
