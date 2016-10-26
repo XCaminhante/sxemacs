@@ -3172,7 +3172,7 @@ FEATURE is a symbol naming a collection of resources (functions, etc).
 Optional FILENAME is a library from which to load resources; it defaults to
 the print name of FEATURE.
 Optional NOERROR, if non-nil, causes require to return nil rather than signal
-`file-error' if loading the library fails.
+an error if loading the library fails.
 
 If feature FEATURE is present in `features', update `load-history' to reflect
 the require and return FEATURE.  Otherwise, try to load it from a library.
@@ -3212,10 +3212,13 @@ requires an explicit \(eval-and-compile ...\) block.
 			return unbind_to(speccount, Qnil);
 
 		tem = Fmemq(feature, Vfeatures);
-		if (NILP(tem))
+		if (NILP(tem) && NILP(noerror)) {
 			signal_type_error(Qinvalid_state,
 					  "Required feature was not provided",
 					  feature);
+		} else if (!NILP(noerror)) {
+			return unbind_to(speccount, Qnil);
+		}
 
 		/* Once loading finishes, don't undo it.  */
 		Vautoload_queue = Qt;
