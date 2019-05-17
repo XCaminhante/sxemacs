@@ -256,7 +256,7 @@ AC_DEFUN([SXE_CHECK_FFI], [dnl
 			"$ac_cv_lib_ffi_ffi_call" = "yes"; then
 			sxe_cv_feat_ffi="yes"
 			have_ffi="yes"
-			FFI_LIBS=-lffi
+			FFI_LIBS="-lffi -ldl"
 		else
 			sxe_cv_feat_ffi="no"
 			have_ffi="no"

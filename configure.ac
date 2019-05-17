@@ -308,7 +308,7 @@ OG_ARG_WITH([debug-malloc],
 OG_ARG_WITH([system-malloc],
 	AS_HELP_STRING([--with-system-malloc],
 		[Use a system malloc instead of GNU.]),
-	[default], [YES if using quantify or purify; NO otherwise])
+	[yes], [YES])
 
 OG_ARG_WITH([regex-malloc],
 	AS_HELP_STRING([--with-regex-malloc],
@@ -1565,7 +1565,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 int main (int argc, char *argv[])
 {
   int fd = -1;
-  caddr_t p;
+
 #ifndef MAP_ANONYMOUS
   fd = open ("/dev/zero", O_RDWR);
   if (fd < 0)
@@ -1899,7 +1899,7 @@ SXE_CHECK_SUFFICIENCY([ffi], [FFI support], [
 	## additional actions
 	AC_DEFINE([HAVE_LIBFFI], [1], [Description here!])
 	HAVE_LIBFFI=yes
-	FFI_LIBS="-lffi"
+	FFI_LIBS="-lffi -ldl"
 	SXE_ADD_CRUFT_OBJS([effi.o])
 ])
 
@@ -4113,6 +4113,9 @@ if test "$GNU_MALLOC" = "yes"; then
 		:
 	fi
 elif test "$with_system_malloc" = "yes" -o "$system_malloc" = "yes"; then
+	if test "$after_morecore_hook_exists" = "yes"; then
+		SXE_ADD_MEMALLOC_OBJS(vm-limit.o)
+	fi
 	AC_DEFINE([USE_SYSTEM_MALLOC], [1], [Description here!])
 	AC_DEFINE([SYSTEM_MALLOC], [1], [Description here!])
 elif test "$with_debug_malloc"  = "yes"; then
