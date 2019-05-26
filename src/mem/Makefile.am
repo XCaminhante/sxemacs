@@ -64,8 +64,7 @@ if USE_MEMALLOC
 libmemalloc_a_headers =
 libmemalloc_a_sources =
 libmemalloc_a_SOURCES = $(libmemalloc_a_headers) $(libmemalloc_a_sources)
-EXTRA_libmemalloc_a_SOURCES = \
-	free-hook.c gmalloc.c malloc.c vm-limit.c ralloc.c
+EXTRA_libmemalloc_a_SOURCES = free-hook.c vm-limit.c ralloc.c
 libmemalloc_a_CPPFLAGS = $(AM_CPPFLAGS)
 libmemalloc_a_LIBADD = $(libmemalloc_objs)
 libmemalloc_a_DEPENDENCIES = $(libmemalloc_a_LIBADD)

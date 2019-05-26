@@ -3676,8 +3676,6 @@ data space when dumping.
 alloca.c
 free-hook.c
 getpagesize.h
-gmalloc.c
-malloc.c
 mem-limits.h
 ralloc.c
 vm-limit.c
@@ -3686,16 +3684,6 @@ vm-limit.c
 These handle basic C allocation of memory.  @file{alloca.c} is an emulation of
 the stack allocation function @code{alloca()} on machines that lack
 this. (SXEmacs makes extensive use of @code{alloca()} in its code.)
-
-@file{gmalloc.c} and @file{malloc.c} are two implementations of the standard C
-functions @code{malloc()}, @code{realloc()} and @code{free()}.  They are
-often used in place of the standard system-provided @code{malloc()}
-because they usually provide a much faster implementation, at the
-expense of additional memory use.  @file{gmalloc.c} is a newer implementation
-that is much more memory-efficient for large allocations than @file{malloc.c},
-and should always be preferred if it works. (At one point, @file{gmalloc.c}
-didn't work on some systems where @file{malloc.c} worked; but this should be
-fixed now.)
 
 @cindex relocating allocator
 @file{ralloc.c} is the @dfn{relocating allocator}.  It provides
@@ -3715,7 +3703,9 @@ which can speed things up; but it can still cause noticeable performance
 degradation.)
 
 @file{free-hook.c} contains some debugging functions for checking for invalid
-arguments to @code{free()}.
+arguments to @code{free()}.  Or, at least, it use to.  Now it contains
+code to aid in debugging GCPRO functions.  Although, at the time of
+writing, they aren't yet being used.
 
 @file{vm-limit.c} contains some functions that warn the user when memory is
 getting low.  These are callback functions that are called by @file{gmalloc.c}

@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include <ent/ent.h>
 #include <ent/ent-float.h>
 
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 #include <malloc.h>
 #endif
 
@@ -704,7 +704,7 @@ int dbg_eq(Lisp_Object obj1, Lisp_Object obj2)
    an object of that type is allocated.  */
 
 #ifndef MALLOC_OVERHEAD
-#ifdef GNU_MALLOC
+#ifdef HAVE_GLIBC
 #define MALLOC_OVERHEAD 0
 #elif defined (rcheck)
 #define MALLOC_OVERHEAD 20
@@ -713,7 +713,7 @@ int dbg_eq(Lisp_Object obj1, Lisp_Object obj2)
 #endif
 #endif  /* MALLOC_OVERHEAD */
 
-#if !defined(HAVE_MMAP) || defined(DOUG_LEA_MALLOC)
+#if !defined(HAVE_MMAP) || defined(HAVE_GLIBC)
 /* If we released our reserve (due to running out of memory),
    and we have a fair amount free once again,
    try to set aside another reserve in case we run out once more.
@@ -726,7 +726,7 @@ void refill_memory_reserve(void)
 		breathing_space = malloc(0xFFFF - MALLOC_OVERHEAD);
 	}
 }
-#endif	/* !HAVE_MMAP || DOUG_LEA_MALLOC */
+#endif	/* !HAVE_MMAP || HAVE_GLIBC */
 
 #ifdef ALLOC_NO_POOLS
 # define TYPE_ALLOC_SIZE(type, structtype) 1
@@ -5197,7 +5197,7 @@ malloced_storage_size(void *ptr, size_t claimed_size,
 {
 	size_t orig_claimed_size = claimed_size;
 
-#ifdef GNU_MALLOC
+#ifdef HAVE_GLIBC
 
 	if (claimed_size < 2 * sizeof(void *))
 		claimed_size = 2 * sizeof(void *);
@@ -5230,37 +5230,13 @@ malloced_storage_size(void *ptr, size_t claimed_size,
 		claimed_size += (claimed_size / 4096) * 3 * sizeof(size_t);
 	}
 
-#elif defined (SYSTEM_MALLOC)
+#else
 
 	if (claimed_size < 16)
 		claimed_size = 16;
 	claimed_size += 2 * sizeof(void *);
 
-#else				/* old GNU allocator */
-
-# ifdef rcheck			/* #### may not be defined here */
-	claimed_size += 20;
-# else
-	claimed_size += 8;
-# endif
-	{
-		int _log_ = 1;
-
-		/* compute the log base two, more or less, then use it to compute
-		   the block size needed. */
-		claimed_size--;
-		/* It's big, it's heavy, it's wood! */
-		while ((claimed_size /= 2) != 0)
-			++_log_;
-		claimed_size = 1;
-		/* It's better than bad, it's good! */
-		while (_log_ > 0) {
-			claimed_size *= 2;
-			_log_--;
-		}
-	}
-
-#endif				/* old GNU allocator */
+#endif				/* HAVE_GLIBC */
 
 	if (stats) {
 		stats->was_requested += orig_claimed_size;
@@ -5387,7 +5363,7 @@ void reinit_alloc_once_early(void)
 	all_lcrecords = 0;
 #endif	/* !BDWGC */
 	ignore_malloc_warnings = 1;
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 	mallopt(M_TRIM_THRESHOLD, 128 * 1024);	/* trim threshold */
 	mallopt(M_MMAP_THRESHOLD, 64 * 1024);	/* mmap threshold */
 #if 1				/* Moved to emacs.c */

@@ -49,7 +49,7 @@ typedef unsigned char *POINTER;
 /* Unconditionally use unsigned char * for this.  */
 typedef unsigned char *POINTER;
 
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 #define M_TOP_PAD -2
 #include <malloc.h>
 #endif
@@ -75,7 +75,7 @@ void init_ralloc(void);
 
 #define NIL ((POINTER) 0)
 
-#if !defined(HAVE_MMAP) || defined(DOUG_LEA_MALLOC)
+#if !defined(HAVE_MMAP) || defined(HAVE_GLIBC)
 
 /* A flag to indicate whether we have initialized ralloc yet.  For
    Emacs's sake, please do not make this local to malloc_init; on some
@@ -1028,7 +1028,7 @@ void r_alloc_thaw(void)
 
 /* The hook `malloc' uses for the function which gets more space
    from the system.  */
-#ifndef DOUG_LEA_MALLOC
+#ifndef HAVE_GLIBC
 extern POINTER(*__morecore) (ptrdiff_t size);
 #endif
 
@@ -1057,7 +1057,7 @@ void init_ralloc(void)
 	page_size = PAGE;
 	extra_bytes = ROUNDUP(50000);
 
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 	mallopt(M_TOP_PAD, 64 * 4096);
 #else
 #if 0				/* Hasn't been synched yet */
@@ -1087,7 +1087,7 @@ void init_ralloc(void)
 	use_relocatable_buffers = 1;
 }
 
-#if defined (emacs) && defined (DOUG_LEA_MALLOC)
+#if defined (emacs) && defined (HAVE_GLIBC)
 
 /* Reinitialize the morecore hook variables after restarting a dumped
    Emacs.  This is needed when using Doug Lea's malloc from GNU libc.  */
@@ -1728,7 +1728,7 @@ static VM_ADDR New_Addr_Block(size_t sz)
 
 static void Free_Addr_Block(VM_ADDR addr, size_t sz)
 {
-	munmap((caddr_t) addr, sz);
+	munmap((void *) addr, sz);
 }
 
 #endif				/* MMAP_GENERATE_ADDRESSES */

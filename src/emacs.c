@@ -229,12 +229,6 @@ extern void *GC_init(void);
 # endif
 #endif	/* HAVE_BDWGC */
 
-#if !defined (SYSTEM_MALLOC) && !defined (DOUG_LEA_MALLOC)
-extern void *(*__malloc_hook) (size_t);
-extern void *(*__realloc_hook) (void *, size_t);
-extern void (*__free_hook) (void *);
-#endif				/* not SYSTEM_MALLOC && not DOUG_LEA_MALLOC */
-
 /* Command line args from shell, as list of strings */
 Lisp_Object Vcommand_line_args;
 
@@ -243,12 +237,12 @@ Lisp_Object Vcommand_line_args;
   on subsequent starts.  */
 int initialized;
 
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 # include <malloc.h>
 /* Preserves a pointer to the memory allocated that copies that
    static data inside glibc's malloc.  */
 static void *malloc_state_ptr;
-#endif				/* DOUG_LEA_MALLOC */
+#endif				/* HAVE_GLIBC */
 
 # ifdef REL_ALLOC
 void r_alloc_reinit(void);
@@ -914,17 +908,6 @@ DOESNT_RETURN main_1(int argc, char **argv, char **envp, int restart)
 	extern int malloc_cookie;
 #endif
 
-#if (!defined (SYSTEM_MALLOC) && !defined (HAVE_LIBMCHECK)	\
-     && !defined (DOUG_LEA_MALLOC))
-	/* Make sure that any libraries we link against haven't installed a
-	   hook for a gmalloc of a potentially incompatible version. */
-	/* If we're using libmcheck, the hooks have already been initialized, */
-	/* don't touch them. -slb */
-	__malloc_hook = NULL;
-	__realloc_hook = NULL;
-	__free_hook = NULL;
-#endif	/* not SYSTEM_MALLOC or HAVE_LIBMCHECK or DOUG_LEA_MALLOC */
-
 	noninteractive = 0;
 	inhibit_non_essential_printing_operations = 1;
 
@@ -940,21 +923,6 @@ DOESNT_RETURN main_1(int argc, char **argv, char **envp, int restart)
 	if (initialized && malloc_jumpstart(malloc_cookie) != 0)
 		stderr_out("malloc jumpstart failed!\n");
 #endif				/* NeXT */
-
-	/*
-	   #if defined (GNU_MALLOC) && \
-	   defined (ERROR_CHECK_MALLOC) && \
-	   !defined (HAVE_LIBMCHECK)
-	 */
-#if defined(LOSING_GCC_DESTRUCTOR_FREE_BUG)
-	/* Prior to SXEmacs 21, this was `#if 0'ed out.  */
-	/* I'm enabling this because it is the only reliable way I've found to */
-	/* prevent a very annoying problem where GCC will attempt to free(3) */
-	/* memory at exit() and cause a coredump. */
-#if 0
-	init_free_hook();
-#endif
-#endif
 
 	sort_args(argc, argv);
 
@@ -977,7 +945,7 @@ DOESNT_RETURN main_1(int argc, char **argv, char **envp, int restart)
 #if defined (HAVE_MMAP) && defined (REL_ALLOC)
 	/* ralloc can only be used if using the GNU memory allocator. */
 	init_ralloc();
-#elif defined (REL_ALLOC) && !defined(DOUG_LEA_MALLOC)
+#elif defined (REL_ALLOC) && !defined(HAVE_GLIBC)
 	if (initialized)
 		init_ralloc();
 #endif
@@ -1432,7 +1400,7 @@ DOESNT_RETURN main_1(int argc, char **argv, char **envp, int restart)
 		syms_of_process();
 #endif
 		syms_of_profile();
-#if defined (HAVE_MMAP) && defined (REL_ALLOC) && !defined(DOUG_LEA_MALLOC)
+#if defined (HAVE_MMAP) && defined (REL_ALLOC) && !defined(HAVE_GLIBC)
 		syms_of_ralloc();
 #endif				/* HAVE_MMAP && REL_ALLOC */
 		syms_of_rangetab();
@@ -1508,16 +1476,6 @@ DOESNT_RETURN main_1(int argc, char **argv, char **envp, int restart)
 
 #ifdef SYMS_MACHINE
 		SYMS_MACHINE;
-#endif
-
-		/*
-		   #if defined (GNU_MALLOC) && \
-		   defined (ERROR_CHECK_MALLOC) && \
-		   !defined (HAVE_LIBMCHECK)
-		 */
-		/* Prior to SXEmacs 21, this was `#if 0'ed out. -slb */
-#if defined (LOSING_GCC_DESTRUCTOR_FREE_BUG)
-		syms_of_free_hook();
 #endif
 
 #ifdef SUNPRO
@@ -1825,7 +1783,7 @@ DOESNT_RETURN main_1(int argc, char **argv, char **envp, int restart)
 #endif
 
 		vars_of_profile();
-#if defined (HAVE_MMAP) && defined (REL_ALLOC) && !defined(DOUG_LEA_MALLOC)
+#if defined (HAVE_MMAP) && defined (REL_ALLOC) && !defined(HAVE_GLIBC)
 		vars_of_ralloc();
 #endif				/* HAVE_MMAP && REL_ALLOC */
 		vars_of_redisplay();
@@ -2698,7 +2656,7 @@ main(int argc, char **argv, char **envp)
 	init_bdwgc();
 
 	if (!initialized) {
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 		if (mallopt(M_MMAP_MAX, 0) != 1)
 			abort();
 #endif
@@ -2739,7 +2697,7 @@ main(int argc, char **argv, char **envp)
 		run_time_remap(argv[0]);
 #endif
 
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 	if (initialized && (malloc_state_ptr != NULL)) {
 		int rc = malloc_set_state(malloc_state_ptr);
 		if (rc != 0) {
@@ -2753,9 +2711,8 @@ main(int argc, char **argv, char **envp)
 		/* mmap works in glibc-2.1, glibc-2.0 (Non-Mule only)
 		 * and Linux libc5 */
 #if (defined(__GLIBC__) && __GLIBC_MINOR__ >= 1) ||                     \
-	defined(_NO_MALLOC_WARNING_) ||                                 \
-	(defined(__GLIBC__) && __GLIBC_MINOR__ < 1 && !defined(MULE)) || \
-	defined(DEBUG_DOUG_LEA_MALLOC)
+	defined(HAVE_MALLOC_WARNING) ||                                 \
+	(defined(__GLIBC__) && __GLIBC_MINOR__ < 1 && !defined(MULE))
 		if (mallopt(M_MMAP_MAX, 0) != 1)
 			abort();
 #endif
@@ -2763,7 +2720,7 @@ main(int argc, char **argv, char **envp)
 		r_alloc_reinit();
 #endif
 	}
- #endif				/* DOUG_LEA_MALLOC */
+#endif				/* HAVE_GLIBC */
 
 	run_temacs_argc = -1;
 
@@ -2773,32 +2730,6 @@ main(int argc, char **argv, char **envp)
 }
 
 
-/* Dumping apparently isn't supported by versions of GCC >= 2.8. */
-/* The following needs conditionalization on whether either SXEmacs or */
-/* various system shared libraries have been built and linked with */
-/* GCC >= 2.8.  -slb */
-#if defined(GNU_MALLOC)
-#if defined(HAVE_MORECORE_HOOK)
-static void voodoo_free_hook(void *mem)
-{
-  /* If it no longer works, we'll know about it. For now there is really no
-     good alternatic. Shut the warning off
-  */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-	/* Disable all calls to free() when SXEmacs is exiting and it doesn't */
-	/* matter. */
-	__free_hook =
-#if defined __GNUC__ || defined __INTEL_COMPILER
-/* prototype of __free_hook varies with glibc version */
-	    (__typeof__(__free_hook))
-#endif
-	    voodoo_free_hook;
-#pragma GCC diagnostic pop
-}
-#endif
-#endif				/* GNU_MALLOC */
 
 DEFUN("kill-emacs", Fkill_emacs, 0, 1, "P", /*
 Exit the SXEmacs job and kill it.  Ask for confirmation, without argument.
@@ -2850,20 +2781,6 @@ all of which are called before SXEmacs is actually killed.
 	UNGCPRO;
 
 	shut_down_emacs(0, STRINGP(arg) ? arg : Qnil, 0);
-
-#if defined(GNU_MALLOC)
-#if defined(HAVE_MORECORE_HOOK)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-	__free_hook =
-#if defined __GNUC__ || defined __INTEL_COMPILER
-/* prototype of __free_hook varies with glibc version */
-	    (__typeof__(__free_hook))
-#endif
-	    voodoo_free_hook;
-#pragma GCC diagnostic pop
-#endif
-#endif
 
 	exit(INTP(arg) ? XINT(arg) : 0);
 	/* NOTREACHED */
@@ -3000,8 +2917,6 @@ static void shut_down_emacs(int sig, Lisp_Object stuff, int no_auto_save)
 extern char my_edata[];
 #endif
 
-extern void disable_free_hook(void);
-
 DEFUN("dump-emacs", Fdump_emacs, 2, 2, 0, /*
 Dump current state of SXEmacs into executable file FILENAME.
 Take symbols from SYMFILE (presumably the file you executed to run SXEmacs).
@@ -3023,13 +2938,6 @@ and announce itself normally when it is run.
 	/* kick them */
 	Vinvocation_directory = Vinvocation_name = Qnil;
 	Vcommand_line_args = Qnil;
-#endif
-
-#ifdef FREE_CHECKING
-	Freally_free(Qnil);
-
-	/* When we're dumping, we can't use the debugging free() */
-	disable_free_hook();
 #endif
 
 	CHECK_STRING(filename);
@@ -3082,7 +2990,7 @@ and announce itself normally when it is run.
 		pdump(filename_ext);
 #else
 
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 		malloc_state_ptr = malloc_get_state();
 #endif
 		/* here we break our rule that the filename conversion should
@@ -3092,7 +3000,7 @@ and announce itself normally when it is run.
 		   conversion is applied everywhere.  Don't worry about memory
 		   leakage because this call only happens once. */
 		unexec(filename_ext, symfile_ext, (uintptr_t) my_edata, 0, 0);
-#ifdef DOUG_LEA_MALLOC
+#ifdef HAVE_GLIBC
 		free(malloc_state_ptr);
 #endif
 #endif				/* not PDUMP */

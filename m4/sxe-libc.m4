@@ -51,6 +51,7 @@ AC_DEFUN([SXE_CHECK_LIBC], [dnl
 	if test "$have_glibc" = "yes"; then
 		AC_DEFINE([_GNU_SOURCE], [1],
 			[Enable GNU extensions on systems that have them.])
+		AC_DEFINE([HAVE_GLIBC], [1], [Define if libc is glibc])
 		AH_VERBATIM([_ALL_SOURCE], [dnl
 			/* WTF?! */
 			#ifndef _ALL_SOURCE

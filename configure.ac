@@ -295,20 +295,10 @@ OG_ARG_WITH([rel-alloc],
 		[Relocating allocator for buffers.]),
 	[default], [Autodetect])
 
-OG_ARG_WITH([dlmalloc],
-	AS_HELP_STRING([--with-dlmalloc],
-		[Use Doug Lea's malloc.]),
-	[default], [Autodetect])
-
 OG_ARG_WITH([debug-malloc],
 	AS_HELP_STRING([--with-debug-malloc],
 		[Use a debugging malloc.]),
 	[no], [NO])
-
-OG_ARG_WITH([system-malloc],
-	AS_HELP_STRING([--with-system-malloc],
-		[Use a system malloc instead of GNU.]),
-	[yes], [YES])
 
 OG_ARG_WITH([regex-malloc],
 	AS_HELP_STRING([--with-regex-malloc],
@@ -1583,26 +1573,22 @@ esac
 AC_MSG_RESULT($have_mmap)
 test "$have_mmap" = "yes" && AC_DEFINE([HAVE_MMAP], [1], [Description here!])
 
-dnl rel_alloc requires either GNU malloc or system malloc with mmap
+dnl rel_alloc requires a malloc with mmap
 dnl We only turn rel_alloc on by default if mmap is available.
-test "$GNU_MALLOC" != "yes" -a "$have_mmap" != "yes" && with_rel_alloc=no
+test "$have_mmap" != "yes" && with_rel_alloc=no
 if test "$with_rel_alloc $have_mmap" = "default yes"; then
-	if test "$doug_lea_malloc" = "yes"; then
-		dnl Check if malloc() calls mmap(), making rel_alloc pointless.
-		AC_MSG_CHECKING(for M_MMAP_THRESHOLD)
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <malloc.h>]],[[
+	dnl Check if malloc() calls mmap(), making rel_alloc pointless.
+	AC_MSG_CHECKING(for M_MMAP_THRESHOLD)
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <malloc.h>]],[[
 #ifndef M_MMAP_THRESHOLD
 #error No M_MMAP_THRESHOLD :-(
 !@+$%^&*_)(_ - unlikely to compile...
 #endif
-			]])], [
-			with_rel_alloc=no
-			AC_MSG_RESULT(yes)], [
-			with_rel_alloc=yes
-			AC_MSG_RESULT(no)])
-	else
+		]])], [
+		with_rel_alloc=no
+		AC_MSG_RESULT(yes)], [
 		with_rel_alloc=yes
-	fi
+		AC_MSG_RESULT(no)])
 fi
 if test "$with_rel_alloc" = "yes"; then
 	AC_DEFINE([REL_ALLOC], [1], [Description here!])
@@ -1729,16 +1715,7 @@ dnl -----------------------------------
 dnl Do some misc autoconf-special tests
 dnl -----------------------------------
 
-dnl Do the opsystem or machine files prohibit the use of the GNU malloc?
-dnl Assume not, until told otherwise.
-GNU_MALLOC=yes
-if test "$with_dlmalloc" != "no"; then
-	doug_lea_malloc=yes
-else
-	doug_lea_malloc=no
-fi
 after_morecore_hook_exists=yes
-AC_CHECK_FUNC(malloc_set_state, ,doug_lea_malloc=no)
 AC_MSG_CHECKING(whether __after_morecore_hook exists)
 AC_LINK_IFELSE([AC_LANG_SOURCE([
 	[extern void (* __after_morecore_hook)();]
@@ -1748,57 +1725,27 @@ AC_LINK_IFELSE([AC_LANG_SOURCE([
   [AC_MSG_RESULT(no)
    after_morecore_hook_exists=no])
 if test "$after_morecore_hook_exists" = "yes" ; then
-   AC_DEFINE([HAVE_MORECORE_HOOK], [1], [Define if __after_morecore_hook is available])
+	AC_DEFINE([HAVE_MORECORE_HOOK], [1],
+		[Define if __after_morecore_hook is available])
+	AC_DEFINE([HAVE_MALLOC_WARNING], [1],
+		[Define if __after_morecore_hook is available])
 fi
 AC_SUBST(HAVE_MORECORE_HOOK)
-free_hook_exists=yes
-AC_MSG_CHECKING(whether __free_hook exists)
-AC_LINK_IFELSE([AC_LANG_SOURCE([
-	[extern void (* __free_hook)();]
-	[main() {__free_hook = 0;}]
-	])],
-  [AC_MSG_RESULT(yes)],
-  [AC_MSG_RESULT(no)
-   free_hook_exists=no])
-if test "$free_hook_exists" = "yes" ; then
-   AC_DEFINE([HAVE_FREE_HOOK], [1], [Define if __free_hook is available])
-fi
-AC_SUBST(HAVE_FREE_HOOK)
-if test "$system_malloc" = "yes" ; then
-  GNU_MALLOC=no
-  GNU_MALLOC_reason="
-    - The GNU allocators don't work with this system configuration."
-elif test "$with_system_malloc" = "yes" ; then
-  GNU_MALLOC=no
-  GNU_MALLOC_reason="
-    - User chose not to use GNU allocators."
-elif test "$with_debug_malloc" = "yes" ; then
-  GNU_MALLOC=no
-  GNU_MALLOC_reason="
-    - User chose to use Debugging Malloc."
-fi
 
-if test "$doug_lea_malloc" = "yes" -a "$GNU_MALLOC" = "yes" ; then
-	GNU_MALLOC_reason="
-    - Using Doug Lea's new malloc from the GNU C Library."
-	AC_DEFINE([DOUG_LEA_MALLOC], [1], [Description here!])
-	if test "$after_morecore_hook_exists" = "no" ; then
-		GNU_MALLOC_reason="
-    - Using Doug Lea's new malloc from the Linux C Library."
-	AC_DEFINE([_NO_MALLOC_WARNING_], [1], [Description here!])
-	fi
-fi
 AM_CONDITIONAL([USE_MEMALLOC], [test -n "${libmemalloc_objs}"])
 
-dnl #### mcheck is broken in all versions of Linux libc and glibc.
-dnl Try this again when 2.1 hits the streets.
-dnl Avoid using free-hook.c if support exists for malloc debugging in libc
+dnl Use the support for for malloc debugging in libc if available.
 have_libmcheck=no
 if test "$with_error_checking_malloc" = "yes" -a \
-   "$have_glibc" = "yes" -a \
-   "$doug_lea_malloc" = "yes"; then
+   "$have_glibc" = "yes" -a; then
 	AC_CHECK_HEADERS(mcheck.h)
 	AC_CHECK_LIB(mcheck, mcheck, [have_libmcheck=yes], [have_libmcheck=no])
+fi
+
+if test "have_libmcheck" = "yes"; then
+	AC_DEFINE([HAVE_LIBMCHECK], [1],
+		[Define if malloc debugging via libmcheck is available])
+	SXE_PREPEND(-lmcheck, MEMALLOC_LIBS)
 fi
 
 if test "$with_module_support" != "no"; then
@@ -4102,29 +4049,12 @@ dnl at the point where the autodetection occurs or would occur,
 dnl so that the user gets immediate feedback on the results of the
 dnl autodetection.
 
-if test "$GNU_MALLOC" = "yes"; then
-	AC_DEFINE([GNU_MALLOC], [1], [Description here!])
+AC_DEFINE([SYSTEM_MALLOC], [1], [Description here!])
+test "$after_morecore_hook_exists" = "yes" && \
 	SXE_ADD_MEMALLOC_OBJS(vm-limit.o)
-	if test "$doug_lea_malloc" != "yes"; then
-		SXE_ADD_MEMALLOC_OBJS(gmalloc.o)
-	fi
-	if test "$with_error_checking_malloc" = "yes"; then
-		dnl SXE_ADD_MEMALLOC_OBJS(free-hook.o)
-		:
-	fi
-elif test "$with_system_malloc" = "yes" -o "$system_malloc" = "yes"; then
-	if test "$after_morecore_hook_exists" = "yes"; then
-		SXE_ADD_MEMALLOC_OBJS(vm-limit.o)
-	fi
-	AC_DEFINE([USE_SYSTEM_MALLOC], [1], [Description here!])
-	AC_DEFINE([SYSTEM_MALLOC], [1], [Description here!])
-elif test "$with_debug_malloc"  = "yes"; then
+if test "$with_debug_malloc"  = "yes"; then
 	AC_DEFINE([USE_DEBUG_MALLOC], [1], [Description here!])
-	AC_DEFINE([USE_SYSTEM_MALLOC], [1], [Description here!])
-	AC_DEFINE([SYSTEM_MALLOC], [1], [Description here!])
 	SXE_APPEND(-ldmalloc, MEMALLOC_LIBS)
-else
-	SXE_ADD_MEMALLOC_OBJS([malloc.o])
 fi
 test "$GCC" = "yes" && \
 	AC_DEFINE([USE_GCC], [1], [Description here!])

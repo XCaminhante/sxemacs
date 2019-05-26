@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 /* XEmacs: the current mmap-based ralloc handles small blocks very
    poorly, so we disable it here. */
 
-#if (defined (REL_ALLOC) && defined (HAVE_MMAP)) || defined(DOUG_LEA_MALLOC)
+#if (defined (REL_ALLOC) && defined (HAVE_MMAP)) || defined(HAVE_GLIBC)
 # undef REL_ALLOC
 #endif
 

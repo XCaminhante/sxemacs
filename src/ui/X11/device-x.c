@@ -921,22 +921,11 @@ static void x_delete_device(struct device *d)
 {
 	Lisp_Object device;
 	Display *display;
-#ifdef FREE_CHECKING
-	extern void (*__free_hook) (void *);
-	int checking_free;
-#endif
 
 	XSETDEVICE(device, d);
 	display = DEVICE_X_DISPLAY(d);
 
 	if (display) {
-#ifdef FREE_CHECKING
-		checking_free = (__free_hook != 0);
-
-		/* Disable strict free checking, to avoid bug in X library */
-		if (checking_free)
-			disable_strict_free_check();
-#endif
 
 		free_gc_cache(DEVICE_X_GC_CACHE(d));
 		if (DEVICE_X_DATA(d)->x_modifier_keymap)
@@ -951,10 +940,6 @@ static void x_delete_device(struct device *d)
 
 		XtCloseDisplay(display);
 		DEVICE_X_DISPLAY(d) = 0;
-#ifdef FREE_CHECKING
-		if (checking_free)
-			enable_strict_free_check();
-#endif
 	}
 
 	if (EQ(device, Vdefault_x_device)) {
