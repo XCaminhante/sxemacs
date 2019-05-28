@@ -121,69 +121,54 @@ AC_DEFUN([SXE_CHECK_LIBC_VERSION], [dnl
 	libc_version=""
 	AC_MSG_CHECKING(for standard C library version information)
 
-	case "$ac_cv_build" in
-	*-*-linux*)
-		dnl #### who would ever _not_ be running the distro's libc?
-		dnl Whose silly question is this? -hroptatyr
-		dnl Maybe it would be better to get/augment this info with ldd?
-		if test -f /etc/redhat-release ; then
-			libc_version=`rpm -q glibc`
-		elif test -f /etc/debian_version ; then
-			libc_version=`dpkg-query --showformat='${version}' --show libc6`
-			libc_version="GNU libc $libc_version (Debian)"
-		elif test -f /etc/slackware-version ; then
-			slackver=`cat /etc/slackware-version`
-			libc_version=`/lib/libc.so.6|head -1|cut -d ' ' -f7|tr -d ,`
-			if test "x$libc_version" = "x"; then
-				libc_version=`/lib64/libc.so.6|head -1|cut -d ' ' -f7|tr -d ,`
-			fi
-			libc_version="GNU libc $libc_version ($slackver)"
-		dnl need SuSE et al checks here...
-		fi
-		dnl #### Tested on Debian, does this actually work elsewhere?  ;-)
-		dnl #### NO! -hroptatyr
-		dnl if test -z "$libc_version"; then
-		dnl   libc_version=`ls /lib/libc-*.so | sed -e 's,/lib/libc-\(.*\)\.so,\1,'`
-		dnl fi
-
-		if test -z "$libc_version"; then
+	if test "$have_glibc" = "yes"; then
 		AC_RUN_IFELSE([AC_LANG_SOURCE([[
-int main() { return 0; }]])], [dnl
-libc_file_we_use=`$LDD ./conftest | grep libc | sed -e "s/.*=>\(.*\) .*$/\1/"`],
-			[],[libc_file_we_use=])
-		libc_version=`$libc_file_we_use 2>/dev/null | sed "/version/q" | tr -cd "0-9.()"`
+#include <stdio.h>
+#include <gnu/libc-version.h>
+int main(void) { puts (gnu_get_libc_version()); return 0; }]])], [dnl
+libc_version=`./conftest`], [libc_version=""],
+	 [AC_MSG_WARN([Cross-compiling? Good luck. Let us know how it goes.])]
+		if test -f /etc/os-release; then
+			source /etc/os-release
+			libc_version="GNU libc $libc_version (${PRETTY_NAME})"
+		else
+			libc_version="GNU libc $libc_version (Unknown OS)"
 		fi
-		;;
+	fi
 
-	*-*-aix*)
-		libc_version="bos.rte.libc `lslpp -Lqc bos.rte.libc | cut -f3 -d:`"
-		;;
+	dnl Amazingly some people don't run Linux, or so I'm told. --SY
+	if test -z "$libc_version"; then
+		case "$ac_cv_build" in
+	 	*-*-aix*)
+	 		libc_version="bos.rte.libc `lslpp -Lqc bos.rte.libc | cut -f3 -d:`"
+	 		;;
 
-	*-*-solaris*)
-		libc=`pkginfo -l SUNWcsl | grep VERSION: | awk '{print $2}'`
-		libc_version="SUNWcsl $libc"
-		;;
+	 	*-*-solaris*)
+	 		libc=`pkginfo -l SUNWcsl | grep VERSION: | awk '{print $2}'`
+	 		libc_version="SUNWcsl $libc"
+	 		;;
 
-	mips-sgi-irix*)
-		libc_version="IRIX libc `uname -sRm`"
-		;;
+	 	mips-sgi-irix*)
+	 		libc_version="IRIX libc `uname -sRm`"
+	 		;;
 
-	alpha*-dec-osf*)
-		dnl Another ugly case
-		(cd /usr/.smdb.;
-			libc_version=` grep -h libc.so *.inv | awk '$9 == "f" {print $12}' | tr '\n' ','`
-		)
-		;;
+	 	alpha*-dec-osf*)
+	 		dnl Another ugly case
+	 		(cd /usr/.smdb.;
+	 			libc_version=` grep -h libc.so *.inv | awk '$9 == "f" {print $12}' | tr '\n' ','`
+	 		)
+	 		;;
 
-	*-apple-darwin*)
-		dnl MacOS guys, does this work?
-		libc_version="`$LDD /usr/lib/libc.dylib | head -n1 | sed -e 's/.*current version[ ]*\([0-9.]*\).*$/\1/'`"
-		;;
+	 	*-apple-darwin*)
+	 		dnl MacOS guys, does this work?
+	 		libc_version="`$LDD /usr/lib/libc.dylib | head -n1 | sed -e 's/.*current version[ ]*\([0-9.]*\).*$/\1/'`"
+	 		;;
 
-	*)
-		libc_version=""
-		;;
-	esac
+	 	*)
+	 		libc_version=""
+	 		;;
+	 	esac
+	fi
 
 	AC_MSG_RESULT($libc_version)
 
