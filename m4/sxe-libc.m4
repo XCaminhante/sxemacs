@@ -127,7 +127,7 @@ AC_DEFUN([SXE_CHECK_LIBC_VERSION], [dnl
 #include <gnu/libc-version.h>
 int main(void) { puts (gnu_get_libc_version()); return 0; }]])], [dnl
 libc_version=`./conftest`], [libc_version=""],
-	 [AC_MSG_WARN([Cross-compiling? Good luck. Let us know how it goes.])]
+	 [AC_MSG_WARN([Cross-compiling? Good luck. Let us know how it goes.])])
 		if test -f /etc/os-release; then
 			source /etc/os-release
 			libc_version="GNU libc $libc_version (${PRETTY_NAME})"
