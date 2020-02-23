@@ -465,27 +465,11 @@ The result of the body appears to the compiler as a quoted constant."
 
 ;;;###autoload
 (defmacro load-time-value (form &optional read-only)
-  "Like `progn', but evaluates the body at load time.
-The result of the body appears to the compiler as a quoted constant."
-  (if (cl-compiling-file)
-      (let* ((temp (gentemp "--cl-load-time--"))
-	     (set (list 'set (list 'quote temp) form)))
-	(if (and (fboundp 'byte-compile-file-form-defmumble)
-		 (boundp 'this-kind) (boundp 'that-one))
-	    (fset 'byte-compile-file-form
-		  (list 'lambda '(form)
-			(list 'fset '(quote byte-compile-file-form)
-			      (list 'quote
-				    (symbol-function 'byte-compile-file-form)))
-			(list 'byte-compile-file-form (list 'quote set))
-			'(byte-compile-file-form form)))
-	  ;; XEmacs change
-	  (print set (symbol-value ;;'outbuffer
-				   'byte-compile-output-buffer
-				   )))
-	(list 'symbol-value (list 'quote temp)))
-    (list 'quote (eval form))))
+  "Evaluate FORM once at load time if byte-compiled.
 
+The result of FORM is returned and stored for later access.  In
+interpreted code, `load-time-value' is equivalent to `progn'."
+  (list 'progn form))
 
 ;;; Conditional control structures.
 
