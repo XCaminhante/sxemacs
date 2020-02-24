@@ -251,11 +251,8 @@ ERROR is message to be signaled."
 ;;;###autoload
 (defun sqlite-file-p (filename)
   "Return non-nil if FILENAME is actually SQLite format 3 file."
-  ;; Unfortunately `magic:file-type' does not recognizes SQLite files,
-  ;; so do it by hand
-  (with-temp-buffer
-    (insert-file-contents-literally filename nil 0 15)
-    (string= (buffer-substring) "SQLite format 3")))
+  (string= (magic:file filename :mime-type)
+	   "application/x-sqlite3"))
 
 ;;;###autoload
 (defun sqlite-open (file)

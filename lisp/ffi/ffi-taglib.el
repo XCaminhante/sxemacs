@@ -430,10 +430,29 @@
 
       (dllist-to-list result))))
 
-;;; FIXME: this isn't failsafe, use #'magic:file-type instead.
-(defvar taglib:extensions
-  '("mp3" "mpc" "ogg" "flac" "spx" "wv" "tta")
-  "List of file types that taglib supports.")
+
+(defvar taglib:mimetypes
+'("audio/aiff"
+  "audio/flac"
+  "audio/mp4"
+  "audio/mpeg"
+  "audio/ogg"
+  "audio/speex"
+  "audio/tta"
+  "audio/x-aiff"
+  "audio/x-m4a"
+  "audio/x-mp4a-latm"
+  "audio/x-musepack"
+  "audio/x-tta"
+  ;; Taglib supports some video types as well, who knew?!  ATM
+  ;; ffi-taglib.el is single-mindedly audio focused.  We should
+  ;; broaden its horizons. --SY.
+  ;; "video/mp4"
+  ;; "video/mpeg"
+  ;; "video/ogg"
+  ;; "video/x-ms-asf"
+)
+"List of MIME audio subtypes that taglib supports.")
 
 (defvar taglib:editable-tagnames
   '("album" "artist" "comment" "genre" "title" "track" "year")
@@ -461,11 +480,9 @@ otherwise just display it in the echo area."
 			  (mapfam #'list taglib:tagnames) nil t)))
   (when (string= tag "")
     (error 'invalid-argument tag))
-  ;; better done with #'magic:file-type
-  (unless (member (file-name-extension (file-basename file))
-		  taglib:extensions)
-    (error "Unsupported file type: %s" (file-name-extension
-					(file-basename file))))
+  (let ((ftype (magic:file file :mime-type)))
+    (unless (member ftype taglib:mimetypes)
+      (error "Unsupported file type: %s" ftype)))
   (let* ((fo (taglib:file-new (expand-file-name file)))
 	 (to (taglib:file-tag fo))
 	 tfun res)
@@ -512,10 +529,15 @@ otherwise just display it in the echo area."
 
 ;;;###autoload
 (defun taglib:list-all-tags (file)
-  "Display a buffer showing all the tags of FILE."
+  "Display a buffer showing all the tags of FILE.
+
+This function is for interactive use only."
   (interactive "fFilename: ")
   (unless (interactive-p)
     (error 'invalid-operation "Interactive only function"))
+  (let ((ftype (magic:file file :mime-type)))
+    (unless (member ftype taglib:mimetypes)
+      (error "Unsupported file type: %s" ftype)))
   (let ((buf (get-buffer-create "*taglib:tags*"))
 	(tags (taglib:properties file)))
     (with-current-buffer buf

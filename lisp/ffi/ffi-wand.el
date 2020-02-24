@@ -2978,16 +2978,12 @@ Bindings are:
 ;;;###autoload
 (defun Wand-file-supported-for-read-p (file)
   "Return non-nil if Wand can decode FILE."
-  ;; Try by extension first, then try heuristic method using
-  ;; `magic:file-type'
-  (let ((ext (file-name-extension file)))
-    (or (and ext (Wand-format-supported-for-read-p ext))
-
-	(multiple-value-bind (itype imagetext)
-	    (split-string (or (magic:file-type file) " ") " ")
-	  (and imagetext
-	       (string= (downcase imagetext) "image")
-	       (Wand-format-supported-for-read-p itype))))))
+  ;; Use `magic:file-image-p' first, fallback to file extension check
+  ;; if that fails.
+  (let ((itype (magic:file-image-p file))
+	(ext (file-name-extension file)))
+    (or (and itype (Wand-format-supported-for-read-p itype))
+	(and ext (Wand-format-supported-for-read-p ext)))))
 
 (defun Wand-formats-list (fmt-regexp &optional mode)
   "Return names of supported formats that matches FMT-REGEXP.
