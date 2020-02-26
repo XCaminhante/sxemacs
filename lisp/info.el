@@ -2,7 +2,7 @@
 ;; Keywords: help
 
 ;; Copyright (C) 1985, 1986, 1993, 1997 Free Software Foundation, Inc.
-;; Copyright (C) 2005 Steve Youngs.
+;; Copyright (C) 2005, 2020 Steve Youngs.
 
 ;; Author: Dave Gillespie <daveg@synaptics.com>
 ;;	   Richard Stallman <rms@gnu.ai.mit.edu>
@@ -557,7 +557,7 @@ The last should be a world-writable \"public\" annotations file."
 This is the file .../info/dir, which contains the topmost node of the
 Info hierarchy.  The first time you invoke Info you start off
 looking at that node, which is (dir)Top.
-
+\037
 File: dir	Node: Top	This is the top of the INFO tree
   This (the Directory node) gives a menu of major topics.
 
@@ -717,7 +717,7 @@ further (recursive) error recovery.  TRYFILE is ??"
 	      (goto-char (point-max))
 	      (forward-line -8)
 	      (or (equal nodename "*")
-		  (not (search-forward "\^_\nEnd tag table\n" nil t))
+		  (not (search-forward "\037\nEnd tag table\n" nil t))
 		  (let (pos)
 		    ;; We have a tag table.  Find its beginning.
 		    ;; Is this an indirect file?
@@ -773,11 +773,13 @@ further (recursive) error recovery.  TRYFILE is ??"
 		      (if (not (eq major-mode found-mode))
 			  (setq guesspos
 				(Info-read-subfile guesspos))))))
-	    (goto-char (max (point-min) (- guesspos 1000)))
+	    (if (eq buffer-file-coding-system (find-coding-system 'utf-8))
+		(goto-char (point-min))
+	      (goto-char (max (point-min) (- guesspos 1000))))
 	    ;; Now search from our advised position (or from beg of buffer)
 	    ;; to find the actual node.
 	    (catch 'foo
-	      (while (search-forward "\n\^_" nil t)
+	      (while (search-forward "\n\037" nil t)
 		(forward-line 1)
 		(let ((beg (point)))
 		  (forward-line 1)
@@ -981,10 +983,10 @@ actually get any text from."
 		(let (beg nodename end)
 		  (forward-line 1)
 		  (setq beg (point))
-		  (search-backward "\n\^_")
+		  (search-backward "\n\037")
 		  (search-forward "Node: ")
 		  (setq nodename (Info-following-node-name))
-		  (search-forward "\n\^_" nil 'move)
+		  (search-forward "\n\037" nil 'move)
 		  (beginning-of-line)
 		  (setq end (point))
 		  (setq nodes (cons (list nodename other beg end) nodes))))))
@@ -996,7 +998,7 @@ actually get any text from."
       (let ((menu-items '("top"))
 	    (nodes nodes)
 	    (case-fold-search t)
-	    (end (save-excursion (search-forward "\^_" nil t) (point))))
+	    (end (save-excursion (search-forward "\037" nil t) (point))))
 	(while nodes
 	  (let ((nodename (car (car nodes))))
 	    (save-excursion
@@ -1015,17 +1017,17 @@ actually get any text from."
 	(let ((nodename (car (car nodes))))
 	  (goto-char (point-min))
 	  ;; Find the like-named node in the main buffer.
-	  (if (re-search-forward (concat "\n\^_.*\n.*Node: "
+	  (if (re-search-forward (concat "\n\037.*\n.*Node: "
 					 (regexp-quote nodename)
 					 "[,\n\t]")
 				 nil t)
 	      (progn
-		(search-forward "\n\^_" nil 'move)
+		(search-forward "\n\037" nil 'move)
 		(beginning-of-line)
 		(insert "\n"))
 	    ;; If none exists, add one.
 	    (goto-char (point-max))
-	    (insert "\^_\nFile: dir\tNode: " nodename "\n\n* Menu:\n\n"))
+	    (insert "\037\nFile: dir\tNode: " nodename "\n\n* Menu:\n\n"))
 	  ;; Merge the text from the other buffer's menu
 	  ;; into the menu in the like-named node in the main buffer.
 	  (apply 'insert-buffer-substring (cdr (car nodes))))
@@ -1273,7 +1275,7 @@ the value of `Info-save-auto-generated-dir'."
 	(catch 'done
 	  (setq buffer-read-only nil)
 	  (goto-char (point-min))
-	  (unless (and (search-forward "\^_")
+	  (unless (and (search-forward "\037")
 		       (re-search-forward "^\\* Menu:.*$" nil t)
 		       (setq mark (and (re-search-forward "^\\* " nil t)
 				       (match-beginning 0))))
@@ -1394,10 +1396,10 @@ invoke \"sxemacs -batch -f Info-batch-rebuild-dir /usr/local/info\"."
     (save-excursion
       (set-buffer (marker-buffer Info-tag-table-marker))
       (goto-char (point-min))
-      (search-forward "\n\^_")
+      (search-forward "\n\037")
       (forward-line 2)
       (catch 'foo
-	(while (not (looking-at "\^_"))
+	(while (not (looking-at "\037"))
 	  (if (not (eolp))
 	      (let ((start (point))
 		    thisfilepos thisfilename)
@@ -1428,7 +1430,7 @@ invoke \"sxemacs -batch -f Info-batch-rebuild-dir /usr/local/info\"."
 	  (set-buffer-modified-p nil)
 	  (setq Info-current-subfile lastfilename)))
     (goto-char (point-min))
-    (search-forward "\n\^_")
+    (search-forward "\n\037")
     (+ (- nodepos lastfilepos) (point))))
 
 (defun Info-all-case-regexp (str)
@@ -1528,7 +1530,18 @@ versions of NAME. Only the suffixes are tried."
 		  buffer-file-truename (file-truename buffer-file-name))
 	    (set-buffer-modified-p nil)
 	    (clear-visited-file-modtime)))
-      (insert-file-contents file visit))))
+      (insert-file-contents file visit)
+      ;; Often info files, especially those from FSF-land set the
+      ;; coding system via a "Last page Local variables" at the end
+      ;; of the file.  #'insert-file-contents doesn't (rightly so)
+      ;; process local vars.  But this time we need it, so force the
+      ;; issue and set the coding system if we find it. --SY.
+      (hack-local-variables)
+      (when (and-boundp 'coding
+	      (find-coding-system coding))
+	(let ((coding-system-for-read coding))
+	  (set-buffer-file-coding-system coding)
+	  (insert-file-contents file visit nil nil t))))))
 
 (defun Info-select-node ()
   "Select the node that point is in, after using `g *' to select whole file."
@@ -1536,7 +1549,7 @@ versions of NAME. Only the suffixes are tried."
   (widen)
   (save-excursion
    ;; Find beginning of node.
-   (search-backward "\n\^_")
+   (search-backward "\n\037")
    (forward-line 2)
    ;; Get nodename spelled as it is in the node.
    (re-search-forward "Node:[ \t]*")
@@ -1550,10 +1563,10 @@ versions of NAME. Only the suffixes are tried."
    (beginning-of-line)
    (let (active-expression)
      (narrow-to-region (point)
-		       (if (re-search-forward "\n[\^_\f]" nil t)
+		       (if (re-search-forward "\n[\037\f]" nil t)
 			   (prog1
 			    (1- (point))
-			    (if (looking-at "[\n\^_\f]*execute: ")
+			    (if (looking-at "[\n\037\f]*execute: ")
 				(progn
 				  (goto-char (match-end 0))
 				  (setq active-expression
@@ -1723,7 +1736,7 @@ annotation for any node of any file.  (See `a' and `x' commands.)"
 							(match-end 1)))
 				compl))))
 	      (goto-char (point-min))
-	      (while (search-forward "\n\^_" nil t)
+	      (while (search-forward "\n\037" nil t)
 		(forward-line 1)
 		(let ((start (point)))
 		  (forward-line 1)
@@ -1771,10 +1784,10 @@ annotation for any node of any file.  (See `a' and `x' commands.)"
 		(save-excursion
 		  (set-buffer (marker-buffer Info-tag-table-marker))
 		  (goto-char (point-min))
-		  (search-forward "\n\^_\nIndirect:")
+		  (search-forward "\n\037\nIndirect:")
 		  (save-restriction
 		    (narrow-to-region (point)
-				      (progn (search-forward "\n\^_")
+				      (progn (search-forward "\n\037")
 					     (1- (point))))
 		    (goto-char (point-min))
 		    (search-forward (concat "\n" osubfile ": "))
