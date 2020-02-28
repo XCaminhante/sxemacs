@@ -579,7 +579,8 @@ As reported by libmagic. If so, the text type is returned."
       (when (and coding (not (eq coding codesys)))
 	(let ((coding-system-for-read coding))
 	  (set-buffer-file-coding-system coding)
-	  (insert-file-contents file t nil nil t))))
+	  (insert-file-contents file t nil nil t)))
+      (after-find-file nil t))
     buf))
 
 ;;;###autoload
