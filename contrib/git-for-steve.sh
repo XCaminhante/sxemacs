@@ -518,6 +518,68 @@ EOF
     set_formats
 fi
 
+## Diff xfuncname
+set_diff()
+{
+    # Configure 'git diff' hunk header format. (lifted from FSF's
+    # autogen.sh)
+
+    # This xfuncname is based on Git's built-in 'cpp' pattern.
+    # The first line rejects jump targets and access declarations.
+    # The second line matches top-level functions and methods.
+    # The third line matches preprocessor and DEFUN macros.
+    [ -n "$(git config diff.cpp.xfuncname)" ] ||
+        git config diff.cpp.xfuncname \
+	    '!^[ \t]*[A-Za-z_][A-Za-z_0-9]*:[[:space:]]*($|/[/*])
+^((::[[:space:]]*)?[A-Za-z_][A-Za-z_0-9]*[[:space:]]*\(.*)$
+^((#define[[:space:]]|DEFUN).*)$'
+    # Elisp
+    [ -n "$(git config diff.elisp.xfuncname)" ] ||
+        git config diff.elisp.xfuncname \
+	    '^\([^[:space:]]*def[^[:space:]]+[[:space:]]+([^()[:space:]]+)'
+    # Texinfo
+    [ -n "$(git config diff.texinfo.xfuncname)" ] ||
+        git config diff.texinfo.xfuncname '^@node[[:space:]]+([^,[:space:]][^,]+)'
+
+    git config --bool sxemacs.diffunks true
+}
+
+BOOL=$(git config sxemacs.diffhunks)
+if [ "${BOOL}" != "true" ]; then
+    cat<<EOF
+
+**[Diff Hunk Headers]*************************************************
+git-diff can be configured to display a customised hunk header we, use
+that feature to try to always print the function name the hunk is 
+pointing to.  This will set the appropriate things in your config to 
+cover C, Elisp, and Texinfo.  But only if you have not already set
+these yourself.
+**********************************************************************
+EOF
+    echo -n "               Would you like more helpful diff hunk headers? [Y/n]: "
+    read HUNKS
+    if [ "${HUNKS}" = "Y" -o "${HUNKS}" = "y" -o "${HUNKS}" = "" ]; then
+	set_diff
+    fi
+fi
+
+## transfer.fsckObjects
+set_fsck()
+{
+    cat<<EOF
+
+**[Data Integrity]****************************************************
+The integrity of the data in our repo is of upmost importance to us.
+Having git check it automatically for us is a big help so we are going
+to set transfer.fsckObjects in your config.
+**********************************************************************
+EOF
+    echo -n "                            Hit [RETURN] to continue, or C-c to abort."
+    read junk
+    git config --bool transfer.fsckObjects true
+}
+git config transfer.fsckObjects || set_fsck
+
 ## Hooks
 set_hook()
 {
