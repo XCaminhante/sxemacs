@@ -541,7 +541,7 @@ set_diff()
     [ -n "$(git config diff.texinfo.xfuncname)" ] ||
         git config diff.texinfo.xfuncname '^@node[[:space:]]+([^,[:space:]][^,]+)'
 
-    git config --bool sxemacs.diffunks true
+    git config --bool sxemacs.diffhunks true
 }
 
 BOOL=$(git config sxemacs.diffhunks)
