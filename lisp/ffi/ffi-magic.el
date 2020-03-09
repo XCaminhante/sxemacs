@@ -56,6 +56,10 @@
 ;;    yourself, visit a file in SXEmacs that you know file(1) reports
 ;;    as normal text and do: `C-u M-: (format "%c" #o177)', save
 ;;    it, and go see what file(1) reports now.
+;;    ---
+;;    Steps are now taken to guard against this sort of thing so it
+;;    should be quite safe to enable this.
+;;
 ;;
 ;;    Other useful bits:
 ;;
@@ -85,6 +89,7 @@
 (defvar ffi-magic-shared nil
   "Shared context with preloaded magic file, to speed up things.")
 
+;;;###autoload(put 'ffi-magic-persistent-flags 'risky-local-variable t)
 (defvar ffi-magic-persistent-flags '(:error)
   "A list of libmagic option flags to always set.
 
@@ -99,42 +104,43 @@ stderr, or it'd hit stdout but wouldn't be an error from our POV.  In
 both cases `magic:error' would return nil.
 
 See `ffi-magic-options-list' for what can be included here.")
-(put 'ffi-magic-persistent-flags 'risky-local-variable t)
 
 
-(define-ffi-type magic_t pointer)
+(unless (ffi-find-named-type 'magic_t)
+  (define-ffi-type magic_t pointer))
 
-(define-ffi-enum magic-options
-  (:none              #x0000000)  ; No flags
-  (:debug             #x0000001)  ; Turn on debugging
-  (:symlink           #x0000002)  ; Follow symlinks
-  (:compress          #x0000004)  ; Check inside compressed files
-  (:devices           #x0000008)  ; Look at contents of devices
-  (:mime-type         #x0000010)  ; Return the MIME type
-  (:continue          #x0000020)  ; Return all matches
-  (:check             #x0000040)  ; Print warnings to stderr
-  (:preserve-atime    #x0000080)  ; Restore access time on exit
-  (:raw               #x0000100)  ; Don't translate unprintable chars
-  (:error             #x0000200)  ; Handle ENOENT etc as real errors
-  (:mime-encoding     #x0000400)  ; Return MIME encoding
-  (:mime              #x0000410)  ; :mime-type + :mime-encoding
-  (:apple             #x0000800)  ; Return Apple creator and type
-  (:extension         #x1000000)  ; Return a / separated list of
-                                  ; extensions
-  (:compress-transp   #x2000000)  ; Check inside compressed files but
-                                  ; not report compression
-  (:nodesc            #x1001210)  ; :extension + :mime + :apple
-  (:no-check-compress #x0001000)  ; Don't check for compressed files
-  (:no-check-tar      #x0002000)  ; Don't check for tar files
-  (:no-check-soft     #x0004000)  ; Don't check magic entries
-  (:no-check-apptype  #x0008000)  ; Don't check application type
-  (:no-check-elf      #x0010000)  ; Don't check for elf details
-  (:no-check-text     #x0020000)  ; Don't check for text files
-  (:no-check-cdf      #x0040000)  ; Don't check for cdf files
-  (:no-check-csv      #x0080000)  ; Don't check for CSV files
-  (:no-check-tokens   #x0100000)  ; Don't check tokens
-  (:no-check-encoding #x0200000)  ; Don't check for text encodings
-  (:no-check-json     #x0400000)) ; Don't check for JSON files
+(unless (ffi-find-named-type 'magic-options)
+  (define-ffi-enum magic-options
+    (:none              #x0000000)   ; No flags
+    (:debug             #x0000001)   ; Turn on debugging
+    (:symlink           #x0000002)   ; Follow symlinks
+    (:compress          #x0000004)   ; Check inside compressed files
+    (:devices           #x0000008)   ; Look at contents of devices
+    (:mime-type         #x0000010)   ; Return the MIME type
+    (:continue          #x0000020)   ; Return all matches
+    (:check             #x0000040)   ; Print warnings to stderr
+    (:preserve-atime    #x0000080)   ; Restore access time on exit
+    (:raw               #x0000100)   ; Don't translate unprintable chars
+    (:error             #x0000200)   ; Handle ENOENT etc as real errors
+    (:mime-encoding     #x0000400)   ; Return MIME encoding
+    (:mime              #x0000410)   ; :mime-type + :mime-encoding
+    (:apple             #x0000800)   ; Return Apple creator and type
+    (:extension         #x1000000)   ; Return a / separated list of
+				     ; extensions
+    (:compress-transp   #x2000000)   ; Check inside compressed files but
+				     ; not report compression
+    (:nodesc            #x1001210)   ; :extension + :mime + :apple
+    (:no-check-compress #x0001000)   ; Don't check for compressed files
+    (:no-check-tar      #x0002000)   ; Don't check for tar files
+    (:no-check-soft     #x0004000)   ; Don't check magic entries
+    (:no-check-apptype  #x0008000)   ; Don't check application type
+    (:no-check-elf      #x0010000)   ; Don't check for elf details
+    (:no-check-text     #x0020000)   ; Don't check for text files
+    (:no-check-cdf      #x0040000)   ; Don't check for cdf files
+    (:no-check-csv      #x0080000)   ; Don't check for CSV files
+    (:no-check-tokens   #x0100000)   ; Don't check tokens
+    (:no-check-encoding #x0200000)   ; Don't check for text encodings
+    (:no-check-json     #x0400000))) ; Don't check for JSON files
 
 (defvar ffi-magic-options-list
   (mapfam #'car :mode 'keyw (ffi-enum-values 'magic-options))
@@ -309,9 +315,9 @@ such a nice guy and always thinking of you, I cater for both."
 (defun magic:getflags (magic)
   (magic-getflags magic))
 
+;;;###autoload(put 'ffi-magic-no-safety 'risky-local-variable t)
 (defvar ffi-magic-no-safety nil
   "Set to non-nil if you DO NOT want your option flags sanitised.")
-(put 'ffi-magic-no-safety 'risky-local-variable t)
 
 (defun ffi-magic-sanitise-flags (flags)
   "Do our best to not let the user shoot themselves in the foot.
@@ -394,6 +400,8 @@ you got it in the first place."
        flags)
       (magic-setflags magic f))))
 
+(globally-declare-fboundp 'completing-read-multiple)
+(globally-declare-boundp 'crm-separator)
 ;;;###autoload
 (defun magic:file (file &rest flags)
   "Return as a string information about FILE using libmagic.
@@ -460,18 +468,24 @@ Example usage:
 
     \(magic:file \"~/tmp/foo\" :symlink\)
      => \"UTF-8 Unicode text\""
-  (interactive "fFile name: \nP")
-  (with-fboundp 'completing-read-multiple
+  (interactive
+   (list
+    (read-file-name "File name: " default-directory nil t)
     (when current-prefix-arg
-      (setq flags
-	    (completing-read-multiple
-	     (format "Magic options ('%s' separated): "
-		     (declare-boundp crm-separator))
-	     (mapfam #'list
-		     (mapfam #'symbol-name ffi-magic-options-list))))
-      (if (string-equal (car flags) "")
-	  (setq flags nil)
-	(setq flags (mapfam #'intern flags)))))
+      (if (featurep 'crm)
+	  (progn
+	    (setq flags
+		  (completing-read-multiple
+		   (format "Magic options ('%s' separated): " crm-separator)
+		   (mapfam #'list
+			   (mapfam #'symbol-name ffi-magic-options-list))))
+	    (if (string-equal (car flags) "")
+		(setq flags nil)
+	      (setq flags (car (mapfam #'intern flags)))))
+	(error 'unimplemented 'crm
+	       ;; Bogus, yes, but crm isn't currently listed as a
+	       ;; provide in the edit-utils pkg
+	       (package-get-package-provider 'avoid))))))
   (unless ffi-magic-shared
     (setq ffi-magic-shared (magic-open 0))
     (magic-load ffi-magic-shared (ffi-null-pointer)))
@@ -562,11 +576,16 @@ As reported by libmagic. If so, the text type is returned."
       (substring type (match-beginning 1)))))
 
 (defun magic:file-coding-system-p (file)
-  "Return non-nil if FILE is formatted in a known coding system."
+  "Return non-nil if FILE is encoded in a known coding system.
+
+This will return nil if `coding-system-for-read' had been explicitly
+set by something else prior.  For example, if the user had called
+`find-file' with a prefix arg."
+  (unless coding-system-for-read
     (let ((cs (magic:file file :mime-encoding)))
-	(and cs
-	     (magic:file-text-p file)
-	     (find-coding-system (intern cs)))))
+      (and cs
+	   (magic:file-text-p file)
+	   (find-coding-system (intern cs))))))
 
 (defun magic:find-file-noselect (file)
   (let* ((codesys (intern (magic:file file :mime-encoding)))
