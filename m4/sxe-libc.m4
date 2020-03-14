@@ -192,6 +192,7 @@ AC_DEFUN([SXE_CHECK_BASIC_HEADERS], [dnl
 	SXE_CHECK_HEADERS([stddef.h stdlib.h string.h wchar.h])
 	SXE_CHECK_HEADERS([fcntl.h float.h inttypes.h limits.h locale.h mach/mach.h malloc.h memory.h unistd.h ulimit.h])
 	SXE_CHECK_HEADERS([sys/file.h sys/ioctl.h sys/param.h sys/pstat.h sys/resource.h sys/vlimit.h])
+	SXE_CHECK_HEADERS([sys/personality.h])
 	SXE_CHECK_HEADERS([a.out.h elf.h])
 	SXE_CHECK_HEADERS([ctype.h errno.h])
 	SXE_CHECK_HEADERS([getopt.h])
