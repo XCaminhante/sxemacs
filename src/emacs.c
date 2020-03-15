@@ -211,6 +211,11 @@ version 18.59 released October 31, 1992.
 # include <sys/resource.h>
 #endif
 
+/* to disable ALSR on Linux */
+#if defined HAVE_SYS_PERSONALITY_H
+# include <sys/personality.h>
+#endif
+
 /* for the reinit funs */
 #include "skiplist.h"
 #include "dllist.h"
@@ -2628,6 +2633,32 @@ main(int argc, char **argv, char **envp)
 
 	int restarted = 0;
 
+#ifdef HAVE_SYS_PERSONALITY_H
+	{
+		int pers = personality(0xffffffff);
+		if (0 == (pers & ADDR_NO_RANDOMIZE)) {
+			personality(pers | ADDR_NO_RANDOMIZE);
+			int pid = fork();
+			if (pid < 0) {
+				return -1;
+			} else if (pid) {
+				int wstatus;
+
+				close(STDIN_FILENO);
+				close(STDOUT_FILENO);
+				close(STDERR_FILENO);
+
+				waitpid(pid, &wstatus, 0);
+				if (WIFEXITED(wstatus)) {
+					return WEXITSTATUS(wstatus);
+				} else {
+					return -1;
+				}
+			}
+			raw_execvp(argv[0], argv);
+		}
+	}
+#endif
 	int arg;
 	assert(vol_argv[0] != NULL || vol_argv[0][0] != '\0');
 	assert(argc >= 1);

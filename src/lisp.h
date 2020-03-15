@@ -2507,7 +2507,7 @@ __next_2power(EMACS_INT v)
    which ensures constant amortized time per element. */
 static inline EMACS_INT
 __attribute__((always_inline))
-__alloc_size(EMACS_INT sz, EMACS_INT needed)
+__sxe_alloc_size(EMACS_INT sz, EMACS_INT needed)
 {
 	if (UNLIKELY(needed <= 32)) {
 		return 32;
@@ -2521,7 +2521,8 @@ __alloc_size(EMACS_INT sz, EMACS_INT needed)
 		if (LIKELY((sizevar) >= cache_needed_size)) {		\
 			break;						\
 		}							\
-		(sizevar) = __alloc_size((sizevar), cache_needed_size); \
+		(sizevar) = __sxe_alloc_size((sizevar),                 \
+			                      cache_needed_size);       \
 		if (UNLIKELY((basevar) == NULL)) {			\
 			(basevar) = xnew_array(type, (sizevar));	\
 		} else {						\
@@ -2535,7 +2536,8 @@ __alloc_size(EMACS_INT sz, EMACS_INT needed)
 		if (LIKELY((sizevar) >= cache_needed_size)) {		\
 			break;						\
 		}							\
-		(sizevar) = __alloc_size((sizevar), cache_needed_size); \
+		(sizevar) = __sxe_alloc_size((sizevar),                 \
+			                     cache_needed_size);        \
 		if (UNLIKELY((basevar) == NULL)) {			\
 			(basevar) = xnew_atomic_array(type, (sizevar));	\
 		} else {						\

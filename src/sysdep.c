@@ -2772,7 +2772,8 @@ int sys_execvp(const char *path, char *const *argv)
 
 	PATHNAME_CONVERT_OUT(path, pout);
 	for (argc = 0; argv[argc]; argc++);
-	{
+
+	do {
 		/* c99ified */
 		char *new_argv[argc+1];
 		for (i = 0; i < argc; i++) {
@@ -2780,9 +2781,15 @@ int sys_execvp(const char *path, char *const *argv)
 		}
 		new_argv[argc] = NULL;
 		return execvp(pout, new_argv);
-	}
+	} while (0);
 }
 #endif				/* ENCAPSULATE_EXECVP */
+
+int raw_execvp(const char *path, char *const *argv)
+{
+        return execvp(path, argv);
+}
+
 
 /************************************************************************/
 /*                  Emulations of missing system calls                  */
