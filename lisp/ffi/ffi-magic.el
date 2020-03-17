@@ -590,7 +590,7 @@ set by something else prior.  For example, if the user had called
 (defun magic:find-file-noselect (file)
   (let* ((codesys (intern (magic:file file :mime-encoding)))
 	 (coding-system-for-read codesys)
-	 (buf (get-buffer-create (file-name-nondirectory file)))
+	 (buf (create-file-buffer file))
 	 (coding nil))
     (with-current-buffer buf
       (insert-file-contents file t)
