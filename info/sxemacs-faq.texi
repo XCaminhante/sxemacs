@@ -1,5 +1,6 @@
-\input texinfo.tex      @c -*- mode: texinfo; coding: iso-2022-8 -*-
+\input texinfo.tex      @c -*- mode: texinfo; coding: utf-8 -*-
 @c %**start of header
+@documentencoding UTF-8
 @setfilename sxemacs-faq.info
 @settitle Frequently asked questions about SXEmacs
 @setchapternewpage off
@@ -15,7 +16,7 @@
 @author Chuck Thompson <cthomp@@xemacs.org>
 @author Steve Baur <steve@@xemacs.org>
 @author Andreas Kaempf <andreas@@sccon.com>
-@author Christian Nybø <chr@@mediascience.no>
+@author Christian NybÃ¸ <chr@@mediascience.no>
 @author Sandra Wambold <wambold@@xemacs.org>
 @page
 @end titlepage
@@ -437,7 +438,7 @@ The previous version was converted to hypertext format, and edited by
 @email{steve@@xemacs.org, Steven L. Baur}.  It was converted back to
 texinfo by @email{hniksic@@xemacs.org, Hrvoje Niksic}.  The FAQ was then
 maintained by @email{andreas@@sccon.com, Andreas Kaempf}, who passed it
-on to Christian Nybø.
+on to Christian NybÃ¸.
 
 If you notice any errors or items which should be added or amended to
 this FAQ please send email to @email{sxemacs-devel@@sxemacs.org}.
@@ -1012,7 +1013,7 @@ input methods for almost all the character sets that Mule supports
 so on), and SKK, for Japanese.  (SKK also supports an interface to an
 external "dictionary server" process.)  Quail supports both typical
 "dead-key" methods (eg, in the "latin-1-prefix" method, @kbd{" a}
-produces ä, LATIN SMALL LETTER A WITH DIAERESIS), and the complex
+produces Ã¤, LATIN SMALL LETTER A WITH DIAERESIS), and the complex
 dictionary-based phonetic methods used for Asian ideographic languages
 like Chinese.
 
@@ -1057,7 +1058,7 @@ patches available (no URL, sorry) to support the SKK server, as well.
 Wnn and SJ3 use the @code{egg} user interface.  The interface for Canna
 is specialized to Canna.
 
-Wnn supports Japanese, Chinese and Korean. It is made by OMRON and Kyôto
+Wnn supports Japanese, Chinese and Korean. It is made by OMRON and KyÃ´to
 University. It is a powerful and complex system.  Wnn4 is free and Wnn6
 is not.  Wnn uses grammatical hints and probability of word association,
 so in principle Wnn can be cleverer than other methods.
@@ -1200,8 +1201,7 @@ SXEmacs) is @uref{http://www.ibiblio.org/sergei/Software/Software.html}
 @unnumberedsec Q1.3.8: Does SXEmacs support Unicode?
 
 Partially, as an external encoding for files, processes, and terminals.
-It does not yet support Unicode fonts @ref{Q1.3.9, Does SXEmacs support
-Unicode Fonts?}
+It does not yet support Unicode fonts, see @ref{Q1.3.9}.
 
 To get Unicode support, you need a Mule-enabled SXEmacs.  Install
 Mule-UCS from packages in the usual way.  Put
@@ -3375,10 +3375,10 @@ the null binding @code{OpenWindows.KeyboardCommand.Help:}.
 @unnumberedsec Q3.5.7: How can you type in special characters in SXEmacs?
 @c Changed
 One way is to use the package @code{x-compose}.  Then you can use
-sequences like @kbd{Compose " a} to get ä, etc.
+sequences like @kbd{Compose " a} to get Ã¤, etc.
 
 Another way is to use the @code{iso-insert} package. Then you can use
-sequences like @kbd{C-x 8 " a} to get ä, etc.
+sequences like @kbd{C-x 8 " a} to get Ã¤, etc.
 
 @email{glynn@@sensei.co.uk, Glynn Clements} writes:
 
@@ -3401,9 +3401,9 @@ define the right `Windows' key as Multi_key'.]
 
 Once you have Multi_key defined, you can use e.g.
 @example
-        Multi a '       => á
-        Multi e "       => ë
-        Multi c ,       => ç
+        Multi a '       => Ã¡
+        Multi e "       => Ã«
+        Multi c ,       => Ã§
 @end example
 
 etc.
@@ -6428,7 +6428,7 @@ ia64 build fixes -- Lesjak.
 @kbd{C-h n} will no longer find NEWS files from packages -- Youngs.
 
 @item
-List of package mirrors updated -- Aichner, Skyttä.
+List of package mirrors updated -- Aichner, SkyttÃ¤.
 
 @item
 Bootstrappable PUI -- Youngs.

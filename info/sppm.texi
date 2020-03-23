@@ -1031,16 +1031,12 @@ you can easily do that with the following 2 git commands@footnote{The
 @enumerate
 @item
 @code{git format-patch --add-header="X-Git-Repo: REPO-URL" \@*
-@indent
---add-header="X-Git-Branch: for-steve" \@*
-@indent
---subject-prefix="P-Req" --minimal --numbered -o DIR origin/master}
+    --add-header="X-Git-Branch: for-steve" \@*
+    --subject-prefix="P-Req" --minimal --numbered -o DIR origin/master}
 @item
 @code{git send-email \@*
-@indent
---to="SXEmacs Patches <sxemacs-patches@@sxemacs.org>" \@*
-@indent
---from="$(git config user.name) <$(git config user.email)>" DIR}
+    --to="SXEmacs Patches <sxemacs-patches@@sxemacs.org>" \@*
+    --from="$(git config user.name) <$(git config user.email)>" DIR}
 @end enumerate
 
 If you not have have a publicly accessible repository, the SXEmacs
