@@ -1101,10 +1101,13 @@ conversion, find-file-hooks, automatic uncompression, etc.
 
 (defun find-file-find-magic (filename)
   "Find entry in `find-file-magic-files-alist' that matches FILENAME."
-  (find filename find-file-magic-files-alist :key #'car
-	:test #'(lambda (fn predicate)
-		  (and (file-exists-p fn)
-		       (funcall predicate fn)))))
+  ;; Guard against TRAMP filenames, they're incompatible with
+  ;; #'magic:file.
+  (unless (string-match "^/\\[" filename)
+    (find filename find-file-magic-files-alist :key #'car
+	  :test #'(lambda (fn predicate)
+		    (and (file-exists-p fn)
+			 (funcall predicate fn))))))
 
 ;;; Sync: XEmacs 21.5 (cb65bfaf7110 tip) 2015-07-03 --SY
 (defcustom find-file-wildcards t
