@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #endif
 
 #define USE_D_TYPE 1
-#define USE_MATCH_ARG 1
 
 Lisp_Object Vcompletion_ignored_extensions;
 Lisp_Object Vdirectory_files_no_trivial_p;
@@ -360,11 +359,9 @@ dfr_inner(dirent_t *res,
 		dired_stack_push(ds, dsi);
 	}
 
-#if USE_MATCH_ARG
 	if (result_p && !NILP(match) && !pathname_matches_p(name, match, bufp)) {
 		result_p = 0;
 	}
-#endif
 
 	if (result_p) {
 		dllist_append(XDLLIST(result), (void*)resname);
@@ -480,9 +477,7 @@ directory_files_magic(Lisp_Object directory, Lisp_Object match,
 	 * processing an entry twice */
 	Lisp_Object compbf = Qnil;
 	int speccount = specpdl_depth();
-#if USE_MATCH_ARG
 	struct re_pattern_buffer *bufp = NULL;
-#endif
 	struct gcpro gcpro1, gcpro2, gcpro3, gcpro4, gcpro5;
 
 	ds = new_dired_stack();
@@ -491,7 +486,6 @@ directory_files_magic(Lisp_Object directory, Lisp_Object match,
 	set_dynacat_finaliser(lds, (dynacat_finaliser_f)dired_stack_fini);
 	GCPRO5(directory, result, compbf, bloom_filter, lds);
 
-#if USE_MATCH_ARG
 	/* SXEmacs: this should come after Ffile_name_as_directory() to avoid
 	   potential regexp cache smashage.  It comes before the opendir()
 	   because it might signal an error.  */
@@ -515,7 +509,6 @@ directory_files_magic(Lisp_Object directory, Lisp_Object match,
 
 	regex_match_object = Qnil;
 	regex_emacs_buffer = current_buffer;
-#endif
 
 	if (opts->maxdepth > 0) {
 		compbf = make_bloom(8192, 8);
