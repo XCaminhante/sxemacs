@@ -648,6 +648,10 @@ Optional argument FILES-ONLY can be one of:
 		.fullp = !NILP(full),
 		.symlink_file_p = 0,
 	};
+
+	/* argument checks */
+	CHECK_STRING(directory);
+
 	GCPRO6(directory, full, match, result_type, files_only, result);
 
 	directory = directory_files_canonicalise_dn(directory);
@@ -733,9 +737,6 @@ to put results in addition to the ordinary result list.
 
 	/* argument checks */
 	CHECK_STRING(directory);
-	if (!NILP(match)) {
-		CHECK_STRING(match);
-	}
 	if (!NILP(maxdepth)) {
 		CHECK_NATNUM(maxdepth);
 		opts.maxdepth = XUINT(maxdepth);
