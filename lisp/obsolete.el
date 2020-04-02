@@ -35,12 +35,15 @@
 
 ;;; Code:
 
-(defsubst define-obsolete-function-alias (oldfun newfun)
+(defsubst define-obsolete-function-alias (oldfun newfun &optional when doc)
   "Define OLDFUN as an obsolete alias for function NEWFUN.
 This makes calling OLDFUN equivalent to calling NEWFUN and marks OLDFUN
-as obsolete."
+as obsolete.
+
+Optional arguments, WHEN and DOC exist purely for compatibility
+with GNU Emacs.  They're silently ignored in SXEmacs."
   (define-function oldfun newfun)
-  (make-obsolete oldfun newfun))
+  (make-obsolete oldfun newfun when))
 
 (defsubst define-compatible-function-alias (oldfun newfun)
   "Define OLDFUN as a compatible alias for function NEWFUN.
@@ -49,17 +52,20 @@ as provided for compatibility only."
   (define-function oldfun newfun)
   (make-compatible oldfun newfun))
 
-(defsubst define-obsolete-variable-alias (oldvar newvar)
+(defsubst define-obsolete-variable-alias (oldvar newvar &optional when doc)
   "Define OLDVAR as an obsolete alias for variable NEWVAR.
 This makes referencing or setting OLDVAR equivalent to referencing or
 setting NEWVAR and marks OLDVAR as obsolete.
 If OLDVAR was bound and NEWVAR was not, Set NEWVAR to OLDVAR.
 
+Optional arguments, WHEN and DOC exist purely for compatibility with
+GNU Emacs.  They're silently ignored in SXEmacs.
+
 Note: Use this before any other references (defvar/defcustom) to NEWVAR."
   (let ((needs-setting (and (boundp oldvar) (not (boundp newvar))))
 	(value (and (boundp oldvar) (symbol-value oldvar))))
      (defvaralias oldvar newvar)
-     (make-obsolete-variable oldvar newvar)
+     (make-obsolete-variable oldvar newvar when)
      (and needs-setting (set newvar value))))
 
 (defsubst define-compatible-variable-alias (oldvar newvar)
