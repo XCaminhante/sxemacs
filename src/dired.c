@@ -274,7 +274,8 @@ dfr_inner(dirent_t *res,
 	if (lstat(statnam, &st) == 0) {
 		if ((st.st_mode & S_IFMT) == S_IFDIR) {
 			dir_p = 1;
-		} else if ((st.st_mode & S_IFMT) == S_IFLNK && !opts->symlink_file_p) {
+		} else if ((st.st_mode & S_IFMT) == S_IFLNK
+			   && !opts->symlink_file_p) {
 			char *canon_name = NULL;
 
 			/* ugly things may happen when a link
@@ -1484,12 +1485,13 @@ void syms_of_dired(void)
 
 void vars_of_dired(void)
 {
-	DEFVAR_LISP("completion-ignored-extensions", &Vcompletion_ignored_extensions	/*
+	DEFVAR_LISP("completion-ignored-extensions",
+		    &Vcompletion_ignored_extensions	/*
 *Completion ignores filenames ending in any string in this list.
 This variable does not affect lists of possible completions,
 but does affect the commands that actually do completions.
 It is used by the function `file-name-completion'.
-											 */ );
+							*/ );
 	Vcompletion_ignored_extensions = Qnil;
 
 	DEFVAR_LISP("directory-files-no-trivial-p",
