@@ -53,6 +53,7 @@ Lisp_Object Qfile_attributes;
 
 Lisp_Object Qcompanion_bf;
 Lisp_Object Qsorted_list, Qdesc_sorted_list, Qunsorted_list;
+Lisp_Object Qmatch_full;
 Lisp_Object Qnoncyclic_directory, Qcyclic_directory;
 Lisp_Object Qsymlink, Qalive_symlink, Qdead_symlink;
 Lisp_Object Qwhiteout;
@@ -101,6 +102,7 @@ struct dfr_options_s {
 	long unsigned int maxdepth;
 	_Bool fullp:1;
 	_Bool symlink_file_p:1;
+	_Bool matchfullp:1;
 };
 
 static Lisp_Object fname_as_directory(Lisp_Object);
@@ -363,7 +365,9 @@ dfr_inner(dirent_t *res,
 		dired_stack_push(ds, dsi);
 	}
 
-	if (result_p && !NILP(match) && !pathname_matches_p(name, match, bufp)) {
+	if (result_p && !NILP(match)
+	    && !pathname_matches_p((opts->matchfullp?fullname:name),
+				   match, bufp)) {
 		result_p = 0;
 	}
 
@@ -609,17 +613,22 @@ EXFUN(Fdirectory_files_recur, 8);
 
 DEFUN("directory-files", Fdirectory_files, 1, 7, 0,	/*
 Return a list of names of files in DIRECTORY.
-Args are DIRECTORY &optional FULL MATCH RESULT-TYPE FILES_ONLY SYMLINK_IS_FILE BLOOM_FILTER
+Args are DIRECTORY &optional FULL MATCH RESULT-TYPE FILES_ONLY
+SYMLINK_IS_FILE BLOOM_FILTER
 
 There are four optional arguments:
-If FULL is non-nil, absolute pathnames of the files are returned.
+FULL can be one of:
+- t to return absolute pathnames of the files.
+- match-full to return and match on absolute pathnames of the files.
+- nil to return relative filenames.
 
 If MATCH is non-nil, it may be a string indicating a regular
 expression which pathnames must meet in order to be returned.
 Moreover, a predicate function can be specified which is called with
-one argument, the pathname in question.  On non-nil return value,
-the pathname is considered in the final result, otherwise it is
-ignored.
+one argument, the pathname in question.  On non-nil return value, the
+pathname is considered in the final result, otherwise it is ignored.
+Note that FULL affects whether the match is done on the filename of
+the full pathname.
 
 Optional argument RESULT-TYPE can be one of:
 - sorted-list (default)  to return a list, sorted in alphabetically
@@ -665,6 +674,7 @@ to put results in addition to the ordinary result list.
 		.maxdepth = 0,
 		.fullp = !NILP(full),
 		.symlink_file_p = !NILP(symlink_is_file),
+		.matchfullp = EQ(full,Qmatch_full),
 	};
 	struct gcpro gcpro1;
 
@@ -698,14 +708,18 @@ Like `directory-files' but recursive and much faster.
 Args are DIRECTORY &optional FULL MATCH RESULT_TYPE FILES-ONLY MAXDEPTH
 SYMLINK_IS_FILE BLOOM_FILTER
 
-If FULL is non-nil, absolute pathnames of the files are returned.
+FULL can be one of:
+- t to return absolute pathnames of the files.
+- match-full to return and match on absolute pathnames of the files.
+- nil to return relative filenames.
 
 If MATCH is non-nil, it may be a string indicating a regular
 expression which pathnames must meet in order to be returned.
 Moreover, a predicate function can be specified which is called with
-one argument, the pathname in question.  On non-nil return value,
-the pathname is considered in the final result, otherwise it is
-ignored.
+one argument, the pathname in question.  On non-nil return value, the
+pathname is considered in the final result, otherwise it is ignored.
+Note that FULL affects whether the match is done on the filename of
+the full pathname.
 
 Optional argument RESULT-TYPE can be one of:
 - sorted-list (default)  to return a list, sorted in alphabetically
@@ -749,6 +763,7 @@ to put results in addition to the ordinary result list.
 		.maxdepth = 64,
 		.fullp = !NILP(full),
 		.symlink_file_p = !NILP(symlink_is_file),
+		.matchfullp = EQ(full, Qmatch_full),
 	};
 	struct gcpro gcpro1;
 
@@ -1455,6 +1470,7 @@ void syms_of_dired(void)
 	defsymbol(&Qsorted_list, "sorted-list");
 	defsymbol(&Qdesc_sorted_list, "desc-sorted-list");
 	defsymbol(&Qunsorted_list, "unsorted-list");
+	defsymbol(&Qmatch_full, "match-full");
 
 	DEFSUBR(Fdirectory_files);
 	DEFSUBR(Fdirectory_files_recur);
