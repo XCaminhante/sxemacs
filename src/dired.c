@@ -717,9 +717,6 @@ to put results in addition to the ordinary result list.
 */
       (directory, full, match, result_type, files_only, maxdepth,
        symlink_is_file, bloom_filter))
-#if 0
-      (int nargs, Lisp_Object *args))
-#endif
 {
 	Lisp_Object handler = Qnil, result = Qnil;
 #if !defined HAVE_BDWGC || !defined EF_USE_BDWGC
