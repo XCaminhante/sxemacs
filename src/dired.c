@@ -607,9 +607,9 @@ call9(Lisp_Object fn,
 
 EXFUN(Fdirectory_files_recur, 8);
 
-DEFUN("directory-files", Fdirectory_files, 1, 5, 0,	/*
+DEFUN("directory-files", Fdirectory_files, 1, 7, 0,	/*
 Return a list of names of files in DIRECTORY.
-Args are DIRECTORY &optional FULL MATCH RESULT-TYPE FILES_ONLY.
+Args are DIRECTORY &optional FULL MATCH RESULT-TYPE FILES_ONLY SYMLINK_IS_FILE BLOOM_FILTER
 
 There are four optional arguments:
 If FULL is non-nil, absolute pathnames of the files are returned.
@@ -641,22 +641,37 @@ Optional argument FILES-ONLY can be one of:
   subdirectories) in DIRECTORY
 - subdir  to return only subdirectories -- but *NOT* symlinks to
   directories -- in DIRECTORY
+
+Optional argument SYMLINK-IS-FILE specifies whether symlinks
+should be resolved \(which is the default behaviour\) or whether
+they are treated as ordinary files \(non-nil\), in the latter
+case symlinks to directories are not recurred.
+
+Optional argument BLOOM-FILTER specifies a bloom filter where
+to put results in addition to the ordinary result list.
 */
-      (directory, full, match, result_type, files_only))
+      (directory, full, match, result_type, files_only,
+       symlink_is_file, bloom_filter))
 {
-	Lisp_Object handler;
+	Lisp_Object handler = Qnil;
 	Lisp_Object result = Qnil;
-	struct gcpro gcpro1, gcpro2, gcpro3, gcpro4, gcpro5, gcpro6;
+#if !defined HAVE_BDWGC || !defined EF_USE_BDWGC
+	/* just a convenience array for gc pro'ing */
+	Lisp_Object args[8] = {
+		directory, match, result_type, files_only,
+		symlink_is_file, bloom_filter, handler, result};
+#endif	/* !BDWGC */
 	struct dfr_options_s opts = {
 		.maxdepth = 0,
 		.fullp = !NILP(full),
-		.symlink_file_p = 0,
+		.symlink_file_p = !NILP(symlink_is_file),
 	};
+	struct gcpro gcpro1;
 
 	/* argument checks */
 	CHECK_STRING(directory);
 
-	GCPRO6(directory, full, match, result_type, files_only, result);
+	GCPROn(args, countof(args));
 
 	directory = directory_files_canonicalise_dn(directory);
 
@@ -665,12 +680,13 @@ Optional argument FILES-ONLY can be one of:
 	handler = Ffind_file_name_handler(directory, Qdirectory_files);
 	if (!NILP(handler)) {
 		UNGCPRO;
-		return call6(handler, Qdirectory_files,
-			     directory, full, match, result_type, files_only);
+		return call8(handler, Qdirectory_files,
+			     directory, full, match, result_type, files_only,
+			     symlink_is_file, bloom_filter);
 	}
 
 	result = directory_files_magic(directory, match,
-				       files_only, /* bloom filter */Qnil,
+				       files_only, bloom_filter,
 				       &opts);
 
 	UNGCPRO;
