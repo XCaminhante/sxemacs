@@ -269,43 +269,47 @@ dfr_inner(dirent_t *res,
 	}
 #else  /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
 	statnam = (char*)XSTRING_DATA(fullname);
-	if (sxemacs_stat(statnam, &st) == 0 &&
-	    (st.st_mode & S_IFMT) == S_IFDIR) {
-		char *canon_name = NULL;
-
-		/* ugly things may happen when a link
-		 * points back to a directory in our recurring
-		 * area, ln -s . foo  is a candidate
-		 * now, we canonicalise the filename, i.e.
-		 * resolve all symlinks and afterwards we
-		 * store it to our companion bloom filter
-		 * The ugly things are even worse than in the
-		 * case of D_TYPE, since we !always! have to
-		 * check against the bloom filter.
-		 */
-		canon_name = CANONICALISE_FILENAME(statnam);
-
-		if (canon_name) {
-			/* now, recycle full name */
-			fullname = make_ext_string(
-				canon_name, strlen(canon_name),
-				Qfile_name);
-		}
-		fullname = fname_as_directory(fullname);
-
-		/* now stat statnam */
-		if (sxemacs_stat(statnam, &st) == 0 &&
-		    (st.st_mode & S_IFMT) == S_IFDIR &&
-		    /* does the bloom know about the dir? */
-		    !NILP(compbf) &&
-		    !(bloom_owns_p(XBLOOM(compbf), fullname))) {
+	if (lstat(statnam, &st) == 0) {
+		if ((st.st_mode & S_IFMT) == S_IFDIR) {
 			dir_p = 1;
-		}
+		} else if ((st.st_mode & S_IFMT) == S_IFLNK && !opts->symlink_file_p) {
+			char *canon_name = NULL;
 
-		if (canon_name) {
-			xfree(canon_name);
+			/* ugly things may happen when a link
+			 * points back to a directory in our recurring
+			 * area, ln -s . foo  is a candidate
+			 * now, we canonicalise the filename, i.e.
+			 * resolve all symlinks and afterwards we
+			 * store it to our companion bloom filter
+			 * The ugly things are even worse than in the
+			 * case of D_TYPE, since we !always! have to
+			 * check against the bloom filter.
+			 */
+			canon_name = CANONICALISE_FILENAME(statnam);
+
+			if (canon_name) {
+				/* now, recycle full name */
+				fullname = make_ext_string(
+					canon_name, strlen(canon_name),
+					Qfile_name);
+			}
+			fullname = fname_as_directory(fullname);
+
+			/* now stat statnam */
+			if (sxemacs_stat(statnam, &st) == 0 &&
+			    (st.st_mode & S_IFMT) == S_IFDIR &&
+			    /* does the bloom know about the dir? */
+			    !NILP(compbf) &&
+			    !(bloom_owns_p(XBLOOM(compbf), fullname))) {
+				dir_p = 1;
+			}
+
+			if (canon_name) {
+				xfree(canon_name);
+			}
 		}
 	}
+
 #endif /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
 
 	/* argh, here is a design flaw!
