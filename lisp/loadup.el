@@ -148,7 +148,7 @@ file .sxemacs.source.tree is found."
 		 (mapcar
 		  #'(lambda (i) (concat i "/"))
 		  (directory-files temp-path t "^[^-.]"
-				   nil 'dirs-only))
+				   nil 'subdir))
 		 (cons (file-name-as-directory temp-path)
 		       load-path))))
 

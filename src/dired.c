@@ -42,7 +42,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #endif
 
 #define USE_D_TYPE 1
-#define USE_MATCH_ARG 1
 
 Lisp_Object Vcompletion_ignored_extensions;
 Lisp_Object Vdirectory_files_no_trivial_p;
@@ -54,6 +53,7 @@ Lisp_Object Qfile_attributes;
 
 Lisp_Object Qcompanion_bf;
 Lisp_Object Qsorted_list, Qdesc_sorted_list, Qunsorted_list;
+Lisp_Object Qmatch_full;
 Lisp_Object Qnoncyclic_directory, Qcyclic_directory;
 Lisp_Object Qsymlink, Qalive_symlink, Qdead_symlink;
 Lisp_Object Qwhiteout;
@@ -102,6 +102,7 @@ struct dfr_options_s {
 	long unsigned int maxdepth;
 	_Bool fullp:1;
 	_Bool symlink_file_p:1;
+	_Bool matchfullp:1;
 };
 
 static Lisp_Object fname_as_directory(Lisp_Object);
@@ -270,43 +271,48 @@ dfr_inner(dirent_t *res,
 	}
 #else  /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
 	statnam = (char*)XSTRING_DATA(fullname);
-	if (sxemacs_stat(statnam, &st) == 0 &&
-	    (st.st_mode & S_IFMT) == S_IFDIR) {
-		char *canon_name = NULL;
-
-		/* ugly things may happen when a link
-		 * points back to a directory in our recurring
-		 * area, ln -s . foo  is a candidate
-		 * now, we canonicalise the filename, i.e.
-		 * resolve all symlinks and afterwards we
-		 * store it to our companion bloom filter
-		 * The ugly things are even worse than in the
-		 * case of D_TYPE, since we !always! have to
-		 * check against the bloom filter.
-		 */
-		canon_name = CANONICALISE_FILENAME(statnam);
-
-		if (canon_name) {
-			/* now, recycle full name */
-			fullname = make_ext_string(
-				canon_name, strlen(canon_name),
-				Qfile_name);
-		}
-		fullname = fname_as_directory(fullname);
-
-		/* now stat statnam */
-		if (sxemacs_stat(statnam, &st) == 0 &&
-		    (st.st_mode & S_IFMT) == S_IFDIR &&
-		    /* does the bloom know about the dir? */
-		    !NILP(compbf) &&
-		    !(bloom_owns_p(XBLOOM(compbf), fullname))) {
+	if (lstat(statnam, &st) == 0) {
+		if ((st.st_mode & S_IFMT) == S_IFDIR) {
 			dir_p = 1;
-		}
+		} else if ((st.st_mode & S_IFMT) == S_IFLNK
+			   && !opts->symlink_file_p) {
+			char *canon_name = NULL;
 
-		if (canon_name) {
-			xfree(canon_name);
+			/* ugly things may happen when a link
+			 * points back to a directory in our recurring
+			 * area, ln -s . foo  is a candidate
+			 * now, we canonicalise the filename, i.e.
+			 * resolve all symlinks and afterwards we
+			 * store it to our companion bloom filter
+			 * The ugly things are even worse than in the
+			 * case of D_TYPE, since we !always! have to
+			 * check against the bloom filter.
+			 */
+			canon_name = CANONICALISE_FILENAME(statnam);
+
+			if (canon_name) {
+				/* now, recycle full name */
+				fullname = make_ext_string(
+					canon_name, strlen(canon_name),
+					Qfile_name);
+			}
+			fullname = fname_as_directory(fullname);
+
+			/* now stat statnam */
+			if (sxemacs_stat(statnam, &st) == 0 &&
+			    (st.st_mode & S_IFMT) == S_IFDIR &&
+			    /* does the bloom know about the dir? */
+			    !NILP(compbf) &&
+			    !(bloom_owns_p(XBLOOM(compbf), fullname))) {
+				dir_p = 1;
+			}
+
+			if (canon_name) {
+				xfree(canon_name);
+			}
 		}
 	}
+
 #endif /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
 
 	/* argh, here is a design flaw!
@@ -360,11 +366,11 @@ dfr_inner(dirent_t *res,
 		dired_stack_push(ds, dsi);
 	}
 
-#if USE_MATCH_ARG
-	if (!NILP(match) && bufp && !pathname_matches_p(name, match, bufp)) {
+	if (result_p && !NILP(match)
+	    && !pathname_matches_p((opts->matchfullp?fullname:name),
+				   match, bufp)) {
 		result_p = 0;
 	}
-#endif
 
 	if (result_p) {
 		dllist_append(XDLLIST(result), (void*)resname);
@@ -480,9 +486,7 @@ directory_files_magic(Lisp_Object directory, Lisp_Object match,
 	 * processing an entry twice */
 	Lisp_Object compbf = Qnil;
 	int speccount = specpdl_depth();
-#if USE_MATCH_ARG
 	struct re_pattern_buffer *bufp = NULL;
-#endif
 	struct gcpro gcpro1, gcpro2, gcpro3, gcpro4, gcpro5;
 
 	ds = new_dired_stack();
@@ -491,7 +495,6 @@ directory_files_magic(Lisp_Object directory, Lisp_Object match,
 	set_dynacat_finaliser(lds, (dynacat_finaliser_f)dired_stack_fini);
 	GCPRO5(directory, result, compbf, bloom_filter, lds);
 
-#if USE_MATCH_ARG
 	/* SXEmacs: this should come after Ffile_name_as_directory() to avoid
 	   potential regexp cache smashage.  It comes before the opendir()
 	   because it might signal an error.  */
@@ -515,7 +518,6 @@ directory_files_magic(Lisp_Object directory, Lisp_Object match,
 
 	regex_match_object = Qnil;
 	regex_emacs_buffer = current_buffer;
-#endif
 
 	if (opts->maxdepth > 0) {
 		compbf = make_bloom(8192, 8);
@@ -610,19 +612,24 @@ call9(Lisp_Object fn,
 
 EXFUN(Fdirectory_files_recur, 8);
 
-DEFUN("directory-files", Fdirectory_files, 1, 5, 0,	/*
+DEFUN("directory-files", Fdirectory_files, 1, 7, 0,	/*
 Return a list of names of files in DIRECTORY.
-Args are DIRECTORY &optional FULL MATCH RESULT-TYPE FILES_ONLY.
+Args are DIRECTORY &optional FULL MATCH RESULT-TYPE FILES_ONLY
+SYMLINK_IS_FILE BLOOM_FILTER
 
 There are four optional arguments:
-If FULL is non-nil, absolute pathnames of the files are returned.
+FULL can be one of:
+- t to return absolute pathnames of the files.
+- match-full to return and match on absolute pathnames of the files.
+- nil to return relative filenames.
 
 If MATCH is non-nil, it may be a string indicating a regular
 expression which pathnames must meet in order to be returned.
 Moreover, a predicate function can be specified which is called with
-one argument, the pathname in question.  On non-nil return value,
-the pathname is considered in the final result, otherwise it is
-ignored.
+one argument, the pathname in question.  On non-nil return value, the
+pathname is considered in the final result, otherwise it is ignored.
+Note that FULL affects whether the match is done on the filename of
+the full pathname.
 
 Optional argument RESULT-TYPE can be one of:
 - sorted-list (default)  to return a list, sorted in alphabetically
@@ -644,18 +651,38 @@ Optional argument FILES-ONLY can be one of:
   subdirectories) in DIRECTORY
 - subdir  to return only subdirectories -- but *NOT* symlinks to
   directories -- in DIRECTORY
+
+Optional argument SYMLINK-IS-FILE specifies whether symlinks
+should be resolved \(which is the default behaviour\) or whether
+they are treated as ordinary files \(non-nil\), in the latter
+case symlinks to directories are not recurred.
+
+Optional argument BLOOM-FILTER specifies a bloom filter where
+to put results in addition to the ordinary result list.
 */
-      (directory, full, match, result_type, files_only))
+      (directory, full, match, result_type, files_only,
+       symlink_is_file, bloom_filter))
 {
-	Lisp_Object handler;
+	Lisp_Object handler = Qnil;
 	Lisp_Object result = Qnil;
-	struct gcpro gcpro1, gcpro2, gcpro3, gcpro4, gcpro5, gcpro6;
+#if !defined HAVE_BDWGC || !defined EF_USE_BDWGC
+	/* just a convenience array for gc pro'ing */
+	Lisp_Object args[8] = {
+		directory, match, result_type, files_only,
+		symlink_is_file, bloom_filter, handler, result};
+#endif	/* !BDWGC */
 	struct dfr_options_s opts = {
 		.maxdepth = 0,
 		.fullp = !NILP(full),
-		.symlink_file_p = 0,
+		.symlink_file_p = !NILP(symlink_is_file),
+		.matchfullp = EQ(full,Qmatch_full),
 	};
-	GCPRO6(directory, full, match, result_type, files_only, result);
+	struct gcpro gcpro1;
+
+	/* argument checks */
+	CHECK_STRING(directory);
+
+	GCPROn(args, countof(args));
 
 	directory = directory_files_canonicalise_dn(directory);
 
@@ -664,12 +691,13 @@ Optional argument FILES-ONLY can be one of:
 	handler = Ffind_file_name_handler(directory, Qdirectory_files);
 	if (!NILP(handler)) {
 		UNGCPRO;
-		return call6(handler, Qdirectory_files,
-			     directory, full, match, result_type, files_only);
+		return call8(handler, Qdirectory_files,
+			     directory, full, match, result_type, files_only,
+			     symlink_is_file, bloom_filter);
 	}
 
 	result = directory_files_magic(directory, match,
-				       files_only, /* bloom filter */Qnil,
+				       files_only, bloom_filter,
 				       &opts);
 
 	UNGCPRO;
@@ -681,14 +709,18 @@ Like `directory-files' but recursive and much faster.
 Args are DIRECTORY &optional FULL MATCH RESULT_TYPE FILES-ONLY MAXDEPTH
 SYMLINK_IS_FILE BLOOM_FILTER
 
-If FULL is non-nil, absolute pathnames of the files are returned.
+FULL can be one of:
+- t to return absolute pathnames of the files.
+- match-full to return and match on absolute pathnames of the files.
+- nil to return relative filenames.
 
 If MATCH is non-nil, it may be a string indicating a regular
 expression which pathnames must meet in order to be returned.
 Moreover, a predicate function can be specified which is called with
-one argument, the pathname in question.  On non-nil return value,
-the pathname is considered in the final result, otherwise it is
-ignored.
+one argument, the pathname in question.  On non-nil return value, the
+pathname is considered in the final result, otherwise it is ignored.
+Note that FULL affects whether the match is done on the filename of
+the full pathname.
 
 Optional argument RESULT-TYPE can be one of:
 - sorted-list (default)  to return a list, sorted in alphabetically
@@ -720,9 +752,6 @@ to put results in addition to the ordinary result list.
 */
       (directory, full, match, result_type, files_only, maxdepth,
        symlink_is_file, bloom_filter))
-#if 0
-      (int nargs, Lisp_Object *args))
-#endif
 {
 	Lisp_Object handler = Qnil, result = Qnil;
 #if !defined HAVE_BDWGC || !defined EF_USE_BDWGC
@@ -735,14 +764,12 @@ to put results in addition to the ordinary result list.
 		.maxdepth = 64,
 		.fullp = !NILP(full),
 		.symlink_file_p = !NILP(symlink_is_file),
+		.matchfullp = EQ(full, Qmatch_full),
 	};
 	struct gcpro gcpro1;
 
 	/* argument checks */
 	CHECK_STRING(directory);
-	if (!NILP(match)) {
-		CHECK_STRING(match);
-	}
 	if (!NILP(maxdepth)) {
 		CHECK_NATNUM(maxdepth);
 		opts.maxdepth = XUINT(maxdepth);
@@ -1444,6 +1471,7 @@ void syms_of_dired(void)
 	defsymbol(&Qsorted_list, "sorted-list");
 	defsymbol(&Qdesc_sorted_list, "desc-sorted-list");
 	defsymbol(&Qunsorted_list, "unsorted-list");
+	defsymbol(&Qmatch_full, "match-full");
 
 	DEFSUBR(Fdirectory_files);
 	DEFSUBR(Fdirectory_files_recur);
@@ -1457,12 +1485,13 @@ void syms_of_dired(void)
 
 void vars_of_dired(void)
 {
-	DEFVAR_LISP("completion-ignored-extensions", &Vcompletion_ignored_extensions	/*
+	DEFVAR_LISP("completion-ignored-extensions",
+		    &Vcompletion_ignored_extensions	/*
 *Completion ignores filenames ending in any string in this list.
 This variable does not affect lists of possible completions,
 but does affect the commands that actually do completions.
 It is used by the function `file-name-completion'.
-											 */ );
+							*/ );
 	Vcompletion_ignored_extensions = Qnil;
 
 	DEFVAR_LISP("directory-files-no-trivial-p",
