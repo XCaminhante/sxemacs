@@ -314,8 +314,8 @@ all else fails.  As a side effect of installing packages under
 	      ;; Oh no!  Either we still haven't found a suitable
 	      ;; directory, or we can't write to the one we did find.
 	      ;; Drop back to the `user-packages-topdir'.
-	      (if (y-or-n-p (format "Directory isn't writable, use %s instead? "
-				    user-packages-topdir))
+	      (if (y-or-n-p (format "Directory %s isn't writable, use %s instead? "
+				    pkg-dir user-packages-topdir))
 		  (progn
 		    (cond ((equal type "site")
 			   (setq pkg-dir (package-admin-find-top-directory 'site 'user-dir)))

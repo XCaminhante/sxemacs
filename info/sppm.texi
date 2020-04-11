@@ -1720,23 +1720,23 @@ Some of these repos may not be publicly accessible or may not be
 accessible 24/7.
 
 @itemize @bullet
+@item
 Nelson
-@item
 http://git.nelsonferreira.com/sxemacs
+@item
 Horst
-@item
 http://midcom.steveyoungs.com/oss-vc/sxemacs.git
+@item
 lg
-@item
 git://github.com/zevlg/SXEmacs.git
+@item
 Rudi
-@item
 git://github.com/rudimeier/sxemacs.git
+@item
 Aidan
-@item
 http://bitbucket.org/kehoea/sxemacs/
-Sebastian
 @item
+Sebastian
 git://github.com/hroptatyr/sxemacs.git
 @end itemize
 

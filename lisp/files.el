@@ -3671,7 +3671,7 @@ absolute one."
 ;; Suggested by Michael Kifer <kifer@CS.SunySB.EDU>
 (defun file-remote-p (file-name)
   "Test whether FILE-NAME is looked for on a remote system."
-  (cond ((not (declare-boundp allow-remote-paths)) nil)
+  (cond ((not (when-boundp 'allow-remote-paths allow-remote-paths)) nil)
 	((fboundp 'ange-ftp-ftp-path)
 	 (declare-fboundp (ange-ftp-ftp-path file-name)))
 	((fboundp 'efs-ftp-path)
