@@ -2979,11 +2979,13 @@ Bindings are:
 (defun Wand-file-supported-for-read-p (file)
   "Return non-nil if Wand can decode FILE."
   ;; Use `magic:file-image-p' first, fallback to file extension check
-  ;; if that fails.
-  (let ((itype (magic:file-image-p file))
-	(ext (file-name-extension file)))
-    (or (and itype (Wand-format-supported-for-read-p itype))
-	(and ext (Wand-format-supported-for-read-p ext)))))
+  ;; if that fails.  But lets not do PDFs as some versions of libWand
+  ;; are a bit finicky in that regard. --SY.
+  (unless (equal (magic:file file :mime-type) "application/pdf")
+    (let ((itype (magic:file-image-p file))
+	  (ext (file-name-extension file)))
+      (or (and itype (Wand-format-supported-for-read-p itype))
+	  (and ext (Wand-format-supported-for-read-p ext))))))
 
 (defun Wand-formats-list (fmt-regexp &optional mode)
   "Return names of supported formats that matches FMT-REGEXP.
