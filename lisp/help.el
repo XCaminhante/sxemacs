@@ -1286,7 +1286,10 @@ part of the documentation of internal subroutines."
 	     nil)))
     (princ "\n")
     (or file-name
-	(setq file-name (symbol-file function 'defun)))
+	(setq file-name
+	      (symbol-file (if aliases
+			       (symbol-function function)
+			     function) 'defun)))
     (when file-name
 	(princ "  -- loaded from \"")
 	(if (not (bufferp standard-output))

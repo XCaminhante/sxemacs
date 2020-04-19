@@ -54,8 +54,8 @@ Lisp_Object Qfile_attributes;
 Lisp_Object Qcompanion_bf;
 Lisp_Object Qsorted_list, Qdesc_sorted_list, Qunsorted_list;
 Lisp_Object Qmatch_full;
+Lisp_Object Qsubdir, Qsymlinks, Qfiles, Qdirs;
 Lisp_Object Qnoncyclic_directory, Qcyclic_directory;
-Lisp_Object Qsymlink, Qalive_symlink, Qdead_symlink;
 Lisp_Object Qwhiteout;
 
 /* On GNU libc systems the declaration is only visible with _GNU_SOURCE.  */
@@ -72,7 +72,7 @@ static char *dired_realpath(const char *);
 #endif	/* defined(HAVE_CANONICALIZE_FILE_NAME) */
 
 #ifndef TRIVIAL_DIRECTORY_ENTRY
-#define TRIVIAL_DIRECTORY_ENTRY(n) (!strcmp (n, ".") || !strcmp (n, ".."))
+#define TRIVIAL_DIRECTORY_ENTRY(n) (!strcmp (".", n) || !strcmp ("..", n))
 #endif
 
 #if 0
@@ -199,11 +199,13 @@ dfr_inner(dirent_t *res,
 	  Lisp_Object bloom_filter)
 {
 	/* this function can GC */
-	int dir_p = 0;
-	int result_p = 0;
-	Lisp_Object name = Qnil;
+	int dir_p     = 0;
+	int symlink_p = 0;
+	int result_p  = 0;
+	int recurse_p = 0;
+	Lisp_Object name     = Qnil;
 	Lisp_Object fullname = Qnil;
-	Lisp_Object resname = Qnil;
+	Lisp_Object resname  = Qnil;
 	int len;
 	struct stat st;
 	char *statnam = NULL;
@@ -213,7 +215,8 @@ dfr_inner(dirent_t *res,
 
 	if (!DIRENTRY_NONEMPTY(res) ||
 	    (TRIVIAL_DIRECTORY_ENTRY(res->d_name) &&
-	     !(NILP(Vdirectory_files_no_trivial_p) && opts->maxdepth == 0))) {
+	     !(NILP(Vdirectory_files_no_trivial_p)
+	       && opts->maxdepth == 0))) {
 		UNGCPRO;
 		return;
 	}
@@ -234,13 +237,18 @@ dfr_inner(dirent_t *res,
 	/* check if we have to recur, i.e. if res was a
 	   directory, otherwise we assume name to be a
 	   file and cons it to the result */
+	statnam = (char*)XSTRING_DATA(fullname);
 #if defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE
-	if (res->d_type == DT_DIR) {
-		dir_p = 1;
-	} else if (res->d_type == DT_LNK && !opts->symlink_file_p) {
+	dir_p     = (res->d_type == DT_DIR);
+	symlink_p = (res->d_type == DT_LNK);
+#else  /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
+	if (lstat(statnam, &st) == 0) {
+		dir_p     = (st.st_mode & S_IFMT) == S_IFDIR);
+		symlink_p = (st.st_mode & S_IFMT) == S_IFLNK);
+	}
+#endif /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
+	if (symlink_p && !opts->symlink_file_p) {
 		char *canon_name = NULL;
-
-		statnam = (char*)XSTRING_DATA(fullname);
 
 		/* ugly things may happen when a link
 		 * points back to a directory in our recurring
@@ -269,51 +277,6 @@ dfr_inner(dirent_t *res,
 			xfree(canon_name);
 		}
 	}
-#else  /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
-	statnam = (char*)XSTRING_DATA(fullname);
-	if (lstat(statnam, &st) == 0) {
-		if ((st.st_mode & S_IFMT) == S_IFDIR) {
-			dir_p = 1;
-		} else if ((st.st_mode & S_IFMT) == S_IFLNK
-			   && !opts->symlink_file_p) {
-			char *canon_name = NULL;
-
-			/* ugly things may happen when a link
-			 * points back to a directory in our recurring
-			 * area, ln -s . foo  is a candidate
-			 * now, we canonicalise the filename, i.e.
-			 * resolve all symlinks and afterwards we
-			 * store it to our companion bloom filter
-			 * The ugly things are even worse than in the
-			 * case of D_TYPE, since we !always! have to
-			 * check against the bloom filter.
-			 */
-			canon_name = CANONICALISE_FILENAME(statnam);
-
-			if (canon_name) {
-				/* now, recycle full name */
-				fullname = make_ext_string(
-					canon_name, strlen(canon_name),
-					Qfile_name);
-			}
-			fullname = fname_as_directory(fullname);
-
-			/* now stat statnam */
-			if (sxemacs_stat(statnam, &st) == 0 &&
-			    (st.st_mode & S_IFMT) == S_IFDIR &&
-			    /* does the bloom know about the dir? */
-			    !NILP(compbf) &&
-			    !(bloom_owns_p(XBLOOM(compbf), fullname))) {
-				dir_p = 1;
-			}
-
-			if (canon_name) {
-				xfree(canon_name);
-			}
-		}
-	}
-
-#endif /* defined(_DIRENT_HAVE_D_TYPE) && USE_D_TYPE */
 
 	/* argh, here is a design flaw!
 	   these operations are not commutable, and it's a
@@ -348,17 +311,27 @@ dfr_inner(dirent_t *res,
 		result_p = 1;
 	} else if (EQ(files_only, Qt) && !dir_p) {
 		result_p = 1;
-	} else if (!EQ(files_only, Qt) && dir_p) {
+	} else if (EQ(files_only, Qdirs) && dir_p) {
+		result_p = 1;
+	} else if (EQ(files_only, Qfiles) && !dir_p && !symlink_p) {
+		result_p = 1;
+	} else if (EQ(files_only, Qsubdir) && !symlink_p && dir_p
+		   && !TRIVIAL_DIRECTORY_ENTRY(res->d_name)) {
+		result_p = 1;
+	} else if (EQ(files_only, Qsymlinks) && symlink_p) {
 		result_p = 1;
 	} else {
 		result_p = 0;
 	}
 
-	if (curdepth >= opts->maxdepth) {
-		dir_p = 0;
+	recurse_p = dir_p
+	            && !TRIVIAL_DIRECTORY_ENTRY(res->d_name)
+		    && (curdepth < opts->maxdepth);
+	if (symlink_p && !opts->symlink_file_p) {
+		recurse_p = 0;
 	}
 
-	if (dir_p) {
+	if (recurse_p) {
 		dired_stack_item_t dsi;
 		dsi = xnew_and_zero(struct dired_stack_item_s);
 		dsi->dir = name;
@@ -612,10 +585,9 @@ call9(Lisp_Object fn,
 
 EXFUN(Fdirectory_files_recur, 8);
 
-DEFUN("directory-files", Fdirectory_files, 1, 7, 0,	/*
+DEFUN("directory-files", Fdirectory_files, 1, 5, 0,	/*
 Return a list of names of files in DIRECTORY.
 Args are DIRECTORY &optional FULL MATCH RESULT-TYPE FILES_ONLY
-SYMLINK_IS_FILE BLOOM_FILTER
 
 There are four optional arguments:
 FULL can be one of:
@@ -646,35 +618,30 @@ RESULT-TYPE can also be any non-nil value.  In that case it will
 return an unsorted list. (https://issues.sxemacs.org/show_bug.cgi?id=163)
 
 Optional argument FILES-ONLY can be one of:
-- t  to return only files and symlinks in DIRECTORY
 - nil (default)  to return all entries (files, symlinks, and
   subdirectories) in DIRECTORY
+- t  to return only files and symlinks to files in DIRECTORY
+- dirs  to return only directories and symlinks to directories
+- files  to return only files -- but *NOT* symlinks to files
 - subdir  to return only subdirectories -- but *NOT* symlinks to
-  directories -- in DIRECTORY
-
-Optional argument SYMLINK-IS-FILE specifies whether symlinks
-should be resolved \(which is the default behaviour\) or whether
-they are treated as ordinary files \(non-nil\), in the latter
-case symlinks to directories are not recurred.
-
-Optional argument BLOOM-FILTER specifies a bloom filter where
-to put results in addition to the ordinary result list.
+  directories, nor the current or parent directories
+- symlinks  to return only symlinks -- but *NOT* real files
+  or directories.
 */
-      (directory, full, match, result_type, files_only,
-       symlink_is_file, bloom_filter))
+      (directory, full, match, result_type, files_only))
 {
 	Lisp_Object handler = Qnil;
 	Lisp_Object result = Qnil;
 #if !defined HAVE_BDWGC || !defined EF_USE_BDWGC
 	/* just a convenience array for gc pro'ing */
-	Lisp_Object args[8] = {
+	Lisp_Object args[6] = {
 		directory, match, result_type, files_only,
-		symlink_is_file, bloom_filter, handler, result};
+		handler, result};
 #endif	/* !BDWGC */
 	struct dfr_options_s opts = {
 		.maxdepth = 0,
 		.fullp = !NILP(full),
-		.symlink_file_p = !NILP(symlink_is_file),
+		.symlink_file_p = 0,
 		.matchfullp = EQ(full,Qmatch_full),
 	};
 	struct gcpro gcpro1;
@@ -691,13 +658,12 @@ to put results in addition to the ordinary result list.
 	handler = Ffind_file_name_handler(directory, Qdirectory_files);
 	if (!NILP(handler)) {
 		UNGCPRO;
-		return call8(handler, Qdirectory_files,
-			     directory, full, match, result_type, files_only,
-			     symlink_is_file, bloom_filter);
+		return call6(handler, Qdirectory_files,
+			     directory, full, match, result_type, files_only);
 	}
 
 	result = directory_files_magic(directory, match,
-				       files_only, bloom_filter,
+				       files_only, Qnil /* bloom_filter */,
 				       &opts);
 
 	UNGCPRO;
@@ -708,6 +674,9 @@ DEFUN("directory-files-recur", Fdirectory_files_recur, 1, 8, 0,	/*
 Like `directory-files' but recursive and much faster.
 Args are DIRECTORY &optional FULL MATCH RESULT_TYPE FILES-ONLY MAXDEPTH
 SYMLINK_IS_FILE BLOOM_FILTER
+
+`directory-files-recur' will not include the any of the current and
+parent directory entries.
 
 FULL can be one of:
 - t to return absolute pathnames of the files.
@@ -733,19 +702,22 @@ The two latter types can be useful if you plan to sort the result
 yourself, or want to feed the result to further processing.
 
 Optional argument FILES-ONLY can be one of:
-- t  to return only files and symlinks in DIRECTORY
 - nil (default)  to return all entries (files, symlinks, and
-  subdirectories) in DIRECTORY
+  subdirectories)
+- t  to return only files and symlinks to files
+- dirs  to return only directories and symlinks to directories
+- files  to return only files -- but *NOT* symlinks to files
 - subdir  to return only subdirectories -- but *NOT* symlinks to
-  directories -- in DIRECTORY
+  directories
+- symlinks  to return only symlinks -- but *NOT* real files
+  or directories.
 
 Optional argument MAXDEPTH \(a positive integer\) specifies the
 maximal recursion depth, use 0 to emulate old `directory-files'.
 
-Optional argument SYMLINK-IS-FILE specifies whether symlinks
-should be resolved \(which is the default behaviour\) or whether
-they are treated as ordinary files \(non-nil\), in the latter
-case symlinks to directories are not recurred.
+Optional argument SYMLINK-IS-FILE specifies whether symlinks should be
+recursed into \(which is the default behaviour\).  When symlinks to
+directories are not recursed the FILES-ONLY option takes effect.
 
 Optional argument BLOOM-FILTER specifies a bloom filter where
 to put results in addition to the ordinary result list.
@@ -1472,6 +1444,10 @@ void syms_of_dired(void)
 	defsymbol(&Qdesc_sorted_list, "desc-sorted-list");
 	defsymbol(&Qunsorted_list, "unsorted-list");
 	defsymbol(&Qmatch_full, "match-full");
+	defsymbol(&Qsubdir, "subdir");
+	defsymbol(&Qfiles, "files");
+	defsymbol(&Qdirs, "dirs");
+	defsymbol(&Qsymlinks, "symlinks");
 
 	DEFSUBR(Fdirectory_files);
 	DEFSUBR(Fdirectory_files_recur);

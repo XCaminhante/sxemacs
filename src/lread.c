@@ -584,14 +584,15 @@ encoding detection or end-of-line detection.
 	Lisp_Object newer = Qnil;
 	Lisp_Object handler = Qnil;
 	Lisp_Object found = Qnil;
-	struct gcpro gcpro1, gcpro2, gcpro3;
+	Lisp_Object absfile = Qnil;
+	struct gcpro gcpro1, gcpro2, gcpro3, gcpro4;
 	int reading_elc = 0;
 	int message_p = NILP(nomessage);
 /*#ifdef DEBUG_SXEMACS*/
 	static Lisp_Object last_file_loaded;
 /*#endif*/
 	struct stat s1, s2;
-	GCPRO3(file, newer, found);
+	GCPRO4(file, newer, found, absfile);
 
 	CHECK_STRING(file);
 
@@ -645,11 +646,11 @@ encoding detection or end-of-line detection.
 		foundstr = (char *)alloca( foundlen+ 1);
 		strncpy(foundstr, (char *)XSTRING_DATA(found), foundlen+1);
 
-
 		/* The omniscient JWZ thinks this is worthless, but I beg to
 		   differ. --ben */
 		if (load_ignore_elc_files) {
-			newer = Ffile_name_nondirectory(found);
+			newer = Ffile_name_nondirectory(Ffile_truename(found,
+								       Qnil));
 		} else if (load_warn_when_source_newer &&
 			   !memcmp(".elc", foundstr + foundlen - 4, 4)) {
 			if (!fstat(fd, &s1)) {	/* can't fail, right? */
@@ -690,24 +691,26 @@ encoding detection or end-of-line detection.
 	do {								\
 		if (load_ignore_elc_files) {				\
 			if (message_p) {				\
-				message("Loading %s..." done,		\
+				message("Loading %s ..." done,		\
 					XSTRING_DATA(newer));		\
 			}						\
 		} else if (!NILP(newer)) {				\
-			message("Loading %s..." done " (file %s is newer)", \
-				XSTRING_DATA(file),			\
+			message("Loading %s ..." done " (file %s is newer)", \
+				XSTRING_DATA(absfile),			\
 				XSTRING_DATA(newer));			\
 		} else if (source_only) {				\
 			Lisp_Object tmp = Ffile_name_nondirectory(file); \
-			message("Loading %s..." done			\
+			message("Loading %s ..." done			\
 				" (file %s.elc does not exist)",	\
-				XSTRING_DATA(file),			\
+				XSTRING_DATA(absfile),			\
 				XSTRING_DATA(tmp)); \
 		} else if (message_p) {					\
-			message("Loading %s..." done,			\
-				XSTRING_DATA(file));			\
+			message("Loading %s ..." done,			\
+				XSTRING_DATA(absfile));			\
 		}							\
 	} while (0)
+
+	absfile = Ffile_truename(found, Qnil);
 
 	PRINT_LOADING_MESSAGE("");
 
@@ -719,7 +722,7 @@ encoding detection or end-of-line detection.
 
 		NGCPRO1(lstrm);
 	       if (fd < 0)
-		      signal_file_error("Cannot open load file", file);
+		      signal_file_error("Cannot open load file", absfile);
 
 		lstrm = make_filedesc_input_stream(fd, 0, -1, LSTR_CLOSING);
 		/* 64K is used for normal files; 8K should be OK here because
@@ -778,8 +781,7 @@ encoding detection or end-of-line detection.
 			/* no Ebolification needed */
 			load_byte_code_version = 100;
 		}
-
-		readevalloop(lstrm, file, Feval, 0);
+		readevalloop(lstrm, absfile, Feval, 0);
 #ifdef FILE_CODING
 		if (!NILP(used_codesys)) {
 			Lisp_Object tmp =
@@ -833,7 +835,7 @@ encoding detection or end-of-line detection.
 /*#endif / * DEBUG_SXEMACS */
 
 	if (!noninteractive) {
-		PRINT_LOADING_MESSAGE("done");
+		PRINT_LOADING_MESSAGE(" done");
 	}
 	UNGCPRO;
 	return Qt;
