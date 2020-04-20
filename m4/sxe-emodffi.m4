@@ -118,14 +118,15 @@ AC_DEFUN([SXE_FFI_TRY_PKGCONFIG], [dnl
 		sxe_cv_feat_ffi="no"
 		MM_FAIL
 	else
-		SXE_CHECK_HEADERS([ffi.h])
 	        SXE_PC_CHECK_EXISTS([libffi])
 	        SXE_PC_CHECK_VERSION([libffi])
 	        SXE_PC_CHECK_CPPFLAGS([libffi])
 	        SXE_PC_CHECK_LDFLAGS([libffi])
 	        SXE_PC_CHECK_LIBS([libffi])
-		SXE_DUMP_LIBS
+		FFI_CPPFLAGS="${sxe_cv_pc_libffi_cppflags}"
 		CPPFLAGS="$CPPFLAGS $FFI_CPPFLAGS"
+		SXE_CHECK_HEADERS([ffi.h])
+		SXE_DUMP_LIBS
 		if test "$ac_cv_header_ffi_h" = "yes"; then
 			AC_CHECK_LIB([ffi], [ffi_call], [dnl
 				sxe_cv_feat_ffi="yes"
