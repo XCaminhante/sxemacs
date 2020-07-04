@@ -215,8 +215,9 @@ as a local directory."
 	   "downloads.sxemacs.org" "xemacs-pkgs/packages" "http")
 	  ))
       ;; FTP Sites
-      ("SXEmacs Main Site (FTP)"
-       "ftp.sxemacs.org" "pub/packages" "ftp")
+      ;; We don't have FTP (does anyone these days?) --SY
+      ;; ("SXEmacs Main Site (FTP)"
+      ;;  "ftp.sxemacs.org" "pub/packages" "ftp")
       )
   "*List of remote sites available for downloading packages.
 
@@ -257,7 +258,7 @@ copy.  Otherwise, keep it around."
 ;; #### it may make sense for this to be a list of names.
 ;; #### also, should we rename "*base*" to "*index*" or "*db*"?
 ;;      "base" is a pretty poor name.
-(defcustom package-get-base-filename "package-index.LATEST.gpg"
+(defcustom package-get-base-filename "package-index"
   "*Name of the default package-get database file.
 This may either be a relative path, in which case it is interpreted
 with respect to `package-get-remote', or an absolute path."
