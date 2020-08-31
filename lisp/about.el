@@ -2,7 +2,7 @@
 
 ;; Copyright (c) 1997 Free Software Foundation, Inc.
 ;; Copyright (C) 2001 Ben Wing.
-;; Copyright (C) 2004 - 2012 Steve Youngs.
+;; Copyright (C) 2004 - 2020 Steve Youngs.
 
 ;; Keywords: extensions
 ;; Version: 3.0
@@ -125,6 +125,7 @@
     (jan       "Jan Vroonhof"      "jan@xemacs.org")
     (jareth    "Jareth Hein"       "jareth@xemacs.org")
     (jason     "Jason R. Mastaler" "jason@xemacs.org")
+    (jay       "Jay Belanger"      "belanger@sxemacs.org")
     (jens      "Jens Lautenbacher" "jens@xemacs.org")
     (jmiller   "Jeff Miller"       "jmiller@xemacs.org")
     (jonathan  "Jonathan Harris"   "jonathan@xemacs.org")
@@ -218,16 +219,14 @@
     (pez        . "http://cbs.sportsline.com/")
     (piper      . "http://www.andypiper.com/")
     (rossini    . "http://faculty.washington.edu/rossini/")
-    (steve      . "http://www.steveyoungs.com/")
-    (steve-emchat . "https://www.emchat.org/")
-    (steve-g+   . "https://plus.google.com/u/0/+SteveYoungs")
+    (steve      . "https://www.steveyoungs.com/")
+    (steve-syw  . "https://sywriting.com/")
     (steve-fb   . "https://facebook.com/steve.r.youngs/")
-    (steve-li   . "http://www.linkedin.com/in/steveyoungs")
-    (steve-inits . "http://bastard.steveyoungs.com/~steve/SXEmacs/htmlinits/")
+    (steve-li   . "https://www.linkedin.com/in/steveyoungs")
+    (steve-inits . "https://www.sxemacs.org/SYinits/index.html")
     (steve-twit . "https://twitter.com/SteveYoungs")
     (stigb      . "http://www.tihlde.hist.no/~stigb/")
     (sxemacs    . "https://www.sxemacs.org/")
-    (sxemacs-shop . "http://store.sxemacs.org/")
     (vin        . "http://www.upa.org/")
     (vladimir   . "http://www.leonora.org/~vladimir/")
     (wget       . "http://sunsite.dk/wget/")
@@ -1285,16 +1284,18 @@ programming languages and their implementation, and hopes that one day
 XEmacs will speak Scheme.\n"))
     (steve
      (widget-insert "
-I live in Brisbane, Australia with my wife, Michelle, and our children,
-Kaitlyn and Blake.
+I live near Brisbane, Australia with my wife, Michelle, and our
+children, Kaitlyn and Blake.  There's also a cat called Seamus.
+Seamus alternates between being a cute, adorable, ginger tom, and the
+spawn of Satan with silent, deadly, ninja skills.
 
 In past lives, I've been a bank officer, car salesman, insurance agent,
 managed a computer firm and owned and operated my own business.  I now
-divide my time between my family, planning my next business, writing,
-and maintaining a few open source projects.
+divide my time between my family, my business, my writing, and maintaining
+the SXEmacs project.
 
 "
-		    (about-with-face "My current open source obsessions are:"
+		    (about-with-face "My open source obsession:"
 				     'font-lock-warning-face))
      (widget-insert "\n\n")
      (widget-insert (about-with-face "   SXEmacs:\t\t"
@@ -1303,30 +1304,24 @@ and maintaining a few open source projects.
      (widget-insert (about-with-face "\n   My SXEmacs conf:     "
 				     'font-lock-string-face))
      (about-url-link 'steve-inits nil "All my sexy SXEmacs init files")
-     (widget-insert (about-with-face "\n   EMchat:      \t"
-				     'font-lock-string-face))
-     (about-url-link 'steve-emchat nil "Visit the EMchat homepage")
-     (widget-insert "\n\n"
-		    (about-with-face "You got the software..."
-				     'font-lock-warning-face)
-		    "\n\n"
-		    (about-with-face "   Now get the"
-				     'font-lock-string-face)
-		    (about-with-face " T-Shirt:\t" 'bold))
-     (about-url-link 'sxemacs-shop nil "Cool SXEmacs merchandise")
      (widget-insert "\n\n"
 		    (about-with-face
 		     "More of me on the Interwebz:\n\n"
 		     'font-lock-warning-face))
-     ; (widget-insert (about-with-face "   My Blog:\t\t"
-     ;    			     'font-lock-string-face))
-     ; (about-url-link 'steve nil "Visit my infrequently updated blog")
-     (widget-insert (about-with-face "   Facebook:\t\t"
+     (widget-insert (about-with-face "   SY Writing:\t\t"
+				     'font-lock-string-face))
+     (about-url-link 'steve-syw nil
+		     "I'm a freelance writer, you can hire me! ;-)")
+     (widget-insert (about-with-face " [Offline, sorry]"
+				     'font-lock-comment-face))
+     (widget-insert (about-with-face "\n   My Blog:\t\t"
+        			     'font-lock-string-face))
+     (about-url-link 'steve nil "Visit my infrequently updated blog")
+     (widget-insert (about-with-face " [Offline, sorry]"
+				     'font-lock-comment-face))
+     (widget-insert (about-with-face "\n   Facebook:\t\t"
 				     'font-lock-string-face))
      (about-url-link 'steve-fb nil "My Facebook Profile")
-     (widget-insert (about-with-face "\n   Google+:\t\t"
-				     'font-lock-string-face))
-     (about-url-link 'steve-g+ nil "My Google+ Profile")
      (widget-insert (about-with-face "\n   LinkedIn:\t\t"
 				     'font-lock-string-face))
      (about-url-link 'steve-li nil "My LinkedIn Profile")
