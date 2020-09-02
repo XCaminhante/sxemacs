@@ -211,8 +211,8 @@ as a local directory."
 (defcustom package-get-download-sites
   `(,@(when package-get-have-curl
 	;; HTTP Sites
-	'(("SXEmacs Main Site (HTTP)"
-	   "downloads.sxemacs.org" "xemacs-pkgs/packages" "http")
+	'(("SXEmacs Main Site (HTTPS)"
+	   "downloads.sxemacs.org" "xemacs-pkgs/packages" "https")
 	  ))
       ;; FTP Sites
       ;; We don't have FTP (does anyone these days?) --SY

@@ -1,6 +1,6 @@
                                                   -*- mode:outline -*-
 
-At the time of this release (SXEmacs 22.1.15), SXEmacs has the
+At the time of this release (SXEmacs 22.1.17), SXEmacs has the
 following idiosyncrasies: 
 
 * File Locations
@@ -387,16 +387,9 @@ make CFLAGS="-Wall -fpacked -fpedantic" build-report
 * XEmacs Packages
 =================
 
-We have identified 2 packages so far that don't work "out of the box"
-with SXEmacs.  In both of these the problem is with parsing version
-information.  Patches have been sent to the appropriate maintainer to
-fix the problem and are included here in case the packages haven't
-been updated by the time you install SXEmacs.
-
-Update:  The EFS, and Dired XEmacs packages that are currently
-available from the "Pre-Releases" area of XEmacs package mirrors are
-both now compatible with SXEmacs and do not need the patches mentioned
-here.
+As of 22.1.17 things are pretty good in package-land. ;-)  I'm not
+suggesting that there aren't any bugs, just none that we currently
+know of that will burn down your house and kick your dog.
 
 * Problems with running SXEmacs
 ===============================

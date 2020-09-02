@@ -20,6 +20,99 @@ in each release should look at the appropriate section of this file.
 
 
 
+* Changes in SXEmacs 22.1.17 (Hudson Custom Eight)
+==================================================
+
+** Developer Stats
+
+	      Steve Youngs -- 41 commits
+	   Nelson Ferreira -- 20 commits
+
+** Bugs closed in this release:
+
+183 184
+
+** Packaging Infrastructure (PUI) -- Youngs.
+
+The big change here is that SXEmacs now uses FFI and libcurl to
+download packages whenever possible.  EFS can still be used for FTP
+download sites but at present we only have a single HTTPS site
+available.  This means that, for the time being, FFI and libcurl are
+mandatory requirements for using PUI for remote package installs.  I
+see that as a feature, not a bug. ;-)
+
+The old "Pre-Release" packages have been removed.
+
+The index file has been renamed to "package-index"
+
+** FFI -- Youngs.
+
+ffi-curl.el was extended and improved so that it could be used as a
+transport backend for PUI.  As a result, the following forms are valid
+and available for use:
+
+      (file-exists-p "http://example.com/filename")
+      (file-readable-p "http://example.com/filename")
+      (insert-file-contents-literally "http://example.com/filename")
+      (copy-file "http://example.com/filename" "/local/file")
+      (expand-file-name "http://example.com/filename")
+      (file-name-directory "http://example.com/filename")
+      (file-name-nondirectory "http://example.com/filename")
+
+ffi-magic.el was rewritten, bringing in most of file(1)'s features and
+capabilities.  See the doc string of #'magic:file for the new options
+and example usage.
+
+Also see:
+
+     #'magic:file-audio-p
+     #'magic:file-video-p
+     #'magic:file-image-p
+     #'magic:file-text-p
+
+ffi-magic.el can also be used to enable automatic coding system
+detection.  In-file coding cookies and local variables sections are
+honoured, as is explicitly setting the coding system.  IOW, the magic
+auto-detection only kicks in if the coding system isn't already set
+some other way.  To get the magic, add this form to your init...
+
+     (require 'ffi-magic)
+     (magic:find-file-magic-alist-enable)
+
+ffi-wand.el no longer supports PDF.  This was because certain versions
+of libWand would cause crashes on PDF files, and the versions that
+didn't the performance and user experience was flakey at best.
+
+** Build Chain -- Youngs
+
+Better, more reliable and robust libffi detection
+
+config.{guess,sub} updated
+
+Use a distro-agnostic way of detecting glibc version
+
+Clean up all warnings from the autogen.sh script
+
+** Internals / elisp -- Youngs, Ferreira
+
+Use the system malloc in all cases instead of the old, crusty,
+in-house malloc we had.
+
+A way to prevent certain OpenSSL ciphers from being used.  This was
+done because some ciphers have been known to causes crashes and data
+corruption.
+
+A couple of tweaks for GNU compat reasons with
+  #'eval-after-load
+  #'define-obsolete-variable-alias
+  #'define-obsolete-function-alias
+
+info.el updated to correctly handle UTF-8 info docs (note that some
+MULE packages are still needed for the complete user experience)
+
+#'directory-files and #'directory-files-recur were updated and fixed
+so that now they do what their doc strings say they can. ;-)
+
 * Changes in SXEmacs 22.1.16 (Hillman Hunter)
 =============================================
 

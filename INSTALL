@@ -10,7 +10,7 @@ Copyright (C) 2005 - 2015 Steve Youngs
 | completely outside of the source tree.
 |
 | In the code examples below, "${SRCTREE}" refers to the path where
-| you wish to build SXEmacs.
+| your SXEmacs source files are stored.
 `----
 
 
@@ -94,27 +94,35 @@ actually have an adverse affect.
 
 Packages:
 --------
+As of 22.1.17 SXEmacs is distributing a set of XEmacs packages.
+However they are currently only available via HTTP so you will need
+a FFI-enabled SXEmacs to download and install package through the
+Package User Interface (PUI).
+
 Like XEmacs, SXEmacs only comes with a minimal set of lisp libraries
 to cover only basic editing and functions.  To get fuller
-functionality you need to install some extra elisp packages.  SXEmacs
-doesn't actually distribute any elisp packages, but it can and does
-use XEmacs packages.
-
-Unlike XEmacs, SXEmacs does _NOT_ need any packages pre-installed
-before its packaging tools (PUI) are usable.  To install elisp
-packages into a virgin, packageless, SXEmacs, follow these steps...
+functionality you need to install some extra elisp packages.
 
   1) Start SXEmacs
 
-  2) From the menubar, choose:
+  2) From the menubar, choose a download site:
 
 	  Tools -> Packages -> Set Download Site -> Official Releases
 	    -> ...
 
-  3) M-x pui-bootstrap RET
+     "choose" might be a bit optimistic of a word as we currently only
+     have a single packages download site.  That could change in the
+     future.  The glass is half-full, yeah? ;-)
 
-After the "bootstrapping" is finished you'll be asked if you want to
-install anymore packages.
+  3) M-x pui-list-packages RET
+
+     It will ask you if you would like to update the package-index
+     file, or, if you don't have one yet (if this is your first time
+     running SXEmacs, you won't), offer to create one for you.  In
+     either case, say "yes".
+
+At this point you can choose which packages to install.  There are
+some brief instructions at the bottom of that "Packages" buffer.
 
 
 File hierarchies:
@@ -278,11 +286,9 @@ install them and incorporate them into SXEmacs.
 
     <ftp://sourceware.org/pub/libffi/>.
 
-  Or grab the latest CVS sources with:
+  Or grab the latest git sources with:
 
-    cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/libffi login
-       (password is ``anoncvs'')
-    cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/libffi co libffi
+    git clone https://github.com/libffi/libffi
 
   FFI is also available as part of GCC.  It gets turned on if you
   build the Java compiler, gcj.  Strangely enough, not very many Linux
