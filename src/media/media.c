@@ -50,13 +50,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #endif
 
 Lisp_Object Qmedia_streamp;
-Lisp_Object Qunknown;
 Lisp_Object Qunavailable;
 /* media property syms */
 Lisp_Object Qdemux, Qcodec, Qnchannels, Qsamplerate;
 Lisp_Object Qbitrate, Qabitrate, Qvbitrate;
-Lisp_Object Qwidth, Qheight, Qaspect, Qdriver, Qkind, Qfifo, Quri, Qtype;
-Lisp_Object Qaudio, Qvideo, Qimage;
+Lisp_Object Qaspect, Qdriver, Qkind, Qfifo, Quri;
+Lisp_Object Qaudio, Qvideo;
 
 static void determine_stream_type(Lisp_Media_Stream *ms, media_driver);
 static void media_stream_print(Lisp_Object, Lisp_Object, int);

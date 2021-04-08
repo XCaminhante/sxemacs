@@ -62,7 +62,7 @@ Lisp_Object Qsubwindow_image_instance_p;
 Lisp_Object Qwidget_image_instance_p;
 Lisp_Object Qconst_glyph_variable;
 Lisp_Object Qmono_pixmap, Qcolor_pixmap, Qsubwindow;
-Lisp_Object Q_file, Q_data, Q_face, Q_pixel_width, Q_pixel_height;
+Lisp_Object Q_face, Q_pixel_width, Q_pixel_height;
 Lisp_Object Qformatted_string;
 Lisp_Object Vcurrent_display_table;
 Lisp_Object Vtruncation_glyph, Vcontinuation_glyph, Voctal_escape_glyph;

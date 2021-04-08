@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include "ent.h"
 
 EMACS_INT Vmost_negative_int, Vmost_positive_int;
-Lisp_Object Qzero, Qone;
+Lisp_Object Qone;
 
 
 static inline int

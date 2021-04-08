@@ -46,7 +46,7 @@ Lisp_Object Vsound_alist;
 Lisp_Object Vsynchronous_sounds;
 Lisp_Object Vnative_sound_only_on_console;
 Lisp_Object Q_volume, Q_pitch, Q_duration, Q_sound;
-Lisp_Object Q_device, Q_server, Q_client, Q_keep_open;
+Lisp_Object Q_server, Q_client, Q_keep_open;
 Lisp_Object Qplay_sound;
 
 #ifdef HAVE_AO_SOUND
