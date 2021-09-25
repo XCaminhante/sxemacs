@@ -67,7 +67,7 @@ AC_DEFUN([_SXE_CHECK_LT2], [dnl
 	dnl for the `old' libtool2 stuff as this is available through
 	dnl cvs only and we stick with the latest
 	dnl AC_CONFIG_SUBDIRS([libltdl])
-	AC_CONFIG_MACRO_DIR([libltdl/m4])
+	AC_CONFIG_MACRO_DIRS([libltdl/m4])
 ])dnl _SXE_CHECK_LT2
 
 m4_ifdef([LT_CONFIG_LTDL_DIR], [], [dnl else

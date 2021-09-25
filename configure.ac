@@ -13,7 +13,7 @@ AC_INIT([SXEmacs], [SXEM4CS_VERSION], [https://issues.sxemacs.org/])
 AC_CONFIG_HEADER([src/config.h])
 AC_CONFIG_SRCDIR([src/lisp.h])
 AC_CONFIG_AUX_DIR([.])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIRS([m4])
 
 dnl -------------------------------------------------------------------------
 dnl Local copyright notices.
