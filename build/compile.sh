@@ -1,5 +1,9 @@
 #!/bin/sh
+
+# apt install libmotif-dev libxaw7-dev x11proto-core-dev libx11-dev libxpm-dev libpng-dev libncurses5-dev libjpeg-dev libgnutls28-dev libfreetype-dev
+
 cd "$(dirname "$0")"
+export CFLAGS='-std=gnu18 -Wall -Wextra -Werror -Wfatal-errors -Wno-unused-function -Wstrict-prototypes -Wno-trigraphs'
 [ -x ../configure ] || {
   pushd ..
   ./autogen.sh
